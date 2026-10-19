@@ -1,0 +1,18 @@
+{
+  "name": "瘋狂農場•果實計算器",
+  "short_name": "農場計算器",
+  "description": "蛋仔派對瘋狂農場果實售價與詞條加成專業試算工具",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#030612",
+  "theme_color": "#030612",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
