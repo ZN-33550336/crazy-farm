@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>瘋狂農場•果實計算器</title>
+    <meta name="theme-color" content="#030612" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="description" content="蛋仔派對《瘋狂農場》果實售價與詞條加成專業計算器。支援全47種詞條試算、全作物同屏對比、生長耗時推估，純前端本機運算、極速流暢！" />
+    <meta name="keywords" content="蛋仔派對, 瘋狂農場, 果實計算器, 農場詞條, 作物倍率, 蛋仔農場, 售價計算" />
+
+    <!-- Open Graph (LINE / Discord / Facebook 預覽卡片) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://zn-33550336.github.io/crazy-farm/" />
+    <meta property="og:title" content="瘋狂農場•果實計算器 ｜ 蛋仔派對高階數值試算" />
+    <meta property="og:description" content="精準計算果實售價、全47種詞條加成、全作物同屏對比、生長耗時分析，專為農場島主打造的賽博龐克試算工具！" />
+    <meta property="og:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
+    <meta property="og:locale" content="zh_TW" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="瘋狂農場•果實計算器" />
+    <meta name="twitter:description" content="蛋仔派對瘋狂農場果實售價與詞條加成專業計算器。" />
+    <meta name="twitter:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
+
+    <!-- Favicon & PWA Icons -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./favicon.svg" />
+    <link rel="manifest" href="./manifest.json" />
+    <!-- Three.js & GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-deep: #030612;
+        --neon-cyan: #00f6ff;
+        --neon-pink: #ff007f;
+        --neon-purple: #b53cff;
+        --neon-lime: #00ff88;
+        --neon-amber: #ffbb00;
+        --neon-blue: #1e90ff;
+
+        --glass-base: rgba(8, 16, 36, 0.78);
+        --border-cyan: rgba(0, 246, 255, 0.35);
+        --border-pink: rgba(255, 0, 127, 0.4);
+
+        --text-white: #ffffff;
+        --text-light: #e2f4ff;
+        --text-muted: #82a5c4;
+
+        font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+
+      input, select, button {
+        user-select: auto;
+        font-family: inherit;
+      }
+
+      /* 嚴格隔離隱藏屬性，杜絕首頁下方穿透計算器 */
+      [hidden] {
+        display: none !important;
+      }
+
+      body {
+        min-height: 100vh;
+        background-color: var(--bg-deep);
+        color: var(--text-light);
+        overflow-x: hidden;
+        position: relative;
+        perspective: 1200px;
+      }
+
+      #quantumCanvas3D {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      #burstCanvas2D {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      .holo-overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        background: 
+          radial-gradient(circle at 50% 0%, rgba(0, 246, 255, 0.12), transparent 60%),
+          linear-gradient(rgba(14, 20, 36, 0) 50%, rgba(0, 0, 0, 0.32) 50%);
+        background-size: 100% 100%, 100% 4px;
+        box-shadow: inset 0 0 90px rgba(0, 5, 18, 0.9);
+      }
+
+      .app-stage {
+        position: relative;
+        z-index: 2;
+        width: min(980px, 100% - 16px);
+        margin: 0 auto;
+        padding: max(env(safe-area-inset-top, 10px), 10px) 0 max(env(safe-area-inset-bottom, 24px), 36px);
+        transform-style: preserve-3d;
+      }
+
+      /* 頂部導航列 */
+      .cyber-header-3d {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        margin-bottom: 14px;
+        background: linear-gradient(135deg, rgba(10, 22, 50, 0.9), rgba(6, 12, 30, 0.85));
+        border: 1px solid var(--border-cyan);
+        border-radius: 14px;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 246, 255, 0.12);
+      }
+
+      .header-title {
+        font-size: clamp(18px, 4.2vw, 24px);
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 0 0 14px rgba(0, 246, 255, 0.5);
+      }
+
+      .btn-3d-icon {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border-cyan);
+        background: rgba(0, 246, 255, 0.1);
+        color: var(--neon-cyan);
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .btn-3d-icon:active {
+        transform: translateY(2px);
+      }
+
+      .panel-3d {
+        background: var(--glass-base);
+        border: 1px solid var(--border-cyan);
+        border-radius: 16px;
+        padding: 14px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65), 0 0 15px rgba(0, 246, 255, 0.08);
+        position: relative;
+      }
+
+      /* 篩選與搜尋 */
+      .filter-deck {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .search-bar-3d {
+        position: relative;
+        width: 100%;
+      }
+
+      .search-bar-3d svg {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        fill: var(--neon-cyan);
+      }
+
+      .input-3d {
+        width: 100%;
+        min-height: 44px;
+        padding: 9px 14px 9px 42px;
+        border: 1px solid rgba(0, 246, 255, 0.35);
+        border-radius: 12px;
+        background: rgba(3, 8, 22, 0.9);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        outline: none;
+        transition: all 0.2s ease;
+      }
+
+      .input-3d:focus {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 16px rgba(0, 246, 255, 0.4);
+      }
+
+      /* 1. 頂部 6 個標籤精準等比網格，完全無滾動 */
+      .quality-pills-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 5px;
+        width: 100%;
+      }
+
+      .filter-tab-pill {
+        padding: 8px 1px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(14, 25, 54, 0.75);
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        text-align: center;
+        white-space: nowrap;
+        min-width: 0;
+        overflow: hidden;
+        transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .filter-tab-pill.active {
+        color: #fff;
+        border-color: var(--neon-cyan);
+        background: rgba(0, 246, 255, 0.25);
+        box-shadow: 0 0 12px rgba(0, 246, 255, 0.38);
+        transform: translateY(-1px);
+      }
+
+      /* 作物矩陣網格 */
+      .crop-grid-3d {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+        gap: 10px;
+        max-height: 72vh;
+        overflow-y: auto;
+        padding-right: 2px;
+      }
+
+      .crop-card-3d {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 62px;
+        padding: 9px 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        cursor: pointer;
+        text-align: left;
+        position: relative;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.45);
+        transition: transform 0.15s ease, border-color 0.15s ease;
+      }
+
+      .crop-card-3d:active {
+        transform: scale(0.96);
+      }
+
+      .crop-card-name {
+        font-size: 14px;
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .crop-card-sub {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 4px;
+      }
+
+      /* 品質漸層底色材質 */
+      .q-theme-灰色 { background: linear-gradient(145deg, #444d5c, #222935); border-left: 3px solid #8e9bb0; }
+      .q-theme-綠色, .q-theme-绿色 { background: linear-gradient(145deg, #125e3b, #072e1c); border-left: 3px solid #00ff73; }
+      .q-theme-藍色, .q-theme-蓝色 { background: linear-gradient(145deg, #174ea6, #0c2759); border-left: 3px solid #00c3ff; }
+      .q-theme-紫色 { background: linear-gradient(145deg, #6c23b5, #350d5f); border-left: 3px solid #d000ff; }
+      .q-theme-金色 { background: linear-gradient(145deg, #a66708, #523000); border-left: 3px solid #ffbb00; }
+      .q-theme-至臻 {
+        background: linear-gradient(135deg, #094b5c 0%, #46146e 50%, #700d43 100%);
+        border: 1px solid rgba(0, 246, 255, 0.5);
+        border-left: 3px solid #00f6ff;
+        box-shadow: inset 0 0 15px rgba(255, 0, 150, 0.2);
+      }
+
+      /* 計算器佈局 */
+      .calc-stage {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .top-action-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-3d-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border-cyan);
+        background: rgba(10, 22, 48, 0.9);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .btn-3d-action:active {
+        transform: scale(0.96);
+      }
+
+      .btn-3d-danger {
+        border-color: var(--border-pink);
+        color: #ff99d6;
+        background: rgba(50, 10, 30, 0.85);
+      }
+
+      .control-pod-3d {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .crop-banner-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        border-radius: 12px;
+      }
+
+      .crop-banner-info strong {
+        display: block;
+        font-size: 20px;
+        font-weight: 900;
+        color: #fff;
+      }
+
+      .crop-banner-info span {
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .quick-switch-box {
+        position: relative;
+      }
+
+      .dropdown-trigger-3d {
+        width: 100%;
+        min-height: 42px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border-cyan);
+        background: rgba(5, 12, 28, 0.92);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+      }
+
+      /* 4. 作物清單下拉選項具備專屬底色 */
+      .dropdown-menu-3d {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        max-height: 280px;
+        overflow-y: auto;
+        background: rgba(4, 10, 26, 0.98);
+        border: 1.5px solid var(--neon-cyan);
+        border-radius: 12px;
+        padding: 6px;
+        z-index: 120;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9);
+      }
+
+      .dropdown-item-btn {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        margin-bottom: 5px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        transition: all 0.12s ease;
+      }
+
+      .dropdown-item-btn:active {
+        transform: scale(0.97);
+      }
+
+      .dropdown-item-btn.selected {
+        border-color: #fff;
+        box-shadow: 0 0 10px var(--neon-cyan);
+      }
+
+      .inputs-3d-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+      }
+
+      .field-box label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        margin-bottom: 4px;
+      }
+
+      .input-num-3d {
+        width: 100%;
+        min-height: 42px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 246, 255, 0.35);
+        background: rgba(3, 8, 20, 0.92);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 900;
+        outline: none;
+      }
+
+      .time-readout-box {
+        min-height: 42px;
+        padding: 8px;
+        border-radius: 10px;
+        border: 1px dashed rgba(0, 255, 136, 0.4);
+        background: rgba(3, 14, 22, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--neon-lime);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .quick-pct-row {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+      }
+
+      .pct-3d-btn {
+        padding: 8px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 246, 255, 0.3);
+        background: rgba(14, 25, 54, 0.8);
+        color: var(--text-light);
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.12s ease;
+      }
+
+      .pct-3d-btn:active {
+        background: var(--neon-cyan);
+        color: #000;
+      }
+
+      /* 全作物對比基準拉條 */
+      .compare-slider-bar {
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(5, 12, 28, 0.82);
+        border: 1px solid rgba(0, 246, 255, 0.25);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .slider-top-labels {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .slider-top-labels strong {
+        color: var(--neon-lime);
+      }
+
+      .cyber-range {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 6px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+        outline: none;
+      }
+
+      .cyber-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid var(--neon-cyan);
+        box-shadow: 0 0 10px var(--neon-cyan);
+        cursor: pointer;
+      }
+
+      /* 總價值與詞條總倍率（位於對比拉條與詞條選擇中間） */
+      .holo-value-reactor-3d {
+        background: linear-gradient(135deg, rgba(8, 28, 68, 0.95) 0%, rgba(28, 8, 56, 0.95) 100%);
+        border: 1.5px solid var(--neon-cyan);
+        border-radius: 16px;
+        padding: 16px 20px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 246, 255, 0.25);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .reactor-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--neon-cyan);
+        letter-spacing: 1px;
+      }
+
+      .reactor-price-value {
+        font-size: clamp(34px, 7.5vw, 50px);
+        font-weight: 900;
+        color: #ffffff;
+        line-height: 1.1;
+        text-shadow: 0 0 16px rgba(0, 246, 255, 0.75);
+      }
+
+      .reactor-right {
+        text-align: right;
+        border-left: 1px solid rgba(0, 246, 255, 0.25);
+        padding-left: 16px;
+      }
+
+      .reactor-mult-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: #ff80bf;
+      }
+
+      .reactor-mult-value {
+        font-size: clamp(24px, 5.5vw, 36px);
+        font-weight: 900;
+        color: var(--neon-pink);
+        text-shadow: 0 0 15px rgba(255, 0, 127, 0.7);
+      }
+
+      .mutations-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .mutations-main-title {
+        font-size: 15px;
+        font-weight: 900;
+        color: var(--neon-cyan);
+        margin-bottom: 0;
+      }
+
+      .btn-reset-mutations {
+        padding: 6px 14px;
+        font-size: 12px;
+        border-radius: 10px;
+      }
+
+      .mutation-group-3d {
+        margin-bottom: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(5, 11, 26, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .mutation-group-3d:last-child {
+        margin-bottom: 0;
+      }
+
+      .mutation-group-title {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+
+      /* 3. 基礎詞條第一排 5 個網格 */
+      .chips-grid-5 {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+      }
+
+      /* 3. 其餘全部每排 6 個網格 */
+      .chips-grid-6 {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 5px;
+      }
+
+      .chip-3d {
+        min-height: 35px;
+        padding: 5px 1px;
+        border-radius: 8px;
+        border: 1px solid var(--chip-border, rgba(255, 255, 255, 0.2));
+        background: var(--chip-bg, rgba(14, 25, 54, 0.75));
+        color: var(--chip-text, #fff);
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+        transition: all 0.12s ease;
+      }
+
+      .chip-3d:active:not(.disabled) {
+        transform: scale(0.95);
+      }
+
+      .chip-3d.selected {
+        background: var(--chip-active-bg, var(--neon-cyan));
+        color: #030814 !important;
+        font-weight: 900;
+        border-color: #fff;
+        box-shadow: 0 0 14px var(--chip-glow, var(--neon-cyan));
+      }
+
+      .chip-3d.disabled {
+        opacity: 0.22;
+        cursor: not-allowed;
+        filter: grayscale(0.9);
+      }
+
+      /* 詞條品質顏色體系 */
+      .chip-color-彩色 {
+        --chip-border: rgba(0, 246, 255, 0.5);
+        --chip-bg: linear-gradient(135deg, rgba(0, 246, 255, 0.25), rgba(255, 0, 127, 0.25));
+        --chip-active-bg: linear-gradient(135deg, #00f6ff, #ff007f);
+        --chip-glow: #00f6ff;
+        --chip-text: #e6ffff;
+      }
+      .chip-color-金色 {
+        --chip-border: rgba(255, 187, 0, 0.5);
+        --chip-bg: rgba(65, 42, 5, 0.7);
+        --chip-active-bg: #ffbb00;
+        --chip-glow: #ffbb00;
+        --chip-text: #fff2c2;
+      }
+      .chip-color-紫色 {
+        --chip-border: rgba(217, 70, 239, 0.5);
+        --chip-bg: rgba(50, 14, 75, 0.7);
+        --chip-active-bg: #d946ef;
+        --chip-glow: #d946ef;
+        --chip-text: #fad8ff;
+      }
+      .chip-color-藍色, .chip-color-蓝色 {
+        --chip-border: rgba(0, 212, 255, 0.5);
+        --chip-bg: rgba(12, 38, 78, 0.7);
+        --chip-active-bg: #00d4ff;
+        --chip-glow: #00d4ff;
+        --chip-text: #dcf7ff;
+      }
+      .chip-color-綠色, .chip-color-绿色 {
+        --chip-border: rgba(0, 255, 136, 0.5);
+        --chip-bg: rgba(10, 48, 28, 0.7);
+        --chip-active-bg: #00ff88;
+        --chip-glow: #00ff88;
+        --chip-text: #dcffe9;
+      }
+      .chip-color-灰色 {
+        --chip-border: rgba(148, 163, 184, 0.35);
+        --chip-bg: rgba(30, 41, 59, 0.7);
+        --chip-active-bg: #94a3b8;
+        --chip-glow: #94a3b8;
+        --chip-text: #e2e8f0;
+      }
+
+      .compare-toggle-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .switch-label-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--neon-cyan);
+        cursor: pointer;
+      }
+      .switch-label-group input { display: none; }
+
+      .cyber-toggle-pill {
+        width: 44px;
+        height: 22px;
+        background: rgba(5, 12, 28, 0.95);
+        border: 1.5px solid var(--neon-cyan);
+        border-radius: 999px;
+        position: relative;
+        transition: all 0.25s ease;
+      }
+
+      .cyber-toggle-pill::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 3px;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: var(--neon-cyan);
+        box-shadow: 0 0 8px var(--neon-cyan);
+        transition: transform 0.25s ease;
+      }
+
+      .switch-label-group input:checked + .cyber-toggle-pill {
+        border-color: var(--neon-lime);
+        background: rgba(0, 255, 136, 0.2);
+      }
+
+      .switch-label-group input:checked + .cyber-toggle-pill::after {
+        transform: translateX(20px);
+        background: var(--neon-lime);
+        box-shadow: 0 0 10px var(--neon-lime);
+      }
+
+      .table-container-3d {
+        margin-top: 12px;
+        overflow-x: auto;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 246, 255, 0.25);
+        background: rgba(3, 8, 20, 0.85);
+      }
+
+      table.cyber-table-3d {
+        width: 100%;
+        min-width: 500px;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      table.cyber-table-3d th {
+        background: rgba(6, 16, 38, 0.95);
+        color: var(--neon-cyan);
+        font-weight: 800;
+        padding: 9px 10px;
+        text-align: left;
+      }
+
+      table.cyber-table-3d td {
+        padding: 9px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        font-weight: 700;
+      }
+
+      .td-price-highlight {
+        color: var(--neon-cyan);
+        font-weight: 900;
+      }
+
+      @media (max-width: 520px) {
+        .inputs-3d-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .field-box-time {
+          grid-column: span 2;
+        }
+        .crop-grid-3d {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 7px;
+        }
+        .crop-card-3d {
+          min-height: 54px;
+          padding: 7px 8px;
+        }
+        .crop-card-name {
+          font-size: 13px;
+        }
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      @media (max-width: 480px) {
+        .cyber-header-3d {
+          padding: 10px 12px;
+        }
+        .header-actions {
+          gap: 6px;
+        }
+        .btn-3d-icon {
+          padding: 6px 9px;
+          font-size: 11px;
+        }
+      }
+
+      /* 免責聲明彈窗 (Cyber Modal) */
+      .modal-backdrop-3d {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(3, 6, 18, 0.82);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease;
+      }
+
+      .modal-backdrop-3d.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal-card-3d {
+        position: relative;
+        width: 100%;
+        max-width: 560px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(145deg, rgba(10, 22, 52, 0.98), rgba(5, 12, 30, 0.96));
+        border: 1px solid var(--border-cyan);
+        border-radius: 18px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 0 0 32px rgba(0, 246, 255, 0.22);
+        transform: scale(0.92) translateY(12px);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+      }
+
+      .modal-backdrop-3d.active .modal-card-3d {
+        transform: scale(1) translateY(0);
+      }
+
+      .modal-header-3d {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(0, 246, 255, 0.2);
+        background: rgba(0, 246, 255, 0.06);
+      }
+
+      .modal-title-3d {
+        font-size: 16px;
+        font-weight: 900;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-shadow: 0 0 10px rgba(0, 246, 255, 0.4);
+      }
+
+      .modal-close-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+        line-height: 1;
+        transition: color 0.15s ease, background 0.15s ease;
+      }
+      .modal-close-btn:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .modal-body-3d {
+        padding: 16px 18px;
+        overflow-y: auto;
+        font-size: 13px;
+        line-height: 1.65;
+        color: var(--text-light);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        overscroll-behavior: contain;
+      }
+
+      .modal-section-card {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(0, 246, 255, 0.12);
+        border-radius: 10px;
+        padding: 11px 13px;
+      }
+
+      .modal-section-card h4 {
+        color: var(--neon-cyan);
+        font-size: 13.5px;
+        font-weight: 800;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .modal-section-card p {
+        color: #cadbee;
+        font-size: 12.5px;
+        margin: 0;
+      }
+
+      .modal-footer-3d {
+        padding: 12px 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        justify-content: flex-end;
+        background: rgba(0, 0, 0, 0.25);
+      }
+
+      .modal-confirm-btn {
+        padding: 8px 20px;
+        background: linear-gradient(135deg, rgba(0, 246, 255, 0.25), rgba(0, 246, 255, 0.1));
+        border: 1px solid var(--neon-cyan);
+        border-radius: 10px;
+        color: var(--neon-cyan);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 0 15px rgba(0, 246, 255, 0.2);
+        transition: all 0.15s ease;
+      }
+      .modal-confirm-btn:hover {
+        background: var(--neon-cyan);
+        color: #030612;
+        box-shadow: 0 0 20px rgba(0, 246, 255, 0.5);
+      }
+
+      /* 賽博龐克頁尾 (Cyber Footer) */
+      .cyber-footer-3d {
+        margin-top: 26px;
+        padding: 18px 16px;
+        text-align: center;
+        border: 1px solid rgba(0, 246, 255, 0.16);
+        background: linear-gradient(180deg, rgba(8, 16, 36, 0.55), rgba(4, 8, 20, 0.88));
+        border-radius: 14px;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 9px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      .footer-badge-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .footer-badge {
+        font-size: 11px;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: rgba(0, 246, 255, 0.12);
+        color: var(--neon-cyan);
+        border: 1px solid rgba(0, 246, 255, 0.3);
+        letter-spacing: 0.5px;
+      }
+
+      .footer-author {
+        font-size: 11.5px;
+        color: var(--neon-cyan);
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-shadow: 0 0 8px rgba(0, 246, 255, 0.4);
+      }
+
+      .footer-copyright {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        max-width: 580px;
+        margin: 0;
+      }
+
+      .footer-links-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 2px;
+      }
+
+      .footer-link, .footer-link-btn {
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: color 0.15s ease, text-shadow 0.15s ease;
+      }
+
+      .footer-link:hover, .footer-link-btn:hover {
+        color: var(--neon-cyan);
+        text-shadow: 0 0 8px rgba(0, 246, 255, 0.6);
+      }
+
+      .footer-sep {
+        color: rgba(255, 255, 255, 0.2);
+        font-size: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="quantumCanvas3D"></canvas>
+    <canvas id="burstCanvas2D"></canvas>
+    <div class="holo-overlay"></div>
+
+    <main class="app-stage">
+      <header class="cyber-header-3d">
+        <h1 class="header-title">瘋狂農場•果實計算器</h1>
+        <button id="soundToggleBtn" class="btn-3d-icon" type="button">
+          <span id="soundIconText">🔊 音效</span>
+        </button>
+      </header>
+
+      <!-- ================================================== -->
+      <!-- 視圖 1：作物清單首頁（7. 下方純淨無計算器殘留）     -->
+      <!-- ================================================== -->
+      <section id="pickerView" class="panel-3d">
+        <div class="filter-deck">
+          <div class="search-bar-3d">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input id="pickerSearch" class="input-3d" type="search" placeholder="輸入作物名稱快速搜尋..." autocomplete="off" />
+          </div>
+
+          <!-- 1. 頂部 6 個標籤均分，無須滑動 -->
+          <div id="qualityTabs" class="quality-pills-grid">
+            <button class="filter-tab-pill" type="button" data-q="至臻">至臻</button>
+            <button class="filter-tab-pill" type="button" data-q="金色">金色</button>
+            <button class="filter-tab-pill" type="button" data-q="紫色">紫色</button>
+            <button class="filter-tab-pill" type="button" data-q="藍色">藍色</button>
+            <button class="filter-tab-pill" type="button" data-q="綠色">綠色</button>
+            <button class="filter-tab-pill" type="button" data-q="灰色">灰色</button>
+          </div>
+        </div>
+
+        <div id="pickerGrid" class="crop-grid-3d"></div>
+      </section>
+
+      <!-- ================================================== -->
+      <!-- 視圖 2：計算機工作區                               -->
+      <!-- ================================================== -->
+      <section id="calculatorView" class="calc-stage" hidden>
+        <div class="top-action-row">
+          <button id="backToPickerBtn" class="btn-3d-action" type="button">
+            ◀ 退回作物清單
+          </button>
+        </div>
+
+        <!-- 控制艙 -->
+        <div class="panel-3d control-pod-3d">
+          <div id="activeCropBanner" class="crop-banner-top q-theme-至臻">
+            <div class="crop-banner-info">
+              <strong id="cropTitleName">-</strong>
+              <span id="cropSubMeta">-</span>
+            </div>
+          </div>
+
+          <!-- 4. 作物清單：下拉式選單 -->
+          <div class="quick-switch-box">
+            <button id="dropdownTriggerBtn" class="dropdown-trigger-3d" type="button">
+              <span id="dropdownLabelText">作物清單：</span>
+              <span>▼</span>
+            </button>
+            <div id="dropdownMenuList" class="dropdown-menu-3d" hidden></div>
+          </div>
+
+          <div class="inputs-3d-grid">
+            <div class="field-box">
+              <label>作物重量 (公斤)</label>
+              <input id="weightInput" class="input-num-3d" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" />
+            </div>
+            <div class="field-box">
+              <label>重量百分比 (%)</label>
+              <input id="percentInput" class="input-num-3d" type="number" min="0" max="100" step="0.01" inputmode="decimal" placeholder="0" />
+            </div>
+            <div class="field-box field-box-time">
+              <label>預估生長耗時</label>
+              <div id="growthTimeBox" class="time-readout-box">-</div>
+            </div>
+          </div>
+
+          <!-- 8. 更改為 100% 90% 80% 70% 60% 55% -->
+          <div class="field-box">
+            <label>一鍵設定百分比</label>
+            <div class="quick-pct-row">
+              <button class="pct-3d-btn" type="button" data-pct="100">100%</button>
+              <button class="pct-3d-btn" type="button" data-pct="90">90%</button>
+              <button class="pct-3d-btn" type="button" data-pct="80">80%</button>
+              <button class="pct-3d-btn" type="button" data-pct="70">70%</button>
+              <button class="pct-3d-btn" type="button" data-pct="60">60%</button>
+              <button class="pct-3d-btn" type="button" data-pct="55">55%</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 總價值與詞條總倍率（位於基準拉條與詞條選擇正中間） -->
+        <section class="holo-value-reactor-3d">
+          <div class="reactor-left">
+            <div class="reactor-label">總價值</div>
+            <strong id="selectedPriceText" class="reactor-price-value">0</strong>
+          </div>
+          <div class="reactor-right">
+            <div class="reactor-mult-label">詞條總倍率</div>
+            <strong id="totalMultiplierText" class="reactor-mult-value">x0</strong>
+          </div>
+        </section>
+
+        <!-- 2. 詞條選擇 -->
+        <section class="panel-3d">
+          <div class="mutations-header-row">
+            <h2 class="mutations-main-title">詞條選擇</h2>
+            <button id="resetMutationsBtn" class="btn-3d-action btn-3d-danger btn-reset-mutations" type="button">
+              ✖ 清除所有詞條
+            </button>
+          </div>
+          <div id="mutationGroupsContainer"></div>
+        </section>
+
+        <!-- 9. 全作物比較 -->
+        <section class="panel-3d">
+          <div class="compare-toggle-bar">
+            <label class="switch-label-group">
+              <input id="showComparisonToggle" type="checkbox" />
+              <div class="cyber-toggle-pill"></div>
+              <span>全作物比較</span>
+            </label>
+          </div>
+
+          <div id="comparisonTableSection" hidden>
+            <!-- 全作物對比基準拉條 -->
+            <div class="compare-slider-bar" style="margin-top: 12px;">
+              <div class="slider-top-labels">
+                <span>全作物對比基準拉條</span>
+                <strong id="comparePercentLabel">100%</strong>
+              </div>
+              <input id="comparePercentSlider" class="cyber-range" type="range" min="1" max="100" value="100" />
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 8px;">
+              <span style="font-size: 12px; font-weight: 800; color: var(--text-muted);">排序方式：</span>
+              <div style="display: flex; gap: 8px;">
+                <select id="sortModeSelect" class="input-num-3d" style="width: auto; min-height: 36px; font-size: 12px; padding: 4px 8px;">
+                  <option value="price">依價值排序</option>
+                  <option value="quality">依品階排序</option>
+                </select>
+                <button id="sortDirBtn" class="btn-3d-icon" type="button">高到低 ▼</button>
+              </div>
+            </div>
+
+            <div class="table-container-3d">
+              <table class="cyber-table-3d">
+                <thead>
+                  <tr>
+                    <th>作物名稱</th>
+                    <th>品質</th>
+                    <th>對比重量</th>
+                    <th>預估價值</th>
+                    <th>總倍率</th>
+                    <th>最高重量</th>
+                  </tr>
+                </thead>
+                <tbody id="comparisonTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- 賽博龐克頁尾資訊 -->
+      <footer class="cyber-footer-3d">
+        <div class="footer-badge-row">
+          <span class="footer-badge">V2.0.0</span>
+          <span class="footer-author">Crafted with ⚡ by ZN...</span>
+        </div>
+        <p class="footer-copyright">
+          本工具為玩家社群愛好者自製之免費非官方試算工具，與《蛋仔派對》及網易公司無官方關聯。
+        </p>
+        <div class="footer-links-row">
+          <button id="footerDisclaimerBtn" class="footer-link-btn" type="button">📜 免責聲明</button>
+          <span class="footer-sep">|</span>
+          <a class="footer-link" href="https://github.com/ZN-33550336/crazy-farm/issues" target="_blank" rel="noopener noreferrer">🐛 問題回報 / 數據反饋</a>
+        </div>
+      </footer>
+    </main>
+
+    <!-- 免責聲明與版權宣告彈窗 -->
+    <div id="disclaimerModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="disclaimerTitle">
+      <div class="modal-card-3d">
+        <div class="modal-header-3d">
+          <div id="disclaimerTitle" class="modal-title-3d">
+            <span>📜</span> 免責聲明與版權宣告
+          </div>
+          <button id="disclaimerCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
+        </div>
+        <div class="modal-body-3d">
+          <div class="modal-section-card">
+            <h4>💡 工具性質聲明</h4>
+            <p>本工具為玩家社群愛好者自製之免費非官方輔助試算工具，旨在提供數值推估與作物收益參考，並非《蛋仔派對》（Eggy Party）或網易公司（NetEase Games）之官方應用程式或合作產品。</p>
+          </div>
+          <div class="modal-section-card">
+            <h4>⚖️ 商標與版權歸屬</h4>
+            <p>本工具中所提及之《蛋仔派對》遊戲名稱、作物名稱、詞條名稱、圖標及相關智慧財產權，均屬網易公司（NetEase Games）或其合法權利人所有。本工具僅於合理使用（Fair Use）原則下用於社區指引與遊戲性交流，絕無侵害任何商標或著作權益之意圖。</p>
+          </div>
+          <div class="modal-section-card">
+            <h4>🎁 非營利與免費聲明</h4>
+            <p>本站為 100% 免費、開源、無廣告之社群工具，不包含任何收費、贊助要求或商業營利行為，請勿向任何第三方付費購買本工具之使用權。</p>
+          </div>
+          <div class="modal-section-card">
+            <h4>📊 數值計算與免責限制</h4>
+            <p>本工具內之售價、生長耗時、詞條加成等計算公式及常數均源自社群玩家收集與逆向分析推估。官方遊戲機制或數值若經更新平衡調整，可能導致計算結果出現些微誤差，所有實際數據請以《蛋仔派對》遊戲內即時顯示為準。本工具不承擔使用者因參考計算結果而產生的任何遊戲內決策責任。</p>
+          </div>
+          <div class="modal-section-card">
+            <h4>🔒 隱私與安全性保護</h4>
+            <p>本工具為純前端靜態頁面，所有操作與計算均在您的本機瀏覽器端執行，不會收集、上傳或記錄任何個人隱私、帳號密碼或設備資訊，請安心使用。</p>
+          </div>
+        </div>
+        <div class="modal-footer-3d">
+          <button id="disclaimerConfirmBtn" class="modal-confirm-btn" type="button">我已瞭解並同意</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 原始資料集 (完整保留秋水仙與 47 詞條演算法) -->
+    <script>
+      window.GAME_DATA = {"versions":{"crops_version":143,"mutations_version":36},"crops":[{"name":"灰壤豆","quality":"灰色","maxWeight":3.40,"growthSpeed":180.00,"specialMutation":null,"priceCoefficient":1375.9391,"sortOrder":0},{"name":"土豆","quality":"灰色","maxWeight":11.90,"growthSpeed":28.50,"specialMutation":"薯片","priceCoefficient":26.2837,"sortOrder":1},{"name":"香菇","quality":"灰色","maxWeight":3.40,"growthSpeed":133.00,"specialMutation":null,"priceCoefficient":688.7738,"sortOrder":2},{"name":"番茄","quality":"灰色","maxWeight":10.20,"growthSpeed":33.33,"specialMutation":null,"priceCoefficient":66.2818,"sortOrder":3},{"name":"波斯菊","quality":"灰色","maxWeight":34.00,"growthSpeed":17.00,"specialMutation":null,"priceCoefficient":43.5454,"sortOrder":4},{"name":"月光草","quality":"灰色","maxWeight":3.40,"growthSpeed":111.00,"specialMutation":null,"priceCoefficient":345.1004,"sortOrder":5},{"name":"月番茄","quality":"绿色","maxWeight":10.20,"growthSpeed":111.00,"specialMutation":null,"priceCoefficient":663.0498,"sortOrder":6},{"name":"大豆","quality":"绿色","maxWeight":3.40,"growthSpeed":275.00,"specialMutation":null,"priceCoefficient":2583.0373,"sortOrder":7},{"name":"月灯草","quality":"绿色","maxWeight":5.10,"growthSpeed":205.00,"specialMutation":null,"priceCoefficient":1496.9466,"sortOrder":8},{"name":"黄瓜","quality":"绿色","maxWeight":13.60,"growthSpeed":50.00,"specialMutation":"黄瓜蛇","priceCoefficient":215.3072,"sortOrder":9},{"name":"竹子","quality":"绿色","maxWeight":136.00,"growthSpeed":7.50,"specialMutation":null,"priceCoefficient":12.2478,"sortOrder":10},{"name":"西瓜","quality":"蓝色","maxWeight":170.00,"growthSpeed":6.00,"specialMutation":"方形","priceCoefficient":10.7111,"sortOrder":11},{"name":"梨","quality":"蓝色","maxWeight":13.60,"growthSpeed":75.00,"specialMutation":null,"priceCoefficient":483.8679,"sortOrder":12},{"name":"橘子","quality":"蓝色","maxWeight":13.60,"growthSpeed":75.00,"specialMutation":null,"priceCoefficient":538.0993,"sortOrder":13},{"name":"蓝莓","quality":"蓝色","maxWeight":40.80,"growthSpeed":27.99,"specialMutation":null,"priceCoefficient":113.8638,"sortOrder":14},{"name":"玉米","quality":"蓝色","maxWeight":40.80,"growthSpeed":27.78,"specialMutation":null,"priceCoefficient":103.5146,"sortOrder":15},{"name":"白菜","quality":"蓝色","maxWeight":10.20,"growthSpeed":80.00,"specialMutation":null,"priceCoefficient":579.6116,"sortOrder":16},{"name":"花生","quality":"蓝色","maxWeight":5.10,"growthSpeed":207.11,"specialMutation":null,"priceCoefficient":2813.5840,"sortOrder":17},{"name":"牵牛花","quality":"蓝色","maxWeight":5.10,"growthSpeed":200.00,"specialMutation":null,"priceCoefficient":2113.5728,"sortOrder":18},{"name":"棉花","quality":"蓝色","maxWeight":5.10,"growthSpeed":200.00,"specialMutation":null,"priceCoefficient":2574.6375,"sortOrder":19},{"name":"银辉苔","quality":"蓝色","maxWeight":5.10,"growthSpeed":280.00,"specialMutation":null,"priceCoefficient":3040.3725,"sortOrder":20},{"name":"月环树","quality":"蓝色","maxWeight":20.40,"growthSpeed":58.00,"specialMutation":null,"priceCoefficient":322.1718,"sortOrder":21},{"name":"苹果","quality":"紫色","maxWeight":37.40,"growthSpeed":40.50,"specialMutation":"糖葫芦","priceCoefficient":188.7990,"sortOrder":22},{"name":"石榴","quality":"紫色","maxWeight":20.40,"growthSpeed":83.50,"specialMutation":null,"priceCoefficient":526.8633,"sortOrder":23},{"name":"月莓","quality":"紫色","maxWeight":8.50,"growthSpeed":375.00,"specialMutation":null,"priceCoefficient":3925.2664,"sortOrder":24},{"name":"星叶菜","quality":"紫色","maxWeight":10.20,"growthSpeed":416.00,"specialMutation":null,"priceCoefficient":3971.3932,"sortOrder":25},{"name":"香蕉","quality":"紫色","maxWeight":10.20,"growthSpeed":280.00,"specialMutation":"香蕉猴","priceCoefficient":2486.5362,"sortOrder":26},{"name":"车厘子","quality":"紫色","maxWeight":10.20,"growthSpeed":166.00,"specialMutation":null,"priceCoefficient":1655.8519,"sortOrder":27},{"name":"柿子","quality":"紫色","maxWeight":37.40,"growthSpeed":45.51,"specialMutation":null,"priceCoefficient":235.9062,"sortOrder":28},{"name":"椰子","quality":"紫色","maxWeight":40.80,"growthSpeed":32.50,"specialMutation":null,"priceCoefficient":144.9230,"sortOrder":29},{"name":"南瓜","quality":"紫色","maxWeight":204.00,"growthSpeed":6.50,"specialMutation":"万圣夜","priceCoefficient":12.9627,"sortOrder":30},{"name":"龙眼","quality":"紫色","maxWeight":8.50,"growthSpeed":438.78,"specialMutation":null,"priceCoefficient":4343.6874,"sortOrder":31},{"name":"草莓","quality":"金色","maxWeight":8.50,"growthSpeed":888.00,"specialMutation":"连体","priceCoefficient":8727.9755,"sortOrder":32},{"name":"荔枝","quality":"金色","maxWeight":23.80,"growthSpeed":135.00,"specialMutation":null,"priceCoefficient":790.0566,"sortOrder":33},{"name":"菠菜","quality":"金色","maxWeight":20.40,"growthSpeed":495.76,"specialMutation":null,"priceCoefficient":3861.3768,"sortOrder":34},{"name":"柚子","quality":"金色","maxWeight":61.20,"growthSpeed":67.34,"specialMutation":null,"priceCoefficient":225.3807,"sortOrder":35},{"name":"液光藤","quality":"金色","maxWeight":20.40,"growthSpeed":520.00,"specialMutation":null,"priceCoefficient":3516.6614,"sortOrder":36},{"name":"月核树","quality":"金色","maxWeight":17.00,"growthSpeed":460.00,"specialMutation":null,"priceCoefficient":3389.4578,"sortOrder":37},{"name":"猕猴桃","quality":"金色","maxWeight":13.60,"growthSpeed":278.00,"specialMutation":null,"priceCoefficient":2151.6753,"sortOrder":38},{"name":"榴莲","quality":"金色","maxWeight":61.20,"growthSpeed":55.55,"specialMutation":null,"priceCoefficient":202.8554,"sortOrder":39},{"name":"葡萄","quality":"至臻","maxWeight":10.20,"growthSpeed":2400.00,"specialMutation":null,"priceCoefficient":24839.9745,"sortOrder":40},{"name":"蟠桃","quality":"至臻","maxWeight":20.40,"growthSpeed":1333.33,"specialMutation":null,"priceCoefficient":8783.9561,"sortOrder":41},{"name":"星空玫瑰","quality":"至臻","maxWeight":10.20,"growthSpeed":2966.60,"specialMutation":null,"priceCoefficient":33129.1179,"sortOrder":42},{"name":"月影梅","quality":"至臻","maxWeight":3.40,"growthSpeed":4022.50,"specialMutation":null,"priceCoefficient":77401.7981,"sortOrder":43},{"name":"大王菊","quality":"至臻","maxWeight":10.20,"growthSpeed":2400.00,"specialMutation":null,"priceCoefficient":24848.7857,"sortOrder":44},{"name":"惊奇菇","quality":"至臻","maxWeight":10.20,"growthSpeed":2400.00,"specialMutation":null,"priceCoefficient":49708.0001,"sortOrder":45},{"name":"月兔","quality":"至臻","maxWeight":23.80,"growthSpeed":1523.00,"specialMutation":null,"priceCoefficient":11151.9680,"sortOrder":46},{"name":"魔鬼朝天椒","quality":"至臻","maxWeight":10.20,"growthSpeed":2400.00,"specialMutation":null,"priceCoefficient":33110.3230,"sortOrder":47},{"name":"月蟾蜍","quality":"至臻","maxWeight":34.00,"growthSpeed":978.90,"specialMutation":null,"priceCoefficient":9797.3968,"sortOrder":48},{"name":"芦荟","quality":"至臻","maxWeight":10.20,"growthSpeed":2169.80,"specialMutation":null,"priceCoefficient":54680.2945,"sortOrder":49},{"name":"向日葵","quality":"至臻","maxWeight":51.00,"growthSpeed":80.00,"specialMutation":"笑日葵","priceCoefficient":370.3857,"sortOrder":50},{"name":"仙人掌象","quality":"至臻","maxWeight":34.00,"growthSpeed":720.00,"specialMutation":null,"priceCoefficient":9524.9248,"sortOrder":51},{"name":"红包树","quality":"至臻","maxWeight":5.10,"growthSpeed":5125.00,"specialMutation":null,"priceCoefficient":83180.1399,"sortOrder":52},{"name":"火龙狗","quality":"至臻","maxWeight":34.00,"growthSpeed":720.00,"specialMutation":null,"priceCoefficient":10889.6528,"sortOrder":53},{"name":"松果","quality":"至臻","maxWeight":17.00,"growthSpeed":570.00,"specialMutation":null,"priceCoefficient":4618.5543,"sortOrder":54},{"name":"幻月花","quality":"至臻","maxWeight":23.80,"growthSpeed":1142.50,"specialMutation":null,"priceCoefficient":8364.9561,"sortOrder":55},{"name":"彼岸花","quality":"至臻","maxWeight":10.20,"growthSpeed":2908.50,"specialMutation":null,"priceCoefficient":49674.0134,"sortOrder":56},{"name":"马蹄莲","quality":"至臻","maxWeight":17.00,"growthSpeed":645.61,"specialMutation":null,"priceCoefficient":5081.0896,"sortOrder":57},{"name":"铃兰幽幽","quality":"至臻","maxWeight":23.80,"growthSpeed":1549.18,"specialMutation":null,"priceCoefficient":12086.5815,"sortOrder":58},{"name":"听歌的柿黛拉","quality":"金色","maxWeight":42.50,"growthSpeed":88.00,"specialMutation":null,"priceCoefficient":775.9520,"sortOrder":59},{"name":"跳舞的柿黛拉","quality":"至臻","maxWeight":45.20,"growthSpeed":990.70,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":60},{"name":"秋水仙","quality":"至臻","maxWeight":34.00,"growthSpeed":667.77,"specialMutation":null,"priceCoefficient":10349.5256,"sortOrder":61}],"mutations":[{"name":"霓虹","color":"彩色","groupKey":"rare","isActive":true,"sortOrder":0,"multiplier":18.00,"shareBitIndex":30},{"name":"薯片","color":"紫色","groupKey":"special","isActive":true,"sortOrder":0,"multiplier":1.50,"shareBitIndex":5},{"name":"星环","color":"紫色","groupKey":"past","isActive":true,"sortOrder":0,"multiplier":10.00,"shareBitIndex":15},{"name":"橙钻","color":"金色","groupKey":"common","isActive":true,"sortOrder":0,"multiplier":18.00,"shareBitIndex":43},{"name":"幻彩","color":"金色","groupKey":"color","isActive":true,"sortOrder":0,"multiplier":3.00,"shareBitIndex":42},{"name":"亮晶晶","color":"紫色","groupKey":"intermediate","isActive":true,"sortOrder":0,"multiplier":10.00,"shareBitIndex":14},{"name":"星空","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":0,"multiplier":40.00,"shareBitIndex":3},{"name":"流火","color":"金色","groupKey":"rare","isActive":true,"sortOrder":1,"multiplier":15.00,"shareBitIndex":23},{"name":"方形","color":"紫色","groupKey":"special","isActive":true,"sortOrder":1,"multiplier":1.50,"shareBitIndex":6},{"name":"流光","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":1,"multiplier":30.00,"shareBitIndex":4},{"name":"异彩","color":"蓝色","groupKey":"color","isActive":true,"sortOrder":1,"multiplier":1.50,"shareBitIndex":44},{"name":"瓷化","color":"紫色","groupKey":"common","isActive":true,"sortOrder":1,"multiplier":8.00,"shareBitIndex":13},{"name":"琥珀","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":1,"multiplier":4.50,"shareBitIndex":45},{"name":"水晶","color":"金色","groupKey":"quality","isActive":true,"sortOrder":2,"multiplier":20.00,"shareBitIndex":2},{"name":"故障","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5.00,"shareBitIndex":41},{"name":"糖葫芦","color":"紫色","groupKey":"special","isActive":true,"sortOrder":2,"multiplier":1.50,"shareBitIndex":7},{"name":"彩尘","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5.00,"shareBitIndex":46},{"name":"太阳耀斑","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":2,"multiplier":5.00,"shareBitIndex":34},{"name":"日蚀","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":2,"multiplier":10.00,"shareBitIndex":24},{"name":"连体","color":"紫色","groupKey":"special","isActive":true,"sortOrder":3,"multiplier":1.50,"shareBitIndex":8},{"name":"金","color":"蓝色","groupKey":"quality","isActive":true,"sortOrder":3,"multiplier":10.00,"shareBitIndex":1},{"name":"哈基咪","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":3,"multiplier":5.00,"shareBitIndex":40},{"name":"冰冻","color":"绿色","groupKey":"common","isActive":true,"sortOrder":3,"multiplier":4.00,"shareBitIndex":17},{"name":"暗雾","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":3,"multiplier":6.00,"shareBitIndex":25},{"name":"陶化","color":"绿色","groupKey":"intermediate","isActive":true,"sortOrder":3,"multiplier":4.00,"shareBitIndex":38},{"name":"惊魂夜","color":"蓝色","groupKey":"common","isActive":true,"sortOrder":4,"multiplier":5.00,"shareBitIndex":33},{"name":"落雷","color":"绿色","groupKey":"common","isActive":true,"sortOrder":4,"multiplier":3.00,"shareBitIndex":16},{"name":"银","color":"绿色","groupKey":"quality","isActive":true,"sortOrder":4,"multiplier":3.00,"shareBitIndex":0},{"name":"彩虹","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":4,"multiplier":5.00,"shareBitIndex":28},{"name":"结霜","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":4,"multiplier":2.00,"shareBitIndex":37},{"name":"黄瓜蛇","color":"金色","groupKey":"special","isActive":true,"sortOrder":4,"multiplier":2.00,"shareBitIndex":9},{"name":"沙尘","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":5,"multiplier":2.00,"shareBitIndex":35},{"name":"极光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":5,"multiplier":5.00,"shareBitIndex":32},{"name":"金币","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":5,"multiplier":5.00,"shareBitIndex":39},{"name":"万圣夜","color":"金色","groupKey":"special","isActive":true,"sortOrder":5,"multiplier":2.00,"shareBitIndex":10},{"name":"潮湿","color":"灰色","groupKey":"common","isActive":true,"sortOrder":5,"multiplier":1.00,"shareBitIndex":20},{"name":"血月","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":6,"multiplier":5.00,"shareBitIndex":27},{"name":"香蕉猴","color":"金色","groupKey":"special","isActive":true,"sortOrder":6,"multiplier":2.00,"shareBitIndex":11},{"name":"覆雪","color":"灰色","groupKey":"common","isActive":true,"sortOrder":6,"multiplier":2.00,"shareBitIndex":19},{"name":"生机","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":6,"multiplier":2.00,"shareBitIndex":22},{"name":"荧光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":5.00,"shareBitIndex":29},{"name":"迷雾","color":"灰色","groupKey":"common","isActive":true,"sortOrder":7,"multiplier":2.00,"shareBitIndex":21},{"name":"笑日葵","color":"彩色","groupKey":"special","isActive":true,"sortOrder":7,"multiplier":10.00,"shareBitIndex":12},{"name":"幽魂","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":7,"multiplier":5.00,"shareBitIndex":31},{"name":"灼热","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":7,"multiplier":2.00,"shareBitIndex":36},{"name":"颤栗","color":"灰色","groupKey":"common","isActive":true,"sortOrder":8,"multiplier":1.00,"shareBitIndex":18},{"name":"陨石","color":"绿色","groupKey":"rare","isActive":true,"sortOrder":8,"multiplier":3.00,"shareBitIndex":26}]};
+    </script>
+
+    <script>
+      const TOOL_STATE = { liuxingzhang: true, huanxingji: true };
+      const STORAGE_KEY_SOUND = "farm_sound_pref";
+      const STORAGE_KEY_COMPARE = "farm_compare_pref";
+
+      const RECIPES = [
+        { ingredients: ["生机", "潮湿"], result: "琥珀" },
+        { ingredients: ["亮晶晶", "琥珀"], result: "橙钻" },
+        { ingredients: ["沙尘", "潮湿"], result: "陶化" },
+        { ingredients: ["陶化", "灼热"], result: "瓷化" },
+        { ingredients: ["潮湿", "结霜"], result: "冰冻" },
+        { ingredients: ["太阳耀斑", "灼热"], result: "流火" },
+      ];
+
+      const qualityOrder = ["星空", "流光", "水晶", "金", "银"];
+      const cropQualityRank = { 至臻: 6, 金色: 5, 紫色: 4, 藍色: 3, 綠色: 2, 灰色: 1, 蓝色: 3, 绿色: 2 };
+
+      const displayNames = {
+        秋水仙: "秋水仙", 土豆: "馬鈴薯", 月灯草: "月燈草", 黄瓜: "黃瓜", 蓝莓: "藍莓",
+        牵牛花: "牽牛花", 银辉苔: "銀輝苔", 月环树: "月環樹", 苹果: "蘋果", 星叶菜: "星葉菜",
+        车厘子: "櫻桃", 龍櫻: "櫻桃", 龙眼: "龍眼", 猕猴桃: "奇異果", 獼猴桃: "奇異果", 榴莲: "榴槤", 惊奇菇: "驚奇菇",
+        芦荟: "蘆薈", 红包树: "紅包樹", 火龙狗: "火龍狗", 马蹄莲: "馬蹄蓮", 铃兰幽幽: "鈴蘭幽幽",
+        听歌的柿黛拉: "聽歌的柿黛拉", 跳舞的柿黛拉: "跳舞的柿黛拉", 绿色: "綠色", 蓝色: "藍色",
+        星环: "星環", 橙钻: "橙鑽", 异彩: "異彩", 糖葫芦: "糖葫蘆", 彩尘: "彩塵",
+        太阳耀斑: "太陽耀斑", 日蚀: "日蝕", 连体: "連體", 冰冻: "冰凍", 暗雾: "暗霧",
+        惊魂夜: "驚魂夜", 银: "銀", 结霜: "結霜", 黄瓜蛇: "黃瓜蛇", 沙尘: "沙塵",
+        极光: "極光", 金币: "金幣", 万圣夜: "萬聖夜", 潮湿: "潮濕", 生机: "生機",
+        荧光: "螢光", 迷雾: "迷霧", 灼热: "灼熱", 颤栗: "顫慄", 陨石: "隕石", 薯片: "洋芋片",
+      };
+
+      const characterMap = {
+        灯: "燈", 黄: "黃", 蓝: "藍", 牵: "牽", 银: "銀", 环: "環", 树: "樹",
+        苹: "蘋", 叶: "葉", 车: "車", 龙: "龍", 猕: "獼", 惊: "驚", 芦: "蘆",
+        红: "紅", 马: "馬", 铃: "鈴", 兰: "蘭", 听: "聽", 绿: "綠", 钻: "鑽",
+        异: "異", 尘: "塵", 阳: "陽", 蚀: "蝕", 连: "連", 冻: "凍", 雾: "霧",
+        圣: "聖", 湿: "濕", 机: "機", 荧: "螢", 热: "熱", 颤: "顫", 栗: "慄", 陨: "隕",
+      };
+
+      // 6. 狀態記憶 (只保留音效與全作物比較)
+      const state = {
+        crops: [],
+        mutations: [],
+        selectedMutations: new Set(),
+        selectedCropName: "",
+        sortDirection: "desc",
+        showComparison: false,
+        view: "picker",
+        currentFilterQuality: null, // 預設無標籤
+        soundEnabled: true
+      };
+
+      const els = {
+        pickerView: document.getElementById("pickerView"),
+        calculatorView: document.getElementById("calculatorView"),
+        pickerSearch: document.getElementById("pickerSearch"),
+        qualityTabs: document.getElementById("qualityTabs"),
+        pickerGrid: document.getElementById("pickerGrid"),
+        backToPickerBtn: document.getElementById("backToPickerBtn"),
+        resetMutationsBtn: document.getElementById("resetMutationsBtn"),
+        activeCropBanner: document.getElementById("activeCropBanner"),
+        cropTitleName: document.getElementById("cropTitleName"),
+        cropSubMeta: document.getElementById("cropSubMeta"),
+        dropdownTriggerBtn: document.getElementById("dropdownTriggerBtn"),
+        dropdownLabelText: document.getElementById("dropdownLabelText"),
+        dropdownMenuList: document.getElementById("dropdownMenuList"),
+        weightInput: document.getElementById("weightInput"),
+        percentInput: document.getElementById("percentInput"),
+        growthTimeBox: document.getElementById("growthTimeBox"),
+        comparePercentSlider: document.getElementById("comparePercentSlider"),
+        comparePercentLabel: document.getElementById("comparePercentLabel"),
+        selectedPriceText: document.getElementById("selectedPriceText"),
+        totalMultiplierText: document.getElementById("totalMultiplierText"),
+        mutationGroupsContainer: document.getElementById("mutationGroupsContainer"),
+        showComparisonToggle: document.getElementById("showComparisonToggle"),
+        comparisonTableSection: document.getElementById("comparisonTableSection"),
+        comparisonTableBody: document.getElementById("comparisonTableBody"),
+        sortModeSelect: document.getElementById("sortModeSelect"),
+        sortDirBtn: document.getElementById("sortDirBtn"),
+        soundToggleBtn: document.getElementById("soundToggleBtn"),
+        soundIconText: document.getElementById("soundIconText"),
+        disclaimerOpenBtn: document.getElementById("disclaimerOpenBtn"),
+        disclaimerModal: document.getElementById("disclaimerModal"),
+        disclaimerCloseBtn: document.getElementById("disclaimerCloseBtn"),
+        disclaimerConfirmBtn: document.getElementById("disclaimerConfirmBtn")
+      };
+
+      // 音效引擎
+      const CyberAudio = (function() {
+        let ctx = null;
+        function getCtx() {
+          if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+          if (ctx.state === "suspended") ctx.resume();
+          return ctx;
+        }
+        return {
+          tap: function(freq = 860) {
+            if (!state.soundEnabled) return;
+            try {
+              const c = getCtx();
+              const osc = c.createOscillator();
+              const g = c.createGain();
+              osc.type = "sine";
+              osc.frequency.setValueAtTime(freq, c.currentTime);
+              osc.frequency.exponentialRampToValueAtTime(freq * 0.5, c.currentTime + 0.06);
+              g.gain.setValueAtTime(0.09, c.currentTime);
+              g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.06);
+              osc.connect(g);
+              g.connect(c.destination);
+              osc.start();
+              osc.stop(c.currentTime + 0.06);
+            } catch (e) {}
+          },
+          activate: function() {
+            if (!state.soundEnabled) return;
+            try {
+              const c = getCtx();
+              const osc = c.createOscillator();
+              const g = c.createGain();
+              osc.type = "triangle";
+              osc.frequency.setValueAtTime(320, c.currentTime);
+              osc.frequency.exponentialRampToValueAtTime(1020, c.currentTime + 0.14);
+              g.gain.setValueAtTime(0.1, c.currentTime);
+              g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.14);
+              osc.connect(g);
+              g.connect(c.destination);
+              osc.start();
+              osc.stop(c.currentTime + 0.14);
+            } catch (e) {}
+          },
+          cancel: function() {
+            if (!state.soundEnabled) return;
+            try {
+              const c = getCtx();
+              const osc = c.createOscillator();
+              const g = c.createGain();
+              osc.type = "sine";
+              osc.frequency.setValueAtTime(600, c.currentTime);
+              osc.frequency.exponentialRampToValueAtTime(240, c.currentTime + 0.1);
+              g.gain.setValueAtTime(0.08, c.currentTime);
+              g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.1);
+              osc.connect(g);
+              g.connect(c.destination);
+              osc.start();
+              osc.stop(c.currentTime + 0.1);
+            } catch (e) {}
+          }
+        };
+      })();
+
+      function vibrate(ms = 12) {
+        if (navigator.vibrate) navigator.vibrate(ms);
+      }
+
+      function escapeHtml(val) {
+        return String(val).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      function formatNumber(val, digits = 2) {
+        return Number(val).toFixed(digits).replace(/\.?0+$/, "");
+      }
+
+      function formatPrice(val) {
+        if (val >= 1000000000) return `${formatNumber(val / 1000000000)}B`;
+        if (val >= 1000000) return `${formatNumber(val / 1000000)}M`;
+        if (val >= 10000) return `${formatNumber(val / 10000)}W`;
+        return `${Math.round(val)}`;
+      }
+
+      function formatDuration(sec) {
+        const total = Math.max(0, Math.round(Number(sec) || 0));
+        if (total === 0) return "0秒";
+        const hours = Math.floor(total / 3600);
+        const mins = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        if (hours > 0) return mins > 0 ? `${hours}小時 ${mins}分` : `${hours}小時`;
+        if (mins > 0) return s > 0 ? `${mins}分 ${s}秒` : `${mins}分鐘`;
+        return `${s}秒`;
+      }
+
+      function displayName(val) {
+        const text = String(val ?? "");
+        if (displayNames[text]) return displayNames[text];
+        return text.replace(/[灯黄蓝牵银环树苹叶车龙猕惊芦红马铃兰听绿钻异尘阳蚀连冻雾圣湿机荧热颤栗陨]/g, (ch) => characterMap[ch] || ch);
+      }
+
+      function minWeight(crop) { return Number(crop.maxWeight) / 34; }
+      function minPercent(crop) { return Math.ceil((minWeight(crop) / Number(crop.maxWeight)) * 100); }
+
+      function getSelectedCrop() {
+        return state.crops.find((c) => c.name === state.selectedCropName) || state.crops[0];
+      }
+
+      function getCropSpecialMutationNames(crop) {
+        if (!crop) return [];
+        if (Array.isArray(crop.specialMutations)) return crop.specialMutations.filter(Boolean);
+        return crop.specialMutation ? [crop.specialMutation] : [];
+      }
+
+      // 這些作物沒有異彩和幻彩
+      const NO_COLOR_MUTATION_CROPS = new Set([
+        "火龙狗", "火龍狗", "火龙果", "火龍果",
+        "跳舞的柿黛拉",
+        "铃兰幽幽", "鈴蘭幽幽",
+        "红包树", "紅包樹",
+        "月蟾蜍",
+        "月兔",
+        "仙人掌象",
+        "惊奇菇", "驚奇菇",
+        "魔鬼朝天椒"
+      ]);
+
+      function cropHasColorMutations(crop) {
+        if (!crop) return true;
+        return !NO_COLOR_MUTATION_CROPS.has(crop.name) && !NO_COLOR_MUTATION_CROPS.has(displayName(crop.name));
+      }
+
+      function getMutationByName() {
+        return new Map(state.mutations.map((m) => [m.name, m]));
+      }
+
+      function activeRecipes(toolState = TOOL_STATE) {
+        return RECIPES.filter((r) => {
+          if (r.result === "琥珀") return toolState.huanxingji;
+          if (r.result === "橙钻") return toolState.huanxingji && toolState.liuxingzhang;
+          return true;
+        });
+      }
+
+      function recipeIngredientsFor(result, seen = new Set(), toolState = TOOL_STATE) {
+        if (seen.has(result)) return [];
+        seen.add(result);
+        const names = [];
+        activeRecipes(toolState).forEach((r) => {
+          if (r.result !== result) return;
+          names.push(...r.ingredients);
+          r.ingredients.forEach((ing) => names.push(...recipeIngredientsFor(ing, seen, toolState)));
+        });
+        return names;
+      }
+
+      function isMutationDisabled(name, selectedNames, toolState = TOOL_STATE) {
+        const selected = [...selectedNames];
+        if (selected.includes(name)) return false;
+        const hasFlowFire = selected.includes("流火");
+        const hasPorcelain = selected.includes("瓷化");
+        const hasOrangeDiamond = selected.includes("橙钻");
+        const hasAmber = selected.includes("琥珀");
+
+        if ((name === "流火" && hasPorcelain) || (name === "瓷化" && hasFlowFire)) return true;
+        if (name === "灼热") return hasFlowFire || hasPorcelain;
+        if (name === "生机") return toolState.huanxingji && (hasAmber || hasOrangeDiamond);
+        if (name === "亮晶晶" || name === "琥珀") return toolState.liuxingzhang && toolState.huanxingji && hasOrangeDiamond;
+        if (name === "沙尘" && selected.includes("潮湿")) return selected.includes("陶化") || selected.includes("瓷化");
+
+        return activeRecipes(toolState).some((r) => {
+          if (!selected.includes(r.result)) return false;
+          return recipeIngredientsFor(r.result, new Set(), toolState)
+            .filter((ing) => ing !== "潮湿")
+            .includes(name);
+        });
+      }
+
+      function normalizeMutations(names, toolState = TOOL_STATE) {
+        let normalized = [...names];
+        let changed = true;
+        while (changed) {
+          changed = false;
+          for (const recipe of activeRecipes(toolState)) {
+            const hasIngredients = recipe.ingredients.every((ing) => normalized.includes(ing));
+            const hasResult = normalized.includes(recipe.result);
+            if (!hasIngredients || hasResult) continue;
+            if ((recipe.result === "流火" && normalized.includes("瓷化")) || (recipe.result === "瓷化" && normalized.includes("流火"))) continue;
+            normalized = normalized.filter((n) => !recipe.ingredients.includes(n) || n === "潮湿");
+            normalized.push(recipe.result);
+            changed = true;
+            break;
+          }
+        }
+        return normalized;
+      }
+
+      function getMultipliers(selectedNames, crop = null) {
+        const mutationByName = getMutationByName();
+        const hasColor = crop ? cropHasColorMutations(crop) : true;
+        let qualityMultiplier = 1;
+        let specialMultiplier = 1;
+        let weatherMultiplierSum = 0;
+        selectedNames.forEach((n) => {
+          const m = mutationByName.get(n);
+          if (!m) return;
+          if (m.groupKey === "color" && !hasColor) return;
+          const mult = Number(m.multiplier) || 0;
+          if (m.groupKey === "quality") qualityMultiplier = Math.max(qualityMultiplier, mult);
+          else if (m.groupKey === "special") specialMultiplier = Math.max(specialMultiplier, mult);
+          else weatherMultiplierSum += mult;
+        });
+        return { qualityMultiplier, specialMultiplier, weatherMultiplierSum };
+      }
+
+      function getDisplayedTotalMultiplier() {
+        const mutationByName = getMutationByName();
+        const crop = getSelectedCrop();
+        const hasColor = cropHasColorMutations(crop);
+        return [...state.selectedMutations].reduce((sum, n) => {
+          const m = mutationByName.get(n);
+          if (!m) return sum;
+          if (m.groupKey === "color" && !hasColor) return sum;
+          const isWeatherOrPast = m.groupKey !== "quality" && m.groupKey !== "special" && m.groupKey !== "color";
+          const isCountedColor = (n === "异彩" || n === "幻彩") && hasColor;
+          return isWeatherOrPast || isCountedColor ? sum + Number(m.multiplier || 0) : sum;
+        }, 0);
+      }
+
+      function calculatePrice(crop, weight, selectedNames = state.selectedMutations) {
+        const multipliers = getMultipliers(selectedNames, crop);
+        const coefficient =
+          Number(Number(crop.priceCoefficient).toFixed(4)) *
+          multipliers.qualityMultiplier *
+          (multipliers.weatherMultiplierSum + 1) *
+          multipliers.specialMultiplier;
+        const price = Number((coefficient * Math.pow(weight, 1.5)).toFixed(4));
+        return { price, formattedPrice: formatPrice(price), multipliers };
+      }
+
+      function baseCropValue(crop) {
+        return calculatePrice(crop, Number(crop.maxWeight), new Set()).price;
+      }
+
+      function compareCropsForPicker(a, b) {
+        const qualityDelta = (cropQualityRank[b.quality] || 0) - (cropQualityRank[a.quality] || 0);
+        if (qualityDelta !== 0) return qualityDelta;
+        return baseCropValue(b) - baseCropValue(a) || Number(a.sortOrder) - Number(b.sortOrder);
+      }
+
+      // 7. 嚴格切換視圖，杜絕首頁下方殘留計算器
+      function setView(view) {
+        state.view = view;
+        if (view === "picker") {
+          els.pickerView.hidden = false;
+          els.calculatorView.hidden = true;
+          els.pickerView.style.display = "block";
+          els.calculatorView.style.display = "none";
+        } else {
+          els.pickerView.hidden = true;
+          els.calculatorView.hidden = false;
+          els.pickerView.style.display = "none";
+          els.calculatorView.style.display = "flex";
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        if (window.gsap) {
+          const target = view === "picker" ? "#pickerView" : "#calculatorView > *";
+          gsap.fromTo(target, 
+            { opacity: 0, y: 15 },
+            { opacity: 1, y: 0, duration: 0.28, stagger: 0.04, ease: "power2.out" }
+          );
+        }
+      }
+
+      // 6. 點入作物：數值預設皆為空白 (相當於 0，不顯示 0)
+      function chooseCrop(cropName) {
+        els.dropdownMenuList.hidden = true;
+        state.selectedCropName = cropName;
+        const crop = getSelectedCrop();
+        pruneUnavailableMutations(crop);
+        
+        els.percentInput.value = "";
+        els.weightInput.value = "";
+        
+        CyberAudio.activate();
+        vibrate(18);
+        if (window.pulse3DReactor) window.pulse3DReactor(crop.quality);
+        setView("calculator");
+        renderAll();
+      }
+
+      function pruneUnavailableMutations(crop) {
+        const allowedSpecials = new Set(getCropSpecialMutationNames(crop));
+        const hasColor = cropHasColorMutations(crop);
+        const mutationByName = getMutationByName();
+        state.selectedMutations = new Set(
+          [...state.selectedMutations].filter((n) => {
+            const m = mutationByName.get(n);
+            if (m?.groupKey === "special") return allowedSpecials.has(n);
+            if (m?.groupKey === "color") return hasColor;
+            return true;
+          })
+        );
+      }
+
+      function clampWeight(crop, val) {
+        return Math.min(Number(crop.maxWeight), Math.max(minWeight(crop), val));
+      }
+
+      function clampPercent(crop, val) {
+        return Math.min(100, Math.max(minPercent(crop), val));
+      }
+
+      function setWeightFromPercent(crop, { clamp = false } = {}) {
+        if (els.percentInput.value.trim() === "") {
+          els.weightInput.value = "";
+          renderSelectedCrop();
+          return;
+        }
+        const raw = Number(els.percentInput.value);
+        if (!Number.isFinite(raw)) return;
+        if (raw > 100 || clamp) {
+          const safe = clampPercent(crop, raw);
+          els.percentInput.value = formatNumber(safe);
+          els.weightInput.value = formatNumber((safe / 100) * Number(crop.maxWeight));
+        } else if (raw >= minPercent(crop)) {
+          els.weightInput.value = formatNumber((raw / 100) * Number(crop.maxWeight));
+        } else {
+          els.weightInput.value = "";
+        }
+        renderSelectedCrop();
+      }
+
+      function setPercentFromWeight(crop, { clamp = false } = {}) {
+        if (els.weightInput.value.trim() === "") {
+          els.percentInput.value = "";
+          renderSelectedCrop();
+          return;
+        }
+        const raw = Number(els.weightInput.value);
+        if (!Number.isFinite(raw)) return;
+        if (raw > Number(crop.maxWeight) || clamp) {
+          const safe = clampWeight(crop, raw);
+          els.weightInput.value = formatNumber(safe);
+          els.percentInput.value = formatNumber(Math.min(100, Math.max(minPercent(crop), (safe / Number(crop.maxWeight)) * 100)));
+        } else if (raw >= minWeight(crop)) {
+          els.percentInput.value = formatNumber((raw / Number(crop.maxWeight)) * 100);
+        } else {
+          els.percentInput.value = "";
+        }
+        renderSelectedCrop();
+      }
+
+      function renderPicker(animateCards = false) {
+        const query = els.pickerSearch.value.trim().toLowerCase();
+        const qFilter = state.currentFilterQuality;
+
+        document.querySelectorAll(".filter-tab-pill").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.q === qFilter);
+        });
+
+        const crops = state.crops
+          .filter((crop) => {
+            const isDragonFruitAlias = (crop.name === "火龙狗" || displayName(crop.name) === "火龍狗") && (query.includes("火龍果") || query.includes("火龙果") || "火龍果".includes(query) || "火龙果".includes(query));
+            const isKiwiAlias = (crop.name.includes("猕猴桃") || displayName(crop.name).includes("奇異果")) && (query.includes("獼猴桃") || query.includes("猕猴桃") || query.includes("奇異果") || query.includes("奇异果") || "奇異果".includes(query) || "獼猴桃".includes(query));
+            const isCherryAlias = (crop.name.includes("车厘子") || displayName(crop.name).includes("櫻桃")) && (query.includes("車厘子") || query.includes("车厘子") || query.includes("櫻桃") || query.includes("樱桃") || "櫻桃".includes(query) || "車厘子".includes(query));
+            const isPotatoAlias = (crop.name.includes("土豆") || displayName(crop.name).includes("馬鈴薯")) && (query.includes("土豆") || query.includes("馬鈴薯") || query.includes("马铃薯") || "馬鈴薯".includes(query));
+            const isCucumberAlias = (crop.name.includes("黄瓜") || displayName(crop.name).includes("黃瓜")) && (query.includes("小黃瓜") || query.includes("小黄瓜") || "小黃瓜".includes(query));
+            const matchQuery = isDragonFruitAlias || isKiwiAlias || isCherryAlias || isPotatoAlias || isCucumberAlias || crop.name.toLowerCase().includes(query) || displayName(crop.name).toLowerCase().includes(query) || crop.quality.toLowerCase().includes(query);
+            if (!matchQuery) return false;
+            if (!qFilter) return true;
+            return displayName(crop.quality) === qFilter || crop.quality === qFilter;
+          })
+          .sort(compareCropsForPicker);
+
+        els.pickerGrid.innerHTML = crops
+          .map(
+            (crop) => `
+              <button class="crop-card-3d q-theme-${crop.quality}" type="button" data-crop="${escapeHtml(crop.name)}">
+                <span class="crop-card-name">${escapeHtml(displayName(crop.name))}</span>
+                <span class="crop-card-sub">
+                  <span>${escapeHtml(displayName(crop.quality))}</span>
+                  <span>${formatNumber(crop.maxWeight)}kg</span>
+                </span>
+              </button>
+            `
+          )
+          .join("");
+
+        if (animateCards && window.gsap) {
+          gsap.fromTo("#pickerGrid .crop-card-3d",
+            { opacity: 0, scale: 0.9 },
+            { opacity: 1, scale: 1, duration: 0.22, stagger: 0.01, ease: "power2.out" }
+          );
+        }
+      }
+
+      // 4. 下拉選單顯示「作物清單：」且選項具備品階底色
+      function renderCropOptions() {
+        const current = getSelectedCrop();
+        if (!current) return;
+
+        els.activeCropBanner.className = `crop-banner-top q-theme-${current.quality}`;
+        els.cropTitleName.textContent = displayName(current.name);
+        const maxTimeSec = (Number(current.growthSpeed) || 0) * Number(current.maxWeight);
+        const maxTimeText = maxTimeSec > 0 ? `滿重耗時：約 ${formatDuration(maxTimeSec)}` : `成熟耗時：暫無數據`;
+        els.cropSubMeta.textContent = `品階：${displayName(current.quality)} ｜ 最高重量：${formatNumber(current.maxWeight)} 公斤 ｜ ${maxTimeText}`;
+
+        els.dropdownLabelText.textContent = `作物清單：${displayName(current.name)}（${displayName(current.quality)}）`;
+
+        const crops = [...state.crops].sort(compareCropsForPicker);
+        els.dropdownMenuList.innerHTML = crops
+          .map(
+            (c) => `
+              <button class="dropdown-item-btn q-theme-${c.quality} ${c.name === state.selectedCropName ? 'selected' : ''}" type="button" data-crop="${escapeHtml(c.name)}">
+                <span>${escapeHtml(displayName(c.name))}</span>
+                <span style="font-size: 11px; opacity: 0.9;">${escapeHtml(displayName(c.quality))} · ${formatNumber(c.maxWeight)}kg</span>
+              </button>
+            `
+          )
+          .join("");
+      }
+
+      function renderSelectedCrop() {
+        const crop = getSelectedCrop();
+        if (!crop) return;
+
+        const hasWeight = els.weightInput.value.trim() !== "";
+        const weight = hasWeight ? Number(els.weightInput.value) : 0;
+        const safeWeight = hasWeight && Number.isFinite(weight) ? clampWeight(crop, weight) : 0;
+        const result = calculatePrice(crop, safeWeight);
+
+        els.selectedPriceText.textContent = hasWeight ? result.formattedPrice : "0";
+        els.totalMultiplierText.textContent = `x${formatNumber(getDisplayedTotalMultiplier())}`;
+
+        const speed = Number(crop.growthSpeed) || 0;
+        if (hasWeight && safeWeight > 0 && speed > 0) {
+          const totalSeconds = safeWeight * speed;
+          const secPerPct = totalSeconds / 100;
+          const rateText = secPerPct >= 60 ? formatDuration(secPerPct) : `${formatNumber(secPerPct, 1)}秒`;
+          els.growthTimeBox.textContent = `約 ${formatDuration(totalSeconds)}（${rateText}/1%）`;
+        } else {
+          els.growthTimeBox.textContent = "-";
+        }
+      }
+
+      function mutationSort(a, b) {
+        if (a.name === "霓虹" && b.name === "橙钻") return -1;
+        if (a.name === "橙钻" && b.name === "霓虹") return 1;
+        if (a.groupKey === "color" && b.groupKey === "color") {
+          const colorOrder = ["幻彩", "异彩"];
+          const delta = colorOrder.indexOf(a.name) - colorOrder.indexOf(b.name);
+          if (delta !== 0) return delta;
+        }
+        const qualityDelta = qualityOrder.indexOf(a.name) - qualityOrder.indexOf(b.name);
+        if (a.groupKey === "quality" && b.groupKey === "quality" && qualityDelta !== 0) return qualityDelta;
+        return Number(b.multiplier) - Number(a.multiplier) || a.name.localeCompare(b.name, "zh-Hant");
+      }
+
+      function toggleMutation(name) {
+        const crop = getSelectedCrop();
+        const mutation = getMutationByName().get(name);
+        if (mutation?.groupKey === "color" && !cropHasColorMutations(crop)) return;
+        if (isMutationDisabled(name, state.selectedMutations)) return;
+        let next = [...state.selectedMutations];
+        if (next.includes(name)) {
+          next = next.filter((item) => item !== name);
+          CyberAudio.cancel();
+        } else {
+          if (mutation?.groupKey === "quality" || mutation?.groupKey === "color") {
+            next = next.filter((item) => getMutationByName().get(item)?.groupKey !== mutation.groupKey);
+          }
+          RECIPES.forEach((recipe) => {
+            if (recipe.result !== name) return;
+            const ingredients = recipeIngredientsFor(name);
+            next = next.filter((item) => !ingredients.includes(item) || item === "潮湿");
+          });
+          next.push(name);
+          next = normalizeMutations(next);
+          CyberAudio.activate();
+          vibrate(14);
+          if (window.pulse3DReactor) window.pulse3DReactor("至臻");
+        }
+        state.selectedMutations = new Set(next);
+        renderAll();
+      }
+
+      // 3. 基礎詞條首排 5 個（星空/流光/水晶/金/銀），次排同樣使用 chips-grid-5 使幻彩/異彩按鈕大小一致
+      function renderMutations() {
+        const active = state.mutations.filter((m) => m.isActive !== false);
+        const mutationByName = getMutationByName();
+        const crop = getSelectedCrop();
+        const specialNames = getCropSpecialMutationNames(crop);
+        const hasColor = cropHasColorMutations(crop);
+
+        const quality = active.filter((m) => m.groupKey === "quality").sort(mutationSort);
+        const color = hasColor ? active.filter((m) => m.groupKey === "color").sort(mutationSort) : [];
+        const cropSpecials = specialNames.map((n) => mutationByName.get(n)).filter(Boolean).sort(mutationSort);
+
+        const weather = active
+          .filter((m) => m.groupKey !== "quality" && m.groupKey !== "color" && m.groupKey !== "past" && m.groupKey !== "special")
+          .sort(mutationSort);
+
+        const past = active.filter((m) => m.groupKey === "past").sort(mutationSort);
+
+        function createChip(m) {
+          const selected = state.selectedMutations.has(m.name);
+          const disabled = isMutationDisabled(m.name, state.selectedMutations);
+          const colorClass = `chip-color-${m.color}`;
+          return `
+            <button class="chip-3d ${colorClass} ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}" 
+                    type="button" 
+                    data-mutation="${escapeHtml(m.name)}" 
+                    ${disabled ? "disabled" : ""}>
+              <span>${escapeHtml(displayName(m.name))}</span>
+            </button>
+          `;
+        }
+
+        const secondRowChips = [...color, ...cropSpecials];
+        let html = '';
+
+        // 基礎詞條
+        html += `
+          <div class="mutation-group-3d">
+            <div class="mutation-group-title">◆ 基礎詞條</div>
+            <div class="chips-grid-5" ${secondRowChips.length > 0 ? 'style="margin-bottom: 6px;"' : ''}>
+              ${quality.map(createChip).join('')}
+            </div>
+            ${secondRowChips.length > 0 ? `
+              <div class="chips-grid-5">
+                ${secondRowChips.map(createChip).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        // 天氣詞條 (一排 6 個)
+        html += `
+          <div class="mutation-group-3d">
+            <div class="mutation-group-title">◆ 天氣詞條</div>
+            <div class="chips-grid-6">
+              ${weather.map(createChip).join('')}
+            </div>
+          </div>
+        `;
+
+        // 活動與下架詞條 (一排 6 個)
+        html += `
+          <div class="mutation-group-3d">
+            <div class="mutation-group-title">◆ 活動與下架詞條</div>
+            <div class="chips-grid-6">
+              ${past.map(createChip).join('')}
+            </div>
+          </div>
+        `;
+
+        els.mutationGroupsContainer.innerHTML = html;
+      }
+
+      function renderTable() {
+        const percent = Number(els.comparePercentSlider.value) || 100;
+        els.comparePercentLabel.textContent = `${percent}%`;
+
+        if (!state.showComparison) {
+          els.comparisonTableBody.innerHTML = "";
+          return;
+        }
+
+        const rows = state.crops.map((crop) => {
+          const weight = Math.min(Number(crop.maxWeight), Math.max(minWeight(crop), (percent / 100) * Number(crop.maxWeight)));
+          const result = calculatePrice(crop, weight);
+          return { crop, weight, result };
+        });
+
+        if (els.sortModeSelect.value === "quality") {
+          rows.sort((a, b) => compareCropsForPicker(a.crop, b.crop));
+        } else {
+          rows.sort((a, b) => b.result.price - a.result.price || compareCropsForPicker(a.crop, b.crop));
+        }
+
+        if (state.sortDirection === "asc") rows.reverse();
+        els.sortDirBtn.textContent = state.sortDirection === "desc" ? "高到低 ▼" : "低到高 ▲";
+
+        els.comparisonTableBody.innerHTML = rows
+          .map(({ crop, weight, result }) => {
+            const totalMult = result.multipliers.qualityMultiplier * (result.multipliers.weatherMultiplierSum + 1) * result.multipliers.specialMultiplier;
+            return `
+              <tr>
+                <td><strong>${escapeHtml(displayName(crop.name))}</strong></td>
+                <td><span class="q-theme-${crop.quality}" style="padding: 2px 6px; border-radius: 4px; font-size: 11px;">${escapeHtml(displayName(crop.quality))}</span></td>
+                <td>${formatNumber(weight)} kg</td>
+                <td class="td-price-highlight">${result.formattedPrice}</td>
+                <td style="color: var(--neon-pink);">x${formatNumber(totalMult)}</td>
+                <td>${formatNumber(crop.maxWeight)} kg</td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      function renderAll() {
+        renderPicker(false);
+        renderCropOptions();
+        if (state.view === "calculator") renderSelectedCrop();
+        renderMutations();
+        els.showComparisonToggle.checked = state.showComparison;
+        els.comparisonTableSection.hidden = !state.showComparison;
+        renderTable();
+      }
+
+      // 5. 點擊清空數值，完全退出輸入狀態與游標防呆處理
+      function setupAutoClearInput(input, isWeight) {
+        input.addEventListener("focus", () => {
+          input.dataset.prevVal = input.value;
+          input.value = "";
+          input.dataset.justFocused = "true";
+          setTimeout(() => { delete input.dataset.justFocused; }, 300);
+          renderSelectedCrop();
+        });
+
+        // 若游標因任何原因未消失而再次點擊，依然執行清空
+        input.addEventListener("click", () => {
+          if (!input.dataset.justFocused) {
+            input.dataset.prevVal = input.value;
+            input.value = "";
+            renderSelectedCrop();
+          }
+        });
+
+        // 鍵盤按下確認/Enter 時收起游標完全退出
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            input.blur();
+          }
+        });
+
+        input.addEventListener("blur", () => {
+          delete input.dataset.justFocused;
+          if (input.value.trim() === "") {
+            input.value = input.dataset.prevVal || "";
+          }
+          const crop = getSelectedCrop();
+          if (isWeight) {
+            setPercentFromWeight(crop, { clamp: true });
+          } else {
+            setWeightFromPercent(crop, { clamp: true });
+          }
+          renderSelectedCrop();
+        });
+      }
+
+      // 點擊螢幕空白處、卡片、按鈕等任何輸入框以外區域時，強制退出輸入狀態收起游標
+      document.addEventListener("pointerdown", (e) => {
+        const active = document.activeElement;
+        if (active && (active === els.weightInput || active === els.percentInput)) {
+          if (e.target !== active) {
+            active.blur();
+          }
+        }
+      }, { passive: true });
+
+      // 手機虛擬鍵盤收起（如按退回鍵/收起鍵盤）時檢測可視高度擴大，強制 blur 移除游標
+      if (window.visualViewport) {
+        let lastVpHeight = window.visualViewport.height;
+        window.visualViewport.addEventListener("resize", () => {
+          const currentH = window.visualViewport.height;
+          if (currentH > lastVpHeight + 80) {
+            if (document.activeElement === els.weightInput || document.activeElement === els.percentInput) {
+              document.activeElement.blur();
+            }
+          }
+          lastVpHeight = currentH;
+        });
+      }
+
+      // 視窗失焦或歷史返回時強制 blur
+      window.addEventListener("blur", () => {
+        if (document.activeElement === els.weightInput || document.activeElement === els.percentInput) {
+          document.activeElement.blur();
+        }
+      });
+      window.addEventListener("popstate", () => {
+        if (document.activeElement === els.weightInput || document.activeElement === els.percentInput) {
+          document.activeElement.blur();
+        }
+      });
+
+      // 限制數值最多輸入到小數點後 2 位
+      function limitDecimalPlaces(input) {
+        let val = input.value;
+        if (val.includes(".")) {
+          const parts = val.split(".");
+          if (parts[1].length > 2) {
+            input.value = parts[0] + "." + parts[1].slice(0, 2);
+          }
+        }
+      }
+
+      setupAutoClearInput(els.weightInput, true);
+      setupAutoClearInput(els.percentInput, false);
+
+      els.weightInput.addEventListener("input", () => {
+        limitDecimalPlaces(els.weightInput);
+        setPercentFromWeight(getSelectedCrop());
+      });
+      els.percentInput.addEventListener("input", () => {
+        limitDecimalPlaces(els.percentInput);
+        setWeightFromPercent(getSelectedCrop());
+      });
+
+      // 2. 退回作物清單
+      els.backToPickerBtn.addEventListener("click", () => {
+        CyberAudio.tap(680);
+        vibrate(10);
+        setView("picker");
+      });
+
+      els.pickerSearch.addEventListener("input", () => renderPicker(false));
+
+      // 1. 標籤切換/再次點擊取消
+      els.qualityTabs.addEventListener("click", (e) => {
+        const btn = e.target.closest(".filter-tab-pill");
+        if (!btn) return;
+        const clickedQ = btn.dataset.q;
+
+        if (state.currentFilterQuality === clickedQ) {
+          state.currentFilterQuality = null;
+          CyberAudio.cancel();
+        } else {
+          state.currentFilterQuality = clickedQ;
+          CyberAudio.activate();
+          if (window.pulse3DReactor) window.pulse3DReactor(clickedQ);
+        }
+        vibrate(12);
+        renderPicker(true);
+      });
+
+      // 6. 狀態儲存
+      els.soundToggleBtn.addEventListener("click", () => {
+        state.soundEnabled = !state.soundEnabled;
+        els.soundIconText.textContent = state.soundEnabled ? "🔊 音效" : "🔇 靜音";
+        try { localStorage.setItem(STORAGE_KEY_SOUND, state.soundEnabled); } catch(e){}
+        vibrate(10);
+      });
+
+      // 免責聲明彈窗交互
+      function openDisclaimerModal() {
+        if (els.disclaimerModal) {
+          els.disclaimerModal.classList.add("active");
+          CyberAudio.tap(800);
+          vibrate(10);
+        }
+      }
+
+      function closeDisclaimerModal() {
+        if (els.disclaimerModal) {
+          els.disclaimerModal.classList.remove("active");
+          CyberAudio.cancel();
+        }
+      }
+
+      const footerDisclaimerBtn = document.getElementById("footerDisclaimerBtn");
+      if (els.disclaimerOpenBtn) els.disclaimerOpenBtn.addEventListener("click", openDisclaimerModal);
+      if (footerDisclaimerBtn) footerDisclaimerBtn.addEventListener("click", openDisclaimerModal);
+      if (els.disclaimerCloseBtn) els.disclaimerCloseBtn.addEventListener("click", closeDisclaimerModal);
+      if (els.disclaimerConfirmBtn) els.disclaimerConfirmBtn.addEventListener("click", closeDisclaimerModal);
+
+      if (els.disclaimerModal) {
+        els.disclaimerModal.addEventListener("click", (e) => {
+          if (e.target === els.disclaimerModal) {
+            closeDisclaimerModal();
+          }
+        });
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && els.disclaimerModal && els.disclaimerModal.classList.contains("active")) {
+          closeDisclaimerModal();
+        }
+      });
+
+      // 8. 六個一鍵百分比快捷鍵
+      document.querySelectorAll(".pct-3d-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const pct = Number(btn.dataset.pct);
+          els.percentInput.value = pct;
+          CyberAudio.tap(920);
+          vibrate(10);
+          setWeightFromPercent(getSelectedCrop(), { clamp: true });
+        });
+      });
+
+      els.pickerGrid.addEventListener("click", (e) => {
+        const card = e.target.closest("[data-crop]");
+        if (card) chooseCrop(card.dataset.crop);
+      });
+
+      els.dropdownTriggerBtn.addEventListener("click", () => {
+        els.dropdownMenuList.hidden = !els.dropdownMenuList.hidden;
+        CyberAudio.tap(780);
+      });
+
+      els.dropdownMenuList.addEventListener("click", (e) => {
+        const item = e.target.closest("[data-crop]");
+        if (item) chooseCrop(item.dataset.crop);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!document.querySelector(".quick-switch-box").contains(e.target)) {
+          els.dropdownMenuList.hidden = true;
+        }
+      });
+
+      els.comparePercentSlider.addEventListener("input", renderTable);
+
+      els.showComparisonToggle.addEventListener("change", () => {
+        state.showComparison = els.showComparisonToggle.checked;
+        try { localStorage.setItem(STORAGE_KEY_COMPARE, state.showComparison); } catch(e){}
+        CyberAudio.tap(840);
+        vibrate(10);
+        renderAll();
+      });
+
+      els.sortModeSelect.addEventListener("change", renderTable);
+      els.sortDirBtn.addEventListener("click", () => {
+        state.sortDirection = state.sortDirection === "desc" ? "asc" : "desc";
+        CyberAudio.tap(760);
+        renderTable();
+      });
+
+      els.resetMutationsBtn.addEventListener("click", () => {
+        state.selectedMutations.clear();
+        CyberAudio.cancel();
+        vibrate(20);
+        renderAll();
+      });
+
+      els.mutationGroupsContainer.addEventListener("click", (e) => {
+        const chip = e.target.closest("[data-mutation]");
+        if (chip) toggleMutation(chip.dataset.mutation);
+      });
+
+      // 6. 讀取上次保留的音效與比較清單狀態
+      try {
+        const savedSound = localStorage.getItem(STORAGE_KEY_SOUND);
+        if (savedSound !== null) state.soundEnabled = (savedSound === "true");
+        els.soundIconText.textContent = state.soundEnabled ? "🔊 音效" : "🔇 靜音";
+
+        const savedCompare = localStorage.getItem(STORAGE_KEY_COMPARE);
+        if (savedCompare !== null) state.showComparison = (savedCompare === "true");
+      } catch(e){}
+
+      // 初始化：進來固定為首頁且不預選標籤
+      state.crops = [...(window.GAME_DATA.crops || [])].sort((a, b) => Number(a.sortOrder) - Number(b.sortOrder));
+      state.mutations = window.GAME_DATA.mutations || [];
+      state.selectedCropName = state.crops[0]?.name || "";
+      state.currentFilterQuality = null;
+
+      setView("picker");
+      renderAll();
+
+      // Three.js 3D 量子空間反應爐
+      (function initThreeQuantumReactor() {
+        const canvas = document.getElementById("quantumCanvas3D");
+        if (!window.THREE || !canvas) return;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 1500);
+        camera.position.z = 380;
+
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const floorGrid = new THREE.GridHelper(1800, 44, 0x00f6ff, 0x0a224e);
+        floorGrid.position.y = -210;
+        scene.add(floorGrid);
+
+        const ceilingGrid = new THREE.GridHelper(1800, 44, 0xff007f, 0x1a0933);
+        ceilingGrid.position.y = 260;
+        scene.add(ceilingGrid);
+
+        const reactorGroup = new THREE.Group();
+        reactorGroup.position.set(0, 20, -120);
+        scene.add(reactorGroup);
+
+        const coreGeo = new THREE.OctahedronGeometry(68, 1);
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f6ff, wireframe: true, transparent: true, opacity: 0.32 });
+        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+        reactorGroup.add(coreMesh);
+
+        const ring1Geo = new THREE.TorusGeometry(115, 1.5, 12, 64);
+        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0xff007f, wireframe: true, transparent: true, opacity: 0.35 });
+        const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
+        ring1.rotation.x = Math.PI / 2.6;
+        reactorGroup.add(ring1);
+
+        const ring2Geo = new THREE.TorusGeometry(148, 1.2, 10, 64);
+        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.24 });
+        const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+        ring2.rotation.y = Math.PI / 3;
+        reactorGroup.add(ring2);
+
+        const starCount = 420;
+        const starGeo = new THREE.BufferGeometry();
+        const positions = new Float32Array(starCount * 3);
+        const colors = new Float32Array(starCount * 3);
+        const palette = [new THREE.Color(0x00f6ff), new THREE.Color(0xff007f), new THREE.Color(0xb53cff), new THREE.Color(0x00ff88)];
+
+        for (let i = 0; i < starCount; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * 1400;
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 900;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 1000;
+          const c = palette[Math.floor(Math.random() * palette.length)];
+          colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+        }
+
+        starGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        starGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        const starMat = new THREE.PointsMaterial({ size: 3.8, vertexColors: true, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
+        const stars = new THREE.Points(starGeo, starMat);
+        scene.add(stars);
+
+        let warpSpeed = 1;
+        const qualityColorHex = { 至臻: 0x00f6ff, 金色: 0xffd000, 紫色: 0xd946ef, 藍色: 0x00d4ff, 綠色: 0x00ff88, 灰色: 0xa0aec0 };
+
+        window.pulse3DReactor = function(qualityName) {
+          warpSpeed = 4;
+          const hex = qualityColorHex[qualityName] || 0x00f6ff;
+          coreMat.color.setHex(hex);
+          if (window.gsap) {
+            gsap.fromTo(reactorGroup.scale,
+              { x: 1.3, y: 1.3, z: 1.3 },
+              { x: 1, y: 1, z: 1, duration: 0.6, ease: "elastic.out(1.1, 0.4)" }
+            );
+          }
+        };
+
+        let pointerX = 0, pointerY = 0;
+        window.addEventListener("pointermove", (e) => {
+          pointerX = (e.clientX - window.innerWidth / 2) * 0.08;
+          pointerY = (e.clientY - window.innerHeight / 2) * 0.08;
+        }, { passive: true });
+
+        const clock = new THREE.Clock();
+        function animate3D() {
+          requestAnimationFrame(animate3D);
+          const dt = clock.getDelta();
+          const elapsed = clock.getElapsedTime();
+
+          warpSpeed += (1 - warpSpeed) * 0.05;
+          coreMesh.rotation.x += 0.45 * dt * warpSpeed;
+          coreMesh.rotation.y += 0.65 * dt * warpSpeed;
+          ring1.rotation.z -= 0.5 * dt * warpSpeed;
+          ring2.rotation.x += 0.35 * dt * warpSpeed;
+
+          floorGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
+          ceilingGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
+
+          camera.position.x += (pointerX - camera.position.x) * 0.05;
+          camera.position.y += (-pointerY - camera.position.y) * 0.05;
+          camera.lookAt(scene.position);
+
+          renderer.render(scene, camera);
+        }
+        animate3D();
+
+        window.addEventListener("resize", () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+      })();
+
+      // 觸控粒子特效
+      (function initTouchBurst() {
+        const canvas = document.getElementById("burstCanvas2D");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        window.addEventListener("pointerdown", (e) => {
+          const colors = ["#00f6ff", "#ff007f", "#00ff88", "#ffd000"];
+          for (let i = 0; i < 14; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 4 + 1.6;
+            particles.push({
+              x: e.clientX,
+              y: e.clientY,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              alpha: 1,
+              size: Math.random() * 3 + 2,
+              color: colors[Math.floor(Math.random() * colors.length)]
+            });
+          }
+        }, { passive: true });
+
+        function loop() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.035;
+            if (p.alpha <= 0) {
+              particles.splice(i, 1);
+              continue;
+            }
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.fillStyle = p.color;
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * p.alpha, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+          requestAnimationFrame(loop);
+        }
+        loop();
+      })();
+    </script>
+  </body>
+</html>
