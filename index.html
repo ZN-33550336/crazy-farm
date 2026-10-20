@@ -8,14 +8,14 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="description" content="蛋仔派對《瘋狂農場》果實售價與詞條加成專業計算器。支援全47種詞條試算、全作物同屏對比、生長耗時推估，純前端本機運算、極速流暢！" />
+    <meta name="description" content="蛋仔派對《瘋狂農場》果實售價與詞條加成專業計算器。全47種詞條試算、全作物同屏對比、生長耗時推估，純前端本機運算、極速流暢！" />
     <meta name="keywords" content="蛋仔派對, 瘋狂農場, 果實計算器, 農場詞條, 作物倍率, 蛋仔農場, 售價計算" />
 
     <!-- Open Graph (LINE / Discord / Facebook 預覽卡片) -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://zn-33550336.github.io/crazy-farm/" />
-    <meta property="og:title" content="瘋狂農場•果實計算器 ｜ 蛋仔派對高階數值試算" />
-    <meta property="og:description" content="精準計算果實售價、全47種詞條加成、全作物同屏對比、生長耗時分析，專為農場島主打造的賽博龐克試算工具！" />
+    <meta property="og:title" content="瘋狂農場•果實計算器 ｜ 蛋仔派對果實數值試算" />
+    <meta property="og:description" content="精準計算果實售價、全47種詞條加成、全作物同屏對比、生長耗時分析，專為農場島主打造的果實試算工具！" />
     <meta property="og:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
     <meta property="og:locale" content="zh_TW" />
 
@@ -2023,9 +2023,10 @@
         renderTable();
       }
 
-      // 5. 點擊清空數值，完全退出輸入狀態與游標防呆處理
+      // 5. 點擊清空數值，完全退出輸入狀態與游標防呆處理（若開啟允許超過兩位小數則不清空）
       function setupAutoClearInput(input, isWeight) {
         input.addEventListener("focus", () => {
+          if (state.allowExtraDecimals) return;
           input.dataset.prevVal = input.value;
           input.value = "";
           input.dataset.justFocused = "true";
@@ -2035,6 +2036,7 @@
 
         // 若游標因任何原因未消失而再次點擊，依然執行清空
         input.addEventListener("click", () => {
+          if (state.allowExtraDecimals) return;
           if (!input.dataset.justFocused) {
             input.dataset.prevVal = input.value;
             input.value = "";
