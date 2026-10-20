@@ -351,6 +351,12 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        position: relative;
+        z-index: 60;
+      }
+
+      .control-pod-3d.dropdown-open {
+        z-index: 999;
       }
 
       .crop-banner-top {
@@ -376,6 +382,7 @@
 
       .quick-switch-box {
         position: relative;
+        z-index: 100;
       }
 
       .dropdown-trigger-3d {
@@ -406,8 +413,9 @@
         border: 1.5px solid var(--neon-cyan);
         border-radius: 12px;
         padding: 6px;
-        z-index: 120;
+        z-index: 1000;
         box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.98), 0 0 25px rgba(0, 246, 255, 0.4);
       }
 
       .dropdown-item-btn {
@@ -557,6 +565,7 @@
         gap: 16px;
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 246, 255, 0.25);
         position: relative;
+        z-index: 5;
         overflow: hidden;
       }
 
@@ -1144,16 +1153,26 @@
           <div class="inputs-3d-grid">
             <div class="field-box">
               <label>作物重量 (公斤)</label>
-              <input id="weightInput" class="input-num-3d" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" />
+              <input id="weightInput" class="input-num-3d" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" />
             </div>
             <div class="field-box">
               <label>重量百分比 (%)</label>
-              <input id="percentInput" class="input-num-3d" type="number" min="0" max="100" step="0.01" inputmode="decimal" placeholder="0" />
+              <input id="percentInput" class="input-num-3d" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="0" />
             </div>
             <div class="field-box field-box-time">
               <label>預估生長耗時</label>
               <div id="growthTimeBox" class="time-readout-box">-</div>
             </div>
+          </div>
+
+          <!-- 可輸入超過兩位小數開關列 -->
+          <div class="decimals-bar-3d" style="display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: rgba(5, 12, 28, 0.7); border: 1px solid rgba(0, 246, 255, 0.22); border-radius: 10px;">
+            <span style="font-size: 12px; font-weight: 800; color: var(--neon-cyan);">⚙️ 小數點輸入精度</span>
+            <label class="switch-label-group" for="allowExtraDecimalsToggle" style="gap: 8px; cursor: pointer; margin-bottom: 0;">
+              <span style="font-size: 12px; font-weight: 700; color: #fff;">可輸入超過兩位小數</span>
+              <input id="allowExtraDecimalsToggle" type="checkbox" />
+              <div class="cyber-toggle-pill mini"></div>
+            </label>
           </div>
 
           <!-- 8. 更改為 100% 90% 80% 70% 60% 55% -->
@@ -1246,7 +1265,7 @@
       <!-- 賽博龐克頁尾資訊 -->
       <footer class="cyber-footer-3d">
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.0.0</span>
+          <span class="footer-badge">V2.0.1</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -1306,6 +1325,9 @@
       const TOOL_STATE = { liuxingzhang: true, huanxingji: true };
       const STORAGE_KEY_SOUND = "farm_sound_pref";
       const STORAGE_KEY_COMPARE = "farm_compare_pref";
+      const STORAGE_KEY_SORT_MODE = "farm_sort_mode_pref";
+      const STORAGE_KEY_SORT_DIR = "farm_sort_dir_pref";
+      const STORAGE_KEY_DECIMALS = "farm_decimals_pref";
 
       const RECIPES = [
         { ingredients: ["生机", "潮湿"], result: "琥珀" },
@@ -1350,7 +1372,8 @@
         showComparison: false,
         view: "picker",
         currentFilterQuality: null, // 預設無標籤
-        soundEnabled: true
+        soundEnabled: true,
+        allowExtraDecimals: false
       };
 
       const els = {
@@ -1382,6 +1405,7 @@
         sortDirBtn: document.getElementById("sortDirBtn"),
         soundToggleBtn: document.getElementById("soundToggleBtn"),
         soundIconText: document.getElementById("soundIconText"),
+        allowExtraDecimalsToggle: document.getElementById("allowExtraDecimalsToggle"),
         disclaimerOpenBtn: document.getElementById("disclaimerOpenBtn"),
         disclaimerModal: document.getElementById("disclaimerModal"),
         disclaimerCloseBtn: document.getElementById("disclaimerCloseBtn"),
@@ -1459,7 +1483,7 @@
         return String(val).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
       }
 
-      function formatNumber(val, digits = 2) {
+      function formatNumber(val, digits = (typeof state !== "undefined" && state.allowExtraDecimals ? 6 : 2)) {
         return Number(val).toFixed(digits).replace(/\.?0+$/, "");
       }
 
@@ -1664,6 +1688,7 @@
       // 6. 點入作物：數值預設皆為空白 (相當於 0，不顯示 0)
       function chooseCrop(cropName) {
         els.dropdownMenuList.hidden = true;
+        document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
         state.selectedCropName = cropName;
         const crop = getSelectedCrop();
         pruneUnavailableMutations(crop);
@@ -2075,8 +2100,9 @@
         }
       });
 
-      // 限制數值最多輸入到小數點後 2 位
+      // 限制數值小數點位數（若開啟允許超過兩位小數則不限制）
       function limitDecimalPlaces(input) {
+        if (state.allowExtraDecimals) return;
         let val = input.value;
         if (val.includes(".")) {
           const parts = val.split(".");
@@ -2096,6 +2122,21 @@
       els.percentInput.addEventListener("input", () => {
         limitDecimalPlaces(els.percentInput);
         setWeightFromPercent(getSelectedCrop());
+      });
+
+      // 小數點精度開關事件監聽
+      els.allowExtraDecimalsToggle.addEventListener("change", () => {
+        state.allowExtraDecimals = els.allowExtraDecimalsToggle.checked;
+        try {
+          localStorage.setItem(STORAGE_KEY_DECIMALS, state.allowExtraDecimals);
+        } catch(e){}
+        CyberAudio.tap(state.allowExtraDecimals ? 880 : 620);
+        vibrate(10);
+        if (!state.allowExtraDecimals) {
+          limitDecimalPlaces(els.weightInput);
+          limitDecimalPlaces(els.percentInput);
+          setPercentFromWeight(getSelectedCrop());
+        }
       });
 
       // 2. 退回作物清單
@@ -2187,6 +2228,7 @@
 
       els.dropdownTriggerBtn.addEventListener("click", () => {
         els.dropdownMenuList.hidden = !els.dropdownMenuList.hidden;
+        document.querySelector(".control-pod-3d")?.classList.toggle("dropdown-open", !els.dropdownMenuList.hidden);
         CyberAudio.tap(780);
       });
 
@@ -2198,6 +2240,7 @@
       document.addEventListener("click", (e) => {
         if (!document.querySelector(".quick-switch-box").contains(e.target)) {
           els.dropdownMenuList.hidden = true;
+          document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
         }
       });
 
@@ -2211,9 +2254,13 @@
         renderAll();
       });
 
-      els.sortModeSelect.addEventListener("change", renderTable);
+      els.sortModeSelect.addEventListener("change", () => {
+        try { localStorage.setItem(STORAGE_KEY_SORT_MODE, els.sortModeSelect.value); } catch(e){}
+        renderTable();
+      });
       els.sortDirBtn.addEventListener("click", () => {
         state.sortDirection = state.sortDirection === "desc" ? "asc" : "desc";
+        try { localStorage.setItem(STORAGE_KEY_SORT_DIR, state.sortDirection); } catch(e){}
         CyberAudio.tap(760);
         renderTable();
       });
@@ -2238,6 +2285,20 @@
 
         const savedCompare = localStorage.getItem(STORAGE_KEY_COMPARE);
         if (savedCompare !== null) state.showComparison = (savedCompare === "true");
+
+        const savedSortMode = localStorage.getItem(STORAGE_KEY_SORT_MODE);
+        if (savedSortMode !== null) els.sortModeSelect.value = savedSortMode;
+
+        const savedSortDir = localStorage.getItem(STORAGE_KEY_SORT_DIR);
+        if (savedSortDir !== null) state.sortDirection = savedSortDir;
+
+        const savedDecimals = localStorage.getItem(STORAGE_KEY_DECIMALS);
+        if (savedDecimals !== null) {
+          state.allowExtraDecimals = (savedDecimals === "true");
+        } else {
+          state.allowExtraDecimals = false;
+        }
+        els.allowExtraDecimalsToggle.checked = state.allowExtraDecimals;
       } catch(e){}
 
       // 初始化：進來固定為首頁且不預選標籤
