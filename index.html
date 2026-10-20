@@ -567,7 +567,86 @@
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 246, 255, 0.25);
         position: relative;
         z-index: 5;
-        overflow: hidden;
+      }
+      .holo-value-reactor-3d.precision-dropdown-open {
+        z-index: 1000;
+      }
+      .reactor-label-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 2px;
+        position: relative;
+      }
+      .value-precision-box {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        z-index: 100;
+      }
+      .val-prec-trigger-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(0, 246, 255, 0.12);
+        border: 1px solid rgba(0, 246, 255, 0.4);
+        border-radius: 6px;
+        padding: 2px 7px;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        outline: none;
+        white-space: nowrap;
+      }
+      .val-prec-trigger-btn:hover {
+        background: rgba(0, 246, 255, 0.25);
+        border-color: var(--neon-cyan);
+      }
+      .val-prec-trigger-btn .caret {
+        font-size: 9px;
+        color: var(--neon-cyan);
+      }
+      .val-prec-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        min-width: 140px;
+        background: rgba(3, 10, 26, 0.98);
+        border: 1.5px solid var(--neon-cyan);
+        border-radius: 8px;
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.95), 0 0 20px rgba(0, 246, 255, 0.35);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        z-index: 1000;
+        padding: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .val-prec-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 10px;
+        border-radius: 5px;
+        background: transparent;
+        border: none;
+        color: #c9e9ff;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.12s ease;
+      }
+      .val-prec-item:hover {
+        background: rgba(0, 246, 255, 0.2);
+        color: #fff;
+      }
+      .val-prec-item.active {
+        background: var(--neon-cyan);
+        color: #000;
       }
 
       .reactor-label {
@@ -1193,7 +1272,22 @@
         <!-- 總價值與詞條總倍率（位於基準拉條與詞條選擇正中間） -->
         <section class="holo-value-reactor-3d">
           <div class="reactor-left">
-            <div class="reactor-label">總價值</div>
+            <div class="reactor-label-row">
+              <span class="reactor-label">總價值</span>
+              <div class="value-precision-box">
+                <button id="valPrecTriggerBtn" class="val-prec-trigger-btn" type="button" aria-label="選擇小數顯示位數">
+                  <span>顯示小數到第<span id="valPrecCurrentNum">2</span>位</span>
+                  <span class="caret">▼</span>
+                </button>
+                <div id="valPrecDropdownMenu" class="val-prec-dropdown-menu" hidden>
+                  <button class="val-prec-item" type="button" data-digits="2">第 2 位 (預設)</button>
+                  <button class="val-prec-item" type="button" data-digits="3">第 3 位</button>
+                  <button class="val-prec-item" type="button" data-digits="4">第 4 位</button>
+                  <button class="val-prec-item" type="button" data-digits="5">第 5 位</button>
+                  <button class="val-prec-item" type="button" data-digits="6">第 6 位</button>
+                </div>
+              </div>
+            </div>
             <strong id="selectedPriceText" class="reactor-price-value">0</strong>
           </div>
           <div class="reactor-right">
@@ -1266,7 +1360,7 @@
       <!-- 賽博龐克頁尾資訊 -->
       <footer class="cyber-footer-3d">
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.0.1</span>
+          <span class="footer-badge">V2.1.0</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -1329,6 +1423,7 @@
       const STORAGE_KEY_SORT_MODE = "farm_sort_mode_pref";
       const STORAGE_KEY_SORT_DIR = "farm_sort_dir_pref";
       const STORAGE_KEY_DECIMALS = "farm_decimals_pref";
+      const STORAGE_KEY_PRICE_DECIMALS = "farm_price_decimals_pref";
 
       const RECIPES = [
         { ingredients: ["生机", "潮湿"], result: "琥珀" },
@@ -1375,7 +1470,8 @@
         currentFilterQuality: null, // 預設無標籤
         soundEnabled: true,
         allowExtraDecimals: false,
-        lastEditedField: "percent"
+        lastEditedField: "percent",
+        priceDigits: 2
       };
 
       const els = {
@@ -1408,6 +1504,9 @@
         soundToggleBtn: document.getElementById("soundToggleBtn"),
         soundIconText: document.getElementById("soundIconText"),
         allowExtraDecimalsToggle: document.getElementById("allowExtraDecimalsToggle"),
+        valPrecTriggerBtn: document.getElementById("valPrecTriggerBtn"),
+        valPrecCurrentNum: document.getElementById("valPrecCurrentNum"),
+        valPrecDropdownMenu: document.getElementById("valPrecDropdownMenu"),
         disclaimerOpenBtn: document.getElementById("disclaimerOpenBtn"),
         disclaimerModal: document.getElementById("disclaimerModal"),
         disclaimerCloseBtn: document.getElementById("disclaimerCloseBtn"),
@@ -1489,11 +1588,12 @@
         return Number(val).toFixed(digits).replace(/\.?0+$/, "");
       }
 
-      function formatPrice(val) {
-        if (val >= 1000000000) return `${formatNumber(val / 1000000000)}B`;
-        if (val >= 1000000) return `${formatNumber(val / 1000000)}M`;
-        if (val >= 10000) return `${formatNumber(val / 10000)}W`;
-        return `${Math.round(val)}`;
+      function formatPrice(val, digits = (typeof state !== "undefined" && state.priceDigits ? state.priceDigits : 2)) {
+        const d = Number(digits) || 2;
+        if (val >= 1000000000) return `${Number(val / 1000000000).toFixed(d).replace(/\.?0+$/, "")}B`;
+        if (val >= 1000000) return `${Number(val / 1000000).toFixed(d).replace(/\.?0+$/, "")}M`;
+        if (val >= 10000) return `${Number(val / 10000).toFixed(d).replace(/\.?0+$/, "")}W`;
+        return Number(val).toFixed(d).replace(/\.?0+$/, "");
       }
 
       function formatDuration(sec) {
@@ -2259,10 +2359,50 @@
         if (item) chooseCrop(item.dataset.crop);
       });
 
+      // 總價值顯示小數點位數選單
+      function updateValPrecMenuUI() {
+        if (els.valPrecCurrentNum) els.valPrecCurrentNum.textContent = state.priceDigits;
+        document.querySelectorAll(".val-prec-item").forEach(item => {
+          item.classList.toggle("active", Number(item.dataset.digits) === state.priceDigits);
+        });
+      }
+
+      els.valPrecTriggerBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = !els.valPrecDropdownMenu.hidden;
+        els.valPrecDropdownMenu.hidden = isOpen;
+        document.querySelector(".holo-value-reactor-3d")?.classList.toggle("precision-dropdown-open", !isOpen);
+        updateValPrecMenuUI();
+        CyberAudio.tap(780);
+      });
+
+      els.valPrecDropdownMenu.addEventListener("click", (e) => {
+        const item = e.target.closest(".val-prec-item");
+        if (!item) return;
+        const digits = Number(item.dataset.digits);
+        if (digits >= 2 && digits <= 6) {
+          state.priceDigits = digits;
+          try {
+            localStorage.setItem(STORAGE_KEY_PRICE_DECIMALS, state.priceDigits);
+          } catch(err){}
+          updateValPrecMenuUI();
+          els.valPrecDropdownMenu.hidden = true;
+          document.querySelector(".holo-value-reactor-3d")?.classList.remove("precision-dropdown-open");
+          CyberAudio.tap(880);
+          vibrate(10);
+          renderSelectedCrop();
+          renderTable();
+        }
+      });
+
       document.addEventListener("click", (e) => {
         if (!document.querySelector(".quick-switch-box").contains(e.target)) {
           els.dropdownMenuList.hidden = true;
           document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
+        }
+        if (els.valPrecDropdownMenu && !document.querySelector(".value-precision-box")?.contains(e.target)) {
+          els.valPrecDropdownMenu.hidden = true;
+          document.querySelector(".holo-value-reactor-3d")?.classList.remove("precision-dropdown-open");
         }
       });
 
@@ -2321,6 +2461,14 @@
           state.allowExtraDecimals = false;
         }
         els.allowExtraDecimalsToggle.checked = state.allowExtraDecimals;
+
+        const savedPriceDecimals = localStorage.getItem(STORAGE_KEY_PRICE_DECIMALS);
+        if (savedPriceDecimals !== null && [2, 3, 4, 5, 6].includes(Number(savedPriceDecimals))) {
+          state.priceDigits = Number(savedPriceDecimals);
+        } else {
+          state.priceDigits = 2;
+        }
+        if (els.valPrecCurrentNum) els.valPrecCurrentNum.textContent = state.priceDigits;
       } catch(e){}
 
       // 初始化：進來固定為首頁且不預選標籤
