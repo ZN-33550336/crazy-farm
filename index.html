@@ -25,6 +25,7 @@
     <meta name="twitter:description" content="蛋仔派對瘋狂農場果實售價與詞條加成專業計算器。" />
     <meta name="twitter:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
 
+
     <!-- Favicon & PWA Icons -->
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="apple-touch-icon" href="./favicon.svg" />
@@ -1373,7 +1374,8 @@
         view: "picker",
         currentFilterQuality: null, // 預設無標籤
         soundEnabled: true,
-        allowExtraDecimals: false
+        allowExtraDecimals: false,
+        lastEditedField: "percent"
       };
 
       const els = {
@@ -1509,6 +1511,12 @@
         const text = String(val ?? "");
         if (displayNames[text]) return displayNames[text];
         return text.replace(/[灯黄蓝牵银环树苹叶车龙猕惊芦红马铃兰听绿钻异尘阳蚀连冻雾圣湿机荧热颤栗陨]/g, (ch) => characterMap[ch] || ch);
+      }
+
+      function roundTo2(val) {
+        const n = Number(val);
+        if (!Number.isFinite(n)) return "";
+        return String(Math.round(n * 100) / 100);
       }
 
       function minWeight(crop) { return Number(crop.maxWeight) / 34; }
@@ -2118,10 +2126,12 @@
       setupAutoClearInput(els.percentInput, false);
 
       els.weightInput.addEventListener("input", () => {
+        state.lastEditedField = "weight";
         limitDecimalPlaces(els.weightInput);
         setPercentFromWeight(getSelectedCrop());
       });
       els.percentInput.addEventListener("input", () => {
+        state.lastEditedField = "percent";
         limitDecimalPlaces(els.percentInput);
         setWeightFromPercent(getSelectedCrop());
       });
@@ -2135,9 +2145,18 @@
         CyberAudio.tap(state.allowExtraDecimals ? 880 : 620);
         vibrate(10);
         if (!state.allowExtraDecimals) {
-          limitDecimalPlaces(els.weightInput);
-          limitDecimalPlaces(els.percentInput);
-          setPercentFromWeight(getSelectedCrop());
+          const crop = getSelectedCrop();
+          if (state.lastEditedField === "weight") {
+            if (els.weightInput.value.trim() !== "") {
+              els.weightInput.value = roundTo2(els.weightInput.value);
+              setPercentFromWeight(crop);
+            }
+          } else {
+            if (els.percentInput.value.trim() !== "") {
+              els.percentInput.value = roundTo2(els.percentInput.value);
+              setWeightFromPercent(crop);
+            }
+          }
         }
       });
 
@@ -2215,6 +2234,7 @@
       // 8. 六個一鍵百分比快捷鍵
       document.querySelectorAll(".pct-3d-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
+          state.lastEditedField = "percent";
           const pct = Number(btn.dataset.pct);
           els.percentInput.value = pct;
           CyberAudio.tap(920);
