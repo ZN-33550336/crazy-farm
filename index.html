@@ -70,6 +70,21 @@
         font-family: inherit;
       }
 
+      
+      /* 超新星大爆炸全螢幕閃光圖層 */
+      .screen-flash-overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(0, 246, 255, 0.85) 50%, transparent 100%);
+        z-index: 99999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.08s ease-out;
+      }
+      .screen-flash-overlay.active {
+        opacity: 1;
+      }
+
       /* 嚴格隔離隱藏屬性，杜絕首頁下方穿透計算器 */
       [hidden] {
         display: none !important;
@@ -403,6 +418,17 @@
       }
 
       /* 4. 作物清單下拉選項具備專屬底色 */
+      .dropdown-filter-pills {
+        position: sticky;
+        top: -6px;
+        margin: -6px -6px 8px -6px;
+        padding: 8px 6px;
+        background: rgba(4, 10, 26, 0.98);
+        border-bottom: 1px solid rgba(0, 246, 255, 0.25);
+        z-index: 10;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+      }
+
       .dropdown-menu-3d {
         position: absolute;
         top: calc(100% + 6px);
@@ -419,21 +445,47 @@
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.98), 0 0 25px rgba(0, 246, 255, 0.4);
       }
 
+      #dropdownCropsContainer {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
       .dropdown-item-btn {
         width: 100%;
-        padding: 9px 12px;
+        padding: 8px 4px;
+        min-height: 52px;
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 8px;
         color: #fff;
-        font-size: 13px;
-        font-weight: 800;
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+        justify-content: center;
         align-items: center;
+        text-align: center;
         cursor: pointer;
-        margin-bottom: 5px;
+        margin-bottom: 0;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
         transition: all 0.12s ease;
+      }
+
+      .dropdown-item-btn span:first-child {
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+      }
+
+      .dropdown-item-btn span:last-child {
+        font-size: 10.5px;
+        opacity: 0.9;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
       }
 
       .dropdown-item-btn:active {
@@ -1168,14 +1220,20 @@
   <body>
     <canvas id="quantumCanvas3D"></canvas>
     <canvas id="burstCanvas2D"></canvas>
+    <div id="screenFlash" class="screen-flash-overlay"></div>
     <div class="holo-overlay"></div>
 
     <main class="app-stage">
       <header class="cyber-header-3d">
         <h1 class="header-title">瘋狂農場•果實計算器</h1>
-        <button id="soundToggleBtn" class="btn-3d-icon" type="button">
-          <span id="soundIconText">🔊 音效</span>
-        </button>
+        <div class="header-actions">
+          <button id="sensorToggleBtn" class="btn-3d-icon" type="button" title="動態感應校準與超載測試">
+            <span id="sensorIconText">📳 感應中</span>
+          </button>
+          <button id="soundToggleBtn" class="btn-3d-icon" type="button">
+            <span id="soundIconText">🔊 音效</span>
+          </button>
+        </div>
       </header>
 
       <!-- ================================================== -->
@@ -1227,7 +1285,17 @@
               <span id="dropdownLabelText">作物清單：</span>
               <span>▼</span>
             </button>
-            <div id="dropdownMenuList" class="dropdown-menu-3d" hidden></div>
+            <div id="dropdownMenuList" class="dropdown-menu-3d" hidden>
+              <div id="dropdownQualityTabs" class="dropdown-filter-pills quality-pills-grid">
+                <button class="filter-tab-pill" type="button" data-q="至臻">至臻</button>
+                <button class="filter-tab-pill" type="button" data-q="金色">金色</button>
+                <button class="filter-tab-pill" type="button" data-q="紫色">紫色</button>
+                <button class="filter-tab-pill" type="button" data-q="藍色">藍色</button>
+                <button class="filter-tab-pill" type="button" data-q="綠色">綠色</button>
+                <button class="filter-tab-pill" type="button" data-q="灰色">灰色</button>
+              </div>
+              <div id="dropdownCropsContainer"></div>
+            </div>
           </div>
 
           <div class="inputs-3d-grid">
@@ -1360,7 +1428,7 @@
       <!-- 賽博龐克頁尾資訊 -->
       <footer class="cyber-footer-3d">
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.1.0</span>
+          <span class="footer-badge">V2.1.1</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -1468,6 +1536,7 @@
         showComparison: false,
         view: "picker",
         currentFilterQuality: null, // 預設無標籤
+        dropdownFilterQuality: null, // 下拉選單品階篩選
         soundEnabled: true,
         allowExtraDecimals: false,
         lastEditedField: "percent",
@@ -1571,6 +1640,56 @@
               g.connect(c.destination);
               osc.start();
               osc.stop(c.currentTime + 0.1);
+            } catch (e) {}
+          },
+          explode: function() {
+            if (!state.soundEnabled) return;
+            try {
+              const c = getCtx();
+              const osc = c.createOscillator();
+              const g = c.createGain();
+              osc.type = "sawtooth";
+              osc.frequency.setValueAtTime(150, c.currentTime);
+              osc.frequency.exponentialRampToValueAtTime(25, c.currentTime + 0.85);
+              g.gain.setValueAtTime(0.35, c.currentTime);
+              g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.85);
+              osc.connect(g);
+              g.connect(c.destination);
+              osc.start();
+              osc.stop(c.currentTime + 0.85);
+
+              const bufferSize = c.sampleRate * 0.5;
+              const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+              const data = buffer.getChannelData(0);
+              for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (c.sampleRate * 0.12));
+              }
+              const noise = c.createBufferSource();
+              noise.buffer = buffer;
+              const ng = c.createGain();
+              ng.gain.setValueAtTime(0.3, c.currentTime);
+              ng.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.5);
+              noise.connect(ng);
+              ng.connect(c.destination);
+              noise.start();
+            } catch (e) {}
+          },
+          reconverge: function() {
+            if (!state.soundEnabled) return;
+            try {
+              const c = getCtx();
+              const osc = c.createOscillator();
+              const g = c.createGain();
+              osc.type = "sine";
+              osc.frequency.setValueAtTime(70, c.currentTime);
+              osc.frequency.exponentialRampToValueAtTime(960, c.currentTime + 1.2);
+              g.gain.setValueAtTime(0.03, c.currentTime);
+              g.gain.linearRampToValueAtTime(0.2, c.currentTime + 1.1);
+              g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 1.25);
+              osc.connect(g);
+              g.connect(c.destination);
+              osc.start();
+              osc.stop(c.currentTime + 1.25);
             } catch (e) {}
           }
         };
@@ -1917,7 +2036,7 @@
         }
       }
 
-      // 4. 下拉選單顯示「作物清單：」且選項具備品階底色
+      // 4. 下拉選單顯示「作物清單：」且選項具備品階底色與上方品階篩選標籤
       function renderCropOptions() {
         const current = getSelectedCrop();
         if (!current) return;
@@ -1930,8 +2049,29 @@
 
         els.dropdownLabelText.textContent = `作物清單：${displayName(current.name)}（${displayName(current.quality)}）`;
 
-        const crops = [...state.crops].sort(compareCropsForPicker);
-        els.dropdownMenuList.innerHTML = crops
+        renderDropdownCrops();
+      }
+
+      function renderDropdownCrops() {
+        const qFilter = state.dropdownFilterQuality;
+        const dropdownTabs = document.getElementById("dropdownQualityTabs");
+        if (dropdownTabs) {
+          dropdownTabs.querySelectorAll(".filter-tab-pill").forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.q === qFilter);
+          });
+        }
+
+        const container = document.getElementById("dropdownCropsContainer");
+        if (!container) return;
+
+        const crops = [...state.crops]
+          .filter((c) => {
+            if (!qFilter) return true;
+            return displayName(c.quality) === qFilter || c.quality === qFilter;
+          })
+          .sort(compareCropsForPicker);
+
+        container.innerHTML = crops
           .map(
             (c) => `
               <button class="dropdown-item-btn q-theme-${c.quality} ${c.name === state.selectedCropName ? 'selected' : ''}" type="button" data-crop="${escapeHtml(c.name)}">
@@ -2349,10 +2489,37 @@
       });
 
       els.dropdownTriggerBtn.addEventListener("click", () => {
-        els.dropdownMenuList.hidden = !els.dropdownMenuList.hidden;
-        document.querySelector(".control-pod-3d")?.classList.toggle("dropdown-open", !els.dropdownMenuList.hidden);
+        const willOpen = els.dropdownMenuList.hidden;
+        els.dropdownMenuList.hidden = !willOpen;
+        document.querySelector(".control-pod-3d")?.classList.toggle("dropdown-open", willOpen);
+        if (willOpen) {
+          state.dropdownFilterQuality = null;
+          renderDropdownCrops();
+        }
         CyberAudio.tap(780);
       });
+
+      // 下拉選單內部頂部品階篩選按鈕 (點擊篩選，再次點擊取消)
+      const dropdownQualityTabs = document.getElementById("dropdownQualityTabs");
+      if (dropdownQualityTabs) {
+        dropdownQualityTabs.addEventListener("click", (e) => {
+          const btn = e.target.closest(".filter-tab-pill");
+          if (!btn) return;
+          e.stopPropagation();
+          const clickedQ = btn.dataset.q;
+
+          if (state.dropdownFilterQuality === clickedQ) {
+            state.dropdownFilterQuality = null;
+            CyberAudio.cancel();
+          } else {
+            state.dropdownFilterQuality = clickedQ;
+            CyberAudio.activate();
+            if (window.pulse3DReactor) window.pulse3DReactor(clickedQ);
+          }
+          vibrate(12);
+          renderDropdownCrops();
+        });
+      }
 
       els.dropdownMenuList.addEventListener("click", (e) => {
         const item = e.target.closest("[data-crop]");
@@ -2501,27 +2668,56 @@
         ceilingGrid.position.y = 260;
         scene.add(ceilingGrid);
 
+        // 核心本體懸浮群組 (直接受手機晃動彈簧物理力驅動)
         const reactorGroup = new THREE.Group();
         reactorGroup.position.set(0, 20, -120);
         scene.add(reactorGroup);
 
         const coreGeo = new THREE.OctahedronGeometry(68, 1);
-        const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f6ff, wireframe: true, transparent: true, opacity: 0.32 });
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f6ff, wireframe: true, transparent: true, opacity: 0.35 });
         const coreMesh = new THREE.Mesh(coreGeo, coreMat);
         reactorGroup.add(coreMesh);
 
         const ring1Geo = new THREE.TorusGeometry(115, 1.5, 12, 64);
-        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0xff007f, wireframe: true, transparent: true, opacity: 0.35 });
+        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0xff007f, wireframe: true, transparent: true, opacity: 0.38 });
         const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
         ring1.rotation.x = Math.PI / 2.6;
         reactorGroup.add(ring1);
 
         const ring2Geo = new THREE.TorusGeometry(148, 1.2, 10, 64);
-        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.24 });
+        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.28 });
         const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
         ring2.rotation.y = Math.PI / 3;
         reactorGroup.add(ring2);
 
+        // 超新星能量碎片系統 (600顆三維立體粒子)
+        const debrisCount = 600;
+        const debrisGeo = new THREE.BufferGeometry();
+        const debrisPos = new Float32Array(debrisCount * 3);
+        const debrisVel = new Float32Array(debrisCount * 3);
+        const debrisColors = new Float32Array(debrisCount * 3);
+        const debrisPalette = [new THREE.Color(0x00f6ff), new THREE.Color(0xff007f), new THREE.Color(0xffbb00), new THREE.Color(0x00ff88), new THREE.Color(0xffffff)];
+
+        for (let i = 0; i < debrisCount; i++) {
+          debrisPos[i * 3] = 0;
+          debrisPos[i * 3 + 1] = 20;
+          debrisPos[i * 3 + 2] = -120;
+          const c = debrisPalette[Math.floor(Math.random() * debrisPalette.length)];
+          debrisColors[i * 3] = c.r; debrisColors[i * 3 + 1] = c.g; debrisColors[i * 3 + 2] = c.b;
+        }
+        debrisGeo.setAttribute("position", new THREE.BufferAttribute(debrisPos, 3));
+        debrisGeo.setAttribute("color", new THREE.BufferAttribute(debrisColors, 3));
+        const debrisMat = new THREE.PointsMaterial({
+          size: 5.5,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending
+        });
+        const debrisMesh = new THREE.Points(debrisGeo, debrisMat);
+        scene.add(debrisMesh);
+
+        // 背景星空微塵
         const starCount = 420;
         const starGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(starCount * 3);
@@ -2535,7 +2731,6 @@
           const c = palette[Math.floor(Math.random() * palette.length)];
           colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
         }
-
         starGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
         starGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
         const starMat = new THREE.PointsMaterial({ size: 3.8, vertexColors: true, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
@@ -2557,10 +2752,164 @@
           }
         };
 
-        let pointerX = 0, pointerY = 0;
+        // 實體動力學變數 (彈性震盪物理)
+        let springX = 0, springY = 0;
+        let velX = 0, velY = 0;
+        let shakeEnergy = 0;
+        let explosionState = "IDLE"; // IDLE, EXPLODING, COLLAPSING
+        let explosionTimer = 0;
+
+        // 電腦滑鼠移動互動
         window.addEventListener("pointermove", (e) => {
-          pointerX = (e.clientX - window.innerWidth / 2) * 0.08;
-          pointerY = (e.clientY - window.innerHeight / 2) * 0.08;
+          if (e.pointerType === "mouse") {
+            const mx = (e.clientX - window.innerWidth / 2);
+            const my = (e.clientY - window.innerHeight / 2);
+            velX += mx * 0.008;
+            velY -= my * 0.008;
+          }
+        }, { passive: true });
+
+        // 觸發超新星大爆炸
+        function triggerSupernova() {
+          if (explosionState !== "IDLE") return;
+          explosionState = "EXPLODING";
+          explosionTimer = 0;
+          CyberAudio.explode();
+          vibrate(70);
+
+          const flash = document.getElementById("screenFlash");
+          if (flash) {
+            flash.classList.add("active");
+            setTimeout(() => flash.classList.remove("active"), 140);
+          }
+
+          coreMesh.visible = false;
+          ring1.visible = false;
+          ring2.visible = false;
+          debrisMat.opacity = 1;
+
+          const pArr = debrisGeo.attributes.position.array;
+          for (let i = 0; i < debrisCount; i++) {
+            pArr[i * 3] = reactorGroup.position.x;
+            pArr[i * 3 + 1] = reactorGroup.position.y;
+            pArr[i * 3 + 2] = reactorGroup.position.z;
+
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(Math.random() * 2 - 1);
+            const speed = Math.random() * 24 + 12;
+
+            debrisVel[i * 3] = Math.sin(phi) * Math.cos(theta) * speed;
+            debrisVel[i * 3 + 1] = Math.sin(phi) * Math.sin(theta) * speed;
+            debrisVel[i * 3 + 2] = Math.cos(phi) * speed;
+          }
+          debrisGeo.attributes.position.needsUpdate = true;
+        }
+
+        // 手機加速度與劇烈晃動感應 (DeviceMotion)
+        let lastAx = 0, lastAy = 0, lastAz = 0;
+        function handleMotion(e) {
+          const acc = e.acceleration || e.accelerationIncludingGravity;
+          if (!acc) return;
+          const ax = acc.x || 0;
+          const ay = acc.y || 0;
+          const az = acc.z || 0;
+
+          // 手機上下/左右晃動直接推動核心
+          velX -= ax * 2.2;
+          velY += ay * 2.2;
+
+          // 計算晃動強烈度 (Jerk)
+          const jerk = Math.abs(ax - lastAx) + Math.abs(ay - lastAy) + Math.abs(az - lastAz);
+          if (jerk > 6.5) {
+            shakeEnergy += jerk * 0.55;
+          }
+          lastAx = ax; lastAy = ay; lastAz = az;
+        }
+
+        // 陀螺儀傾斜角度 (DeviceOrientation)
+        function handleOrientation(e) {
+          if (e.gamma !== null && e.beta !== null) {
+            const gamma = Math.max(-40, Math.min(40, e.gamma));
+            const beta = Math.max(-35, Math.min(35, e.beta - 45));
+            velX += (gamma / 40) * 1.5;
+            velY -= (beta / 35) * 1.5;
+          }
+        }
+
+        let motionActive = false;
+        function startMotionListeners() {
+          if (motionActive) return;
+          motionActive = true;
+          window.addEventListener("devicemotion", handleMotion, { passive: true });
+          window.addEventListener("deviceorientation", handleOrientation, { passive: true });
+        }
+
+        // 頂部動態感應按鈕點擊：授權或一鍵手動引爆測試
+        const sensorBtn = document.getElementById("sensorToggleBtn");
+        if (sensorBtn) {
+          sensorBtn.addEventListener("click", () => {
+            if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+              DeviceOrientationEvent.requestPermission().then((res) => {
+                if (res === "granted") {
+                  startMotionListeners();
+                  CyberAudio.activate();
+                  vibrate(15);
+                }
+              }).catch(() => {});
+            } else {
+              startMotionListeners();
+            }
+
+            // 再次點擊或手動觸發超新星大爆炸彩蛋
+            triggerSupernova();
+          });
+        }
+
+        // 自動嘗試掛載運動感測
+        if (typeof DeviceOrientationEvent === "undefined" || typeof DeviceOrientationEvent.requestPermission !== "function") {
+          startMotionListeners();
+        } else {
+          // iOS 於首次點擊螢幕時靜默請求授權
+          const reqTouch = () => {
+            DeviceOrientationEvent.requestPermission().then((res) => {
+              if (res === "granted") startMotionListeners();
+            }).catch(() => {});
+            window.removeEventListener("touchstart", reqTouch);
+            window.removeEventListener("click", reqTouch);
+          };
+          window.addEventListener("touchstart", reqTouch, { once: true });
+          window.addEventListener("click", reqTouch, { once: true });
+        }
+
+        // 解決手機無空白處解法 1：頁面自然滾動慣性聯動！滑動頁面時核心自動上下彈跳
+        let lastScrY = window.scrollY;
+        window.addEventListener("scroll", () => {
+          const dy = window.scrollY - lastScrY;
+          velY -= dy * 0.4;
+          lastScrY = window.scrollY;
+        }, { passive: true });
+
+        // 解決手機無空白處解法 2：全螢幕雙指任意滑動 (在卡片/表格/按鈕上均可直接轉動3D空間)
+        let lastTouchMidX = 0, lastTouchMidY = 0;
+        window.addEventListener("touchmove", (e) => {
+          if (e.touches && e.touches.length === 2) {
+            const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+            const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            if (lastTouchMidX !== 0) {
+              velX += (mx - lastTouchMidX) * 1.5;
+              velY -= (my - lastTouchMidY) * 1.5;
+              shakeEnergy += 2.5;
+            }
+            lastTouchMidX = mx;
+            lastTouchMidY = my;
+          }
+        }, { passive: true });
+
+        window.addEventListener("touchend", (e) => {
+          if (!e.touches || e.touches.length < 2) {
+            lastTouchMidX = 0;
+            lastTouchMidY = 0;
+          }
         }, { passive: true });
 
         const clock = new THREE.Clock();
@@ -2569,18 +2918,98 @@
           const dt = clock.getDelta();
           const elapsed = clock.getElapsedTime();
 
-          warpSpeed += (1 - warpSpeed) * 0.05;
+          // 1. 彈簧阻尼運動學 (核心實體晃動跟隨與彈回)
+          const forceX = (0 - springX) * 0.08 - velX * 0.16;
+          const forceY = (0 - springY) * 0.08 - velY * 0.16;
+          velX += forceX;
+          velY += forceY;
+          springX += velX;
+          springY += velY;
+
+          // 限制最大擺動位移
+          springX = Math.max(-140, Math.min(140, springX));
+          springY = Math.max(-120, Math.min(120, springY));
+
+          // 核心本體隨晃動直接向上下/左右偏移，並附帶彈性側傾角
+          reactorGroup.position.x = springX;
+          reactorGroup.position.y = 20 + springY;
+          reactorGroup.rotation.z = -springX * 0.015;
+
+          // 2. 超載蓄能與超新星大爆炸
+          shakeEnergy *= 0.965; // 自然阻尼衰減
+
+          if (explosionState === "IDLE") {
+            // 晃動劇烈時產生能量超載抖動與超光速狂轉
+            if (shakeEnergy > 20) {
+              reactorGroup.position.x += (Math.random() - 0.5) * (shakeEnergy * 0.22);
+              reactorGroup.position.y += (Math.random() - 0.5) * (shakeEnergy * 0.22);
+              ring1.rotation.z -= 0.09 * shakeEnergy;
+              ring2.rotation.x += 0.09 * shakeEnergy;
+            }
+            // 搖太大力或晃太久觸發大爆炸！
+            if (shakeEnergy > 70) {
+              triggerSupernova();
+            }
+          } else if (explosionState === "EXPLODING") {
+            explosionTimer += dt;
+            const pArr = debrisGeo.attributes.position.array;
+            for (let i = 0; i < debrisCount; i++) {
+              pArr[i * 3] += debrisVel[i * 3] * dt * 32;
+              pArr[i * 3 + 1] += debrisVel[i * 3 + 1] * dt * 32;
+              pArr[i * 3 + 2] += debrisVel[i * 3 + 2] * dt * 32;
+              // 阻尼減速
+              debrisVel[i * 3] *= 0.95;
+              debrisVel[i * 3 + 1] *= 0.95;
+              debrisVel[i * 3 + 2] *= 0.95;
+            }
+            debrisGeo.attributes.position.needsUpdate = true;
+
+            // 炸開後短暫停頓，隨後啟動黑洞引力坍縮重組
+            if (explosionTimer > 0.85) {
+              explosionState = "COLLAPSING";
+              CyberAudio.reconverge();
+            }
+          } else if (explosionState === "COLLAPSING") {
+            const pArr = debrisGeo.attributes.position.array;
+            let allReturned = true;
+            for (let i = 0; i < debrisCount; i++) {
+              const dx = 0 - pArr[i * 3];
+              const dy = 20 - pArr[i * 3 + 1];
+              const dz = -120 - pArr[i * 3 + 2];
+              const dist = Math.hypot(dx, dy, dz);
+
+              if (dist > 8) {
+                allReturned = false;
+                // 向心引力加速度 + 旋轉漩渦倒流
+                pArr[i * 3] += (dx * 6.8 - dy * 3.2) * dt;
+                pArr[i * 3 + 1] += (dy * 6.8 + dx * 3.2) * dt;
+                pArr[i * 3 + 2] += dz * 6.8 * dt;
+              }
+            }
+            debrisGeo.attributes.position.needsUpdate = true;
+
+            // 全部粒子匯聚回中心，重生核心！
+            if (allReturned) {
+              explosionState = "IDLE";
+              debrisMat.opacity = 0;
+              coreMesh.visible = true;
+              ring1.visible = true;
+              ring2.visible = true;
+              shakeEnergy = 0;
+              vibrate(30);
+              if (window.pulse3DReactor) window.pulse3DReactor("至臻");
+            }
+          }
+
+          // 地平線網格推進
+          floorGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
+          ceilingGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
+
+          // 常規旋轉
           coreMesh.rotation.x += 0.45 * dt * warpSpeed;
           coreMesh.rotation.y += 0.65 * dt * warpSpeed;
           ring1.rotation.z -= 0.5 * dt * warpSpeed;
           ring2.rotation.x += 0.35 * dt * warpSpeed;
-
-          floorGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
-          ceilingGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
-
-          camera.position.x += (pointerX - camera.position.x) * 0.05;
-          camera.position.y += (-pointerY - camera.position.y) * 0.05;
-          camera.lookAt(scene.position);
 
           renderer.render(scene, camera);
         }
@@ -2651,4 +3080,4 @@
       })();
     </script>
   </body>
-</html>
+  </html>
