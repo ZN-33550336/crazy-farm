@@ -905,6 +905,14 @@
         transform: scale(0.94);
       }
 
+      .pct-cell.active {
+        background: linear-gradient(135deg, rgba(36, 208, 198, 0.35) 0%, rgba(36, 208, 198, 0.16) 100%);
+        border-color: var(--neon-cyan);
+        color: #fff;
+        box-shadow: 0 0 10px rgba(36, 208, 198, 0.45), inset 0 0 6px rgba(36, 208, 198, 0.25);
+        text-shadow: 0 0 8px rgba(36, 208, 198, 0.8);
+      }
+
       /* 全作物對比基準拉條 (Astra Compare Slider Bar) */
       .compare-slider-bar {
         padding: 12px 14px;
@@ -1978,17 +1986,17 @@
               <div class="astra-toggle-switch"></div>
               <span class="switch-label-text">輸入時暫清原值(2)</span>
             </label>
-            <label id="autoClearMoreLabel" class="switch-unit" style="display: none;" title="輸入時暫時清除原數值 (>2位小數模式)">
+            <label id="autoClearMoreLabel" class="switch-unit" style="display: none;" title="輸入時暫時清除原數值 (6位小數模式)">
               <input id="autoClearMoreToggle" type="checkbox" />
               <div class="astra-toggle-switch"></div>
-              <span class="switch-label-text">輸入時暫清原值(&gt;2)</span>
+              <span class="switch-label-text">輸入時暫清原值(6)</span>
             </label>
 
-            <!-- 右側：可輸入超過兩位小數開關 -->
+            <!-- 右側：可輸入到小數第六位開關 -->
             <label class="switch-unit" for="allowExtraDecimalsToggle">
               <input id="allowExtraDecimalsToggle" type="checkbox" />
               <div class="astra-toggle-switch"></div>
-              <span class="switch-label-text">可輸入超過兩位小數</span>
+              <span class="switch-label-text">可輸入到小數第六位</span>
             </label>
           </div>
 
@@ -2210,6 +2218,8 @@
         autoClear2: true,
         autoClearMore: false,
         lastEditedField: "percent",
+        activeQuickPct: null,
+        lastManualInput: null,
         priceDigits: 2
       };
 
@@ -2609,6 +2619,9 @@
         
         els.percentInput.value = "";
         els.weightInput.value = "";
+        state.activeQuickPct = null;
+        state.lastManualInput = null;
+        updateQuickPctButtons();
         
         CyberAudio.activate();
         vibrate(18);
@@ -3060,14 +3073,14 @@
         }
       });
 
-      // 限制數值小數點位數（若開啟允許超過兩位小數則不限制）
+      // 限制數值小數點位數（預設 2 位，開啟開關時上限為 6 位）
       function limitDecimalPlaces(input) {
-        if (state.allowExtraDecimals) return;
+        const maxDecimals = state.allowExtraDecimals ? 6 : 2;
         let val = input.value;
         if (val.includes(".")) {
           const parts = val.split(".");
-          if (parts[1].length > 2) {
-            input.value = parts[0] + "." + parts[1].slice(0, 2);
+          if (parts[1].length > maxDecimals) {
+            input.value = parts[0] + "." + parts[1].slice(0, maxDecimals);
           }
         }
       }
@@ -3077,12 +3090,18 @@
 
       els.weightInput.addEventListener("input", () => {
         state.lastEditedField = "weight";
+        state.activeQuickPct = null;
+        updateQuickPctButtons();
         limitDecimalPlaces(els.weightInput);
+        state.lastManualInput = { field: "weight", val: els.weightInput.value };
         setPercentFromWeight(getSelectedCrop());
       });
       els.percentInput.addEventListener("input", () => {
         state.lastEditedField = "percent";
+        state.activeQuickPct = null;
+        updateQuickPctButtons();
         limitDecimalPlaces(els.percentInput);
+        state.lastManualInput = { field: "percent", val: els.percentInput.value };
         setWeightFromPercent(getSelectedCrop());
       });
 
@@ -3109,6 +3128,8 @@
             }
           }
         } else {
+          limitDecimalPlaces(els.weightInput);
+          limitDecimalPlaces(els.percentInput);
           if (state.lastEditedField === "weight") {
             if (els.weightInput.value.trim() !== "") {
               setPercentFromWeight(crop);
@@ -3214,15 +3235,51 @@
         }
       });
 
-      // 8. 六個一鍵百分比快捷鍵
+      // 8. 六個一鍵百分比快捷鍵（再次點擊取消並回到上次輸入的值）
+      function updateQuickPctButtons() {
+        document.querySelectorAll(".pct-3d-btn").forEach((btn) => {
+          const isMatch = state.activeQuickPct !== null && Number(btn.dataset.pct) === Number(state.activeQuickPct);
+          btn.classList.toggle("active", isMatch);
+        });
+      }
+
       document.querySelectorAll(".pct-3d-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-          state.lastEditedField = "percent";
+          const crop = getSelectedCrop();
           const pct = Number(btn.dataset.pct);
-          els.percentInput.value = pct;
-          CyberAudio.tap(920);
-          vibrate(10);
-          setWeightFromPercent(getSelectedCrop(), { clamp: true });
+
+          if (state.activeQuickPct === pct) {
+            // 再次點擊相同快捷按鈕：取消快捷狀態，回到上次輸入的值
+            state.activeQuickPct = null;
+            updateQuickPctButtons();
+            CyberAudio.cancel();
+            vibrate(10);
+
+            if (state.lastManualInput && state.lastManualInput.val !== "") {
+              if (state.lastManualInput.field === "weight") {
+                state.lastEditedField = "weight";
+                els.weightInput.value = state.lastManualInput.val;
+                setPercentFromWeight(crop, { clamp: true });
+              } else {
+                state.lastEditedField = "percent";
+                els.percentInput.value = state.lastManualInput.val;
+                setWeightFromPercent(crop, { clamp: true });
+              }
+            } else {
+              els.weightInput.value = "";
+              els.percentInput.value = "";
+              renderSelectedCrop();
+            }
+          } else {
+            // 點擊快捷按鈕：設定數值並高亮
+            state.activeQuickPct = pct;
+            updateQuickPctButtons();
+            state.lastEditedField = "percent";
+            els.percentInput.value = pct;
+            CyberAudio.tap(920);
+            vibrate(10);
+            setWeightFromPercent(crop, { clamp: true });
+          }
         });
       });
 
