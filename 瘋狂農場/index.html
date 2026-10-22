@@ -35,26 +35,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
       :root {
-        --bg-deep: #030612;
-        --neon-cyan: #00f6ff;
-        --neon-pink: #ff007f;
-        --neon-purple: #b53cff;
-        --neon-lime: #00ff88;
-        --neon-amber: #ffbb00;
-        --neon-blue: #1e90ff;
+        --bg-deep: #020712;
+        --neon-cyan: #24d0c6;
+        --neon-pink: #ff2a7a;
+        --neon-purple: #b76cff;
+        --neon-lime: #38e888;
+        --neon-amber: #f5c443;
+        --neon-gold: #f5c443;
+        --neon-blue: #24d0c6;
 
-        --glass-base: rgba(8, 16, 36, 0.78);
-        --border-cyan: rgba(0, 246, 255, 0.35);
-        --border-pink: rgba(255, 0, 127, 0.4);
+        --glass-base: rgba(6, 18, 30, 0.88);
+        --border-cyan: rgba(36, 208, 198, 0.35);
+        --border-gold: rgba(245, 196, 67, 0.45);
+        --border-pink: rgba(255, 42, 122, 0.4);
 
         --text-white: #ffffff;
-        --text-light: #e2f4ff;
-        --text-muted: #82a5c4;
+        --text-light: #e2f2f5;
+        --text-muted: #7f9ea8;
+        --text-dim: #4b6672;
 
-        font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: "Chakra Petch", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
       * {
@@ -123,10 +126,12 @@
         pointer-events: none;
         z-index: 1;
         background: 
-          radial-gradient(circle at 50% 0%, rgba(0, 246, 255, 0.12), transparent 60%),
-          linear-gradient(rgba(14, 20, 36, 0) 50%, rgba(0, 0, 0, 0.32) 50%);
-        background-size: 100% 100%, 100% 4px;
-        box-shadow: inset 0 0 90px rgba(0, 5, 18, 0.9);
+          radial-gradient(circle at 50% 20%, rgba(14, 38, 68, 0.5) 0%, rgba(4, 12, 22, 0.85) 65%, #02060c 100%),
+          linear-gradient(rgba(36, 208, 198, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(36, 208, 198, 0.035) 1px, transparent 1px),
+          linear-gradient(rgba(14, 20, 36, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+        background-size: 100% 100%, 60px 60px, 60px 60px, 100% 4px;
+        box-shadow: inset 0 0 120px rgba(1, 4, 10, 0.95);
       }
 
       .app-stage {
@@ -138,56 +143,97 @@
         transform-style: preserve-3d;
       }
 
-      /* 頂部導航列 */
+      /* 頂部導航列 (Astra Imperial Command Bar) */
       .cyber-header-3d {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 16px;
+        padding: 11px 16px;
         margin-bottom: 14px;
-        background: linear-gradient(135deg, rgba(10, 22, 50, 0.9), rgba(6, 12, 30, 0.85));
+        background: linear-gradient(180deg, rgba(14, 30, 48, 0.94) 0%, rgba(6, 16, 28, 0.88) 100%);
         border: 1px solid var(--border-cyan);
-        border-radius: 14px;
+        clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
         backdrop-filter: blur(18px);
         -webkit-backdrop-filter: blur(18px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 246, 255, 0.12);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        position: relative;
+      }
+
+      .cyber-header-3d::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 36px;
+        width: 80px;
+        height: 3px;
+        background: var(--neon-gold);
+        box-shadow: 0 0 12px rgba(245, 196, 67, 0.6);
       }
 
       .header-title {
-        font-size: clamp(18px, 4.2vw, 24px);
+        font-size: clamp(16px, 4vw, 22px);
         font-weight: 900;
         color: #fff;
-        text-shadow: 0 0 14px rgba(0, 246, 255, 0.5);
+        letter-spacing: 1.5px;
+        text-shadow: 0 0 14px rgba(36, 208, 198, 0.5);
       }
 
       .btn-3d-icon {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 8px 12px;
-        border-radius: 10px;
+        padding: 6px 12px;
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
         border: 1px solid var(--border-cyan);
-        background: rgba(0, 246, 255, 0.1);
+        background: rgba(36, 208, 198, 0.12);
         color: var(--neon-cyan);
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 800;
+        font-family: "Share Tech Mono", monospace;
+        letter-spacing: 1px;
         cursor: pointer;
         transition: all 0.15s ease;
+      }
+
+      .btn-3d-icon:hover {
+        background: rgba(36, 208, 198, 0.25);
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 10px rgba(36, 208, 198, 0.35);
       }
 
       .btn-3d-icon:active {
         transform: translateY(2px);
       }
 
+      /* Astra 45度斜切角面板 (Chamfered HUD Panel) */
       .panel-3d {
         background: var(--glass-base);
         border: 1px solid var(--border-cyan);
-        border-radius: 16px;
-        padding: 14px;
+        clip-path: polygon(
+          14px 0,
+          calc(100% - 14px) 0,
+          100% 14px,
+          100% calc(100% - 14px),
+          calc(100% - 14px) 100%,
+          14px 100%,
+          0 calc(100% - 14px),
+          0 14px
+        );
+        padding: 16px;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65), 0 0 15px rgba(0, 246, 255, 0.08);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(4, 14, 24, 0.6);
         position: relative;
+      }
+
+      .panel-3d::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent 0%, var(--neon-cyan) 30%, var(--neon-gold) 70%, transparent 100%);
+        opacity: 0.7;
+        pointer-events: none;
       }
 
       /* 篩選與搜尋 */
@@ -213,13 +259,13 @@
 
       .input-3d {
         width: 100%;
-        min-height: 44px;
+        min-height: 42px;
         padding: 9px 14px 9px 42px;
-        border: 1px solid rgba(0, 246, 255, 0.35);
-        border-radius: 12px;
-        background: rgba(3, 8, 22, 0.9);
+        border: 1px solid rgba(36, 208, 198, 0.3);
+        clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        background: rgba(4, 12, 22, 0.9);
         color: #fff;
-        font-size: 14px;
+        font-size: 13.5px;
         font-weight: 700;
         outline: none;
         transition: all 0.2s ease;
@@ -227,22 +273,22 @@
 
       .input-3d:focus {
         border-color: var(--neon-cyan);
-        box-shadow: 0 0 16px rgba(0, 246, 255, 0.4);
+        box-shadow: 0 0 16px rgba(36, 208, 198, 0.4);
       }
 
-      /* 1. 頂部 6 個標籤精準等比網格，完全無滾動 */
+      /* 1. 頂部 6 個標籤精準等比網格 (Astra Tab Pills) */
       .quality-pills-grid {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
-        gap: 5px;
+        gap: 6px;
         width: 100%;
       }
 
       .filter-tab-pill {
-        padding: 8px 1px;
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        background: rgba(14, 25, 54, 0.75);
+        padding: 7px 1px;
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+        border: 1px solid rgba(127, 158, 168, 0.25);
+        background: rgba(8, 20, 34, 0.8);
         color: var(--text-muted);
         font-size: 12px;
         font-weight: 800;
@@ -254,37 +300,77 @@
         transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
 
-      .filter-tab-pill.active {
-        color: #fff;
+      .filter-tab-pill:hover {
         border-color: var(--neon-cyan);
-        background: rgba(0, 246, 255, 0.25);
-        box-shadow: 0 0 12px rgba(0, 246, 255, 0.38);
+        color: #fff;
+      }
+
+      .filter-tab-pill.active {
+        color: var(--neon-cyan);
+        border-color: var(--neon-cyan);
+        background: rgba(36, 208, 198, 0.22);
+        box-shadow: 0 0 12px rgba(36, 208, 198, 0.45);
         transform: translateY(-1px);
+      }
+
+      .rainbow-q-text {
+        background: linear-gradient(90deg, #ff0055 0%, #ff7700 20%, #ffee00 40%, #00ff88 60%, #00f6ff 80%, #b53cff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+        font-weight: 900;
+        text-shadow: none;
+      }
+
+      .filter-tab-pill[data-q="彩色"].active,
+      .filter-tab-pill[data-q="至臻"].active {
+        border-color: rgba(0, 246, 255, 0.75);
+        color: #fff;
+        background: linear-gradient(135deg, rgba(255, 0, 128, 0.28), rgba(0, 246, 255, 0.24));
+        box-shadow: 0 0 14px rgba(0, 246, 255, 0.5), 0 0 20px rgba(255, 0, 128, 0.35);
       }
 
       /* 作物矩陣網格 */
       .crop-grid-3d {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
-        gap: 10px;
+        gap: 8px;
         max-height: 72vh;
         overflow-y: auto;
         padding-right: 2px;
       }
 
+      /* Astra 作物卡片 (Chamfered Module Card) */
       .crop-card-3d {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         min-height: 62px;
-        padding: 9px 10px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 8px 7px;
+        clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+        border: 1px solid rgba(36, 208, 198, 0.25);
         cursor: pointer;
         text-align: left;
         position: relative;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.45);
-        transition: transform 0.15s ease, border-color 0.15s ease;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .crop-card-3d::before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 4px;
+        height: 4px;
+        background: var(--neon-cyan);
+        opacity: 0.4;
+      }
+
+      .crop-card-3d:hover {
+        transform: translateY(-2px);
+        border-color: var(--neon-cyan);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 12px rgba(36, 208, 198, 0.35);
       }
 
       .crop-card-3d:active {
@@ -295,10 +381,12 @@
         font-size: 14px;
         font-weight: 900;
         color: #fff;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        letter-spacing: 0;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: 1.2;
       }
 
       .crop-card-sub {
@@ -307,21 +395,94 @@
         align-items: center;
         font-size: 11px;
         font-weight: 700;
-        color: rgba(255, 255, 255, 0.9);
+        font-family: "Share Tech Mono", monospace;
+        color: rgba(226, 242, 245, 0.85);
         margin-top: 4px;
       }
 
-      /* 品質漸層底色材質 */
-      .q-theme-灰色 { background: linear-gradient(145deg, #444d5c, #222935); border-left: 3px solid #8e9bb0; }
-      .q-theme-綠色, .q-theme-绿色 { background: linear-gradient(145deg, #125e3b, #072e1c); border-left: 3px solid #00ff73; }
-      .q-theme-藍色, .q-theme-蓝色 { background: linear-gradient(145deg, #174ea6, #0c2759); border-left: 3px solid #00c3ff; }
-      .q-theme-紫色 { background: linear-gradient(145deg, #6c23b5, #350d5f); border-left: 3px solid #d000ff; }
-      .q-theme-金色 { background: linear-gradient(145deg, #a66708, #523000); border-left: 3px solid #ffbb00; }
-      .q-theme-至臻 {
-        background: linear-gradient(135deg, #094b5c 0%, #46146e 50%, #700d43 100%);
-        border: 1px solid rgba(0, 246, 255, 0.5);
-        border-left: 3px solid #00f6ff;
-        box-shadow: inset 0 0 15px rgba(255, 0, 150, 0.2);
+      /* Astra 群星品階深空材質與高亮外框（強化亮度與辨識度） */
+      .q-theme-灰色 {
+        background: linear-gradient(145deg, rgba(32, 44, 54, 0.94) 0%, rgba(15, 22, 28, 0.96) 100%);
+        border: 1.2px solid rgba(175, 195, 215, 0.45);
+        border-left: 3.5px solid #a8c0d6;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), 0 0 6px rgba(168, 192, 214, 0.18);
+      }
+      .q-theme-灰色::before { background: #a8c0d6; opacity: 0.7; }
+      .q-theme-灰色:hover {
+        border-color: #d0e2f2;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75), 0 0 12px rgba(175, 195, 215, 0.5);
+      }
+
+      .q-theme-綠色, .q-theme-绿色 {
+        background: linear-gradient(145deg, rgba(14, 62, 38, 0.92) 0%, rgba(5, 28, 17, 0.96) 100%);
+        border: 1.2px solid rgba(56, 232, 136, 0.52);
+        border-left: 3.5px solid #00ff88;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), 0 0 8px rgba(0, 255, 136, 0.25);
+      }
+      .q-theme-綠色::before, .q-theme-绿色::before { background: #00ff88; opacity: 0.8; }
+      .q-theme-綠色:hover, .q-theme-绿色:hover {
+        border-color: #00ff88;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75), 0 0 15px rgba(0, 255, 136, 0.55);
+      }
+
+      .q-theme-藍色, .q-theme-蓝色 {
+        background: linear-gradient(145deg, rgba(12, 54, 72, 0.92) 0%, rgba(4, 25, 36, 0.96) 100%);
+        border: 1.2px solid rgba(36, 208, 198, 0.55);
+        border-left: 3.5px solid #00f6ff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), 0 0 8px rgba(0, 246, 255, 0.28);
+      }
+      .q-theme-藍色::before, .q-theme-蓝色::before { background: #00f6ff; opacity: 0.8; }
+      .q-theme-藍色:hover, .q-theme-蓝色:hover {
+        border-color: #00f6ff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75), 0 0 15px rgba(0, 246, 255, 0.55);
+      }
+
+      .q-theme-紫色 {
+        background: linear-gradient(145deg, rgba(52, 18, 80, 0.92) 0%, rgba(22, 6, 38, 0.96) 100%);
+        border: 1.2px solid rgba(195, 120, 255, 0.52);
+        border-left: 3.5px solid #d066ff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), 0 0 8px rgba(208, 102, 255, 0.25);
+      }
+      .q-theme-紫色::before { background: #d066ff; opacity: 0.8; }
+      .q-theme-紫色:hover {
+        border-color: #e28aff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75), 0 0 15px rgba(208, 102, 255, 0.55);
+      }
+
+      .q-theme-金色 {
+        background: linear-gradient(145deg, rgba(72, 44, 7, 0.92) 0%, rgba(28, 17, 2, 0.96) 100%);
+        border: 1.2px solid rgba(245, 196, 67, 0.55);
+        border-left: 3.5px solid #f5c443;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), 0 0 8px rgba(245, 196, 67, 0.28);
+      }
+      .q-theme-金色::before { background: #f5c443; opacity: 0.8; }
+      .q-theme-金色:hover {
+        border-color: #ffd700;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75), 0 0 15px rgba(245, 196, 67, 0.6);
+      }
+
+      .q-theme-至臻, .q-theme-彩色 {
+        background: linear-gradient(145deg, rgba(38, 14, 58, 0.94) 0%, rgba(14, 6, 32, 0.96) 100%);
+        border: 1.2px solid rgba(255, 130, 220, 0.58);
+        border-left: 3px solid transparent;
+        position: relative;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), 0 0 10px rgba(230, 80, 255, 0.28);
+      }
+      .q-theme-至臻::before, .q-theme-彩色::before { background: #ff007f; opacity: 0.85; }
+      .q-theme-至臻::after, .q-theme-彩色::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: linear-gradient(180deg, #ff0055 0%, #ff8800 20%, #ffee00 40%, #00ff88 60%, #00f6ff 80%, #b53cff 100%);
+        box-shadow: 0 0 10px rgba(0, 246, 255, 0.75), 0 0 14px rgba(255, 0, 128, 0.55);
+        pointer-events: none;
+      }
+      .q-theme-至臻:hover, .q-theme-彩色:hover {
+        border-color: rgba(0, 246, 255, 0.85);
+        box-shadow: 0 8px 26px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 246, 255, 0.5), 0 0 20px rgba(255, 0, 128, 0.35);
       }
 
       /* 計算器佈局 */
@@ -343,12 +504,14 @@
         align-items: center;
         gap: 6px;
         padding: 9px 16px;
-        border-radius: 12px;
+        clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
         border: 1px solid var(--border-cyan);
-        background: rgba(10, 22, 48, 0.9);
+        background: rgba(8, 22, 38, 0.92);
         color: #fff;
         font-size: 13px;
         font-weight: 800;
+        font-family: "Chakra Petch", sans-serif;
+        letter-spacing: 1px;
         cursor: pointer;
         transition: all 0.15s ease;
       }
@@ -375,49 +538,92 @@
         z-index: 999;
       }
 
-      .crop-banner-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 14px;
-        border-radius: 12px;
-      }
-
-      .crop-banner-info strong {
-        display: block;
-        font-size: 20px;
-        font-weight: 900;
-        color: #fff;
-      }
-
-      .crop-banner-info span {
-        font-size: 12px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.85);
-      }
-
-      .quick-switch-box {
+      /* Astra 作物資訊橫幅與切換按鈕整合包裝 */
+      .active-crop-banner-wrap {
         position: relative;
         z-index: 100;
+        margin-bottom: 2px;
       }
 
-      .dropdown-trigger-3d {
-        width: 100%;
-        min-height: 42px;
-        padding: 8px 12px;
-        border-radius: 10px;
-        border: 1px solid var(--border-cyan);
-        background: rgba(5, 12, 28, 0.92);
-        color: #fff;
-        font-size: 13px;
-        font-weight: 800;
+      .active-crop-banner {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        cursor: pointer;
+        padding: 12px 16px;
+        background: linear-gradient(90deg, rgba(8, 28, 44, 0.88) 0%, rgba(4, 14, 24, 0.65) 100%);
+        border: 1px solid rgba(36, 208, 198, 0.35);
+        clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+        position: relative;
+        gap: 12px;
       }
 
-      /* 4. 作物清單下拉選項具備專屬底色 */
+      .active-crop-banner .banner-left {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+      }
+
+      .active-crop-banner .b-name {
+        font-size: 19px;
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: 1px;
+        line-height: 1.2;
+      }
+
+      .active-crop-banner .b-meta {
+        font-size: 11.5px;
+        font-family: "Share Tech Mono", monospace;
+        color: var(--text-dim);
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Astra 斜角切換作物按鈕 */
+      .btn-repick-crop {
+        padding: 7px 14px;
+        background: rgba(8, 20, 36, 0.9);
+        border: 1px solid rgba(36, 208, 198, 0.35);
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+        color: var(--neon-cyan);
+        font-size: 12.5px;
+        font-weight: 800;
+        cursor: pointer;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+        font-family: inherit;
+      }
+
+      .btn-repick-crop:hover {
+        background: rgba(36, 208, 198, 0.22);
+        border-color: var(--neon-cyan);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(36, 208, 198, 0.4);
+      }
+
+      .btn-repick-crop.active {
+        background: rgba(36, 208, 198, 0.3);
+        border-color: var(--neon-cyan);
+        color: #fff;
+        box-shadow: 0 0 14px rgba(36, 208, 198, 0.55);
+      }
+
+      .btn-repick-crop #repickArrow {
+        font-size: 11px;
+        color: var(--neon-cyan);
+        font-weight: 900;
+        transition: transform 0.2s ease;
+      }
+
+      /* 下拉作物清單選單 */
       .dropdown-filter-pills {
         position: sticky;
         top: -6px;
@@ -437,12 +643,13 @@
         max-height: 280px;
         overflow-y: auto;
         background: rgba(4, 10, 26, 0.98);
-        border: 1.5px solid var(--neon-cyan);
-        border-radius: 12px;
-        padding: 6px;
+        border: 1px solid var(--border-cyan);
+        clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        padding: 8px;
         z-index: 1000;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.98), 0 0 25px rgba(0, 246, 255, 0.4);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.98), 0 0 25px rgba(36, 208, 198, 0.25);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
       }
 
       #dropdownCropsContainer {
@@ -497,68 +704,178 @@
         box-shadow: 0 0 10px var(--neon-cyan);
       }
 
-      .inputs-3d-grid {
+      /* 數值輸入矩陣 (Dual inputs) */
+      .input-chambers-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 8px;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
       }
 
-      .field-box label {
-        display: block;
+      .chamber-box {
+        background: rgba(3, 10, 18, 0.75);
+        border: 1px solid rgba(36, 208, 198, 0.28);
+        clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        padding: 8px 12px;
+        position: relative;
+      }
+
+      .chamber-box label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         font-size: 11px;
         font-weight: 700;
-        color: var(--neon-cyan);
+        color: var(--text-dim);
         margin-bottom: 4px;
+        letter-spacing: 0.5px;
       }
 
-      .input-num-3d {
+      .chamber-box .unit-tag {
+        font-family: "Share Tech Mono", monospace;
+        color: var(--neon-cyan);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .chamber-input {
         width: 100%;
-        min-height: 42px;
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1px solid rgba(0, 246, 255, 0.35);
-        background: rgba(3, 8, 20, 0.92);
-        color: #fff;
-        font-size: 15px;
-        font-weight: 900;
+        background: transparent;
+        border: none;
         outline: none;
+        color: #fff;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 2px 0;
       }
 
-      .time-readout-box {
-        min-height: 42px;
-        padding: 8px;
-        border-radius: 10px;
-        border: 1px dashed rgba(0, 255, 136, 0.4);
-        background: rgba(3, 14, 22, 0.8);
+      .chamber-input:focus {
+        color: var(--neon-cyan);
+      }
+
+      /* 耗時讀數條 */
+      .time-hud-box {
+        background: rgba(4, 14, 24, 0.65);
+        border: 1px dashed rgba(36, 208, 198, 0.35);
+        border-radius: 6px;
+        padding: 9px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12.5px;
+      }
+
+      .time-hud-box .time-label {
+        color: var(--text-dim);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .time-hud-box .time-val {
+        color: var(--neon-cyan);
+        font-weight: 700;
+        font-size: 13.5px;
+        text-shadow: 0 0 10px rgba(0, 246, 255, 0.4);
+      }
+
+      /* 艦橋開關中樞 (Console Switch Bar) */
+      .console-switch-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 14px;
+        background: linear-gradient(90deg, rgba(10, 26, 40, 0.85) 0%, rgba(5, 14, 22, 0.9) 100%);
+        border: 1px solid rgba(36, 208, 198, 0.3);
+        clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .switch-unit {
         display: flex;
         align-items: center;
-        justify-content: center;
-        color: var(--neon-lime);
-        font-size: 13px;
-        font-weight: 900;
+        gap: 8px;
+        cursor: pointer;
+        margin-bottom: 0;
       }
 
-      .quick-pct-row {
+      .switch-unit input { display: none; }
+
+      /* 群星艦橋機械式切換推桿 (Astra Console Toggle) */
+      .astra-toggle-switch {
+        width: 38px;
+        height: 18px;
+        background: rgba(3, 8, 14, 0.95);
+        border: 1px solid rgba(36, 208, 198, 0.4);
+        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+        position: relative;
+        transition: all 0.25s ease;
+        flex-shrink: 0;
+      }
+
+      .astra-toggle-switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 3px;
+        width: 12px;
+        height: 12px;
+        background: var(--text-dim);
+        clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+        transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .switch-unit input:checked + .astra-toggle-switch {
+        border-color: var(--neon-lime);
+        background: rgba(56, 232, 136, 0.15);
+      }
+
+      .switch-unit input:checked + .astra-toggle-switch::after {
+        transform: translateX(18px);
+        background: var(--neon-lime);
+        box-shadow: 0 0 10px rgba(56, 232, 136, 0.6);
+      }
+
+      .switch-label-text {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+
+      /* 快捷設定百分比按鈕艙 (Quick Pct Dock) */
+      .quick-pct-dock {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
         gap: 6px;
+        width: 100%;
       }
 
-      .pct-3d-btn {
-        padding: 8px 0;
-        border-radius: 8px;
-        border: 1px solid rgba(0, 246, 255, 0.3);
-        background: rgba(14, 25, 54, 0.8);
-        color: var(--text-light);
-        font-size: 12px;
-        font-weight: 800;
+      .pct-cell {
+        padding: 7px 0;
+        text-align: center;
+        background: rgba(6, 18, 30, 0.7);
+        border: 1px solid rgba(36, 208, 198, 0.25);
+        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+        color: var(--text-dim);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11.5px;
+        font-weight: 700;
         cursor: pointer;
-        transition: all 0.12s ease;
+        transition: all 0.2s;
       }
 
-      .pct-3d-btn:active {
-        background: var(--neon-cyan);
-        color: #000;
+      .pct-cell:hover {
+        background: rgba(36, 208, 198, 0.22);
+        border-color: var(--neon-cyan);
+        color: #fff;
+        box-shadow: 0 0 8px rgba(36, 208, 198, 0.3);
+      }
+
+      .pct-cell:active {
+        transform: scale(0.94);
       }
 
       /* 全作物對比基準拉條 */
@@ -606,60 +923,79 @@
         cursor: pointer;
       }
 
-      /* 總價值與詞條總倍率（位於對比拉條與詞條選擇中間） */
-      .holo-value-reactor-3d {
-        background: linear-gradient(135deg, rgba(8, 28, 68, 0.95) 0%, rgba(28, 8, 56, 0.95) 100%);
-        border: 1.5px solid var(--neon-cyan);
-        border-radius: 16px;
+      /* 星艦能量反應爐 (Astra Energy Reactor - 總價值與總倍率) */
+      .energy-reactor-dock {
+        background: radial-gradient(circle at 50% 50%, rgba(14, 38, 62, 0.6) 0%, rgba(4, 12, 20, 0.95) 100%);
+        border: 1.5px solid var(--border-cyan);
+        clip-path: polygon(
+          14px 0,
+          calc(100% - 14px) 0,
+          100% 14px,
+          100% calc(100% - 14px),
+          calc(100% - 14px) 100%,
+          14px 100%,
+          0 calc(100% - 14px),
+          0 14px
+        );
         padding: 16px 20px;
-        display: grid;
-        grid-template-columns: 1fr auto;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 16px;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 246, 255, 0.25);
         position: relative;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(36, 208, 198, 0.12);
         z-index: 5;
       }
-      .holo-value-reactor-3d.precision-dropdown-open {
+
+      .energy-reactor-dock.precision-dropdown-open {
         z-index: 1000;
       }
-      .reactor-label-row {
+
+      .reactor-val-left .title-row {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 2px;
-        position: relative;
+        margin-bottom: 4px;
       }
+
+      .reactor-val-left .tag {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--neon-gold);
+        letter-spacing: 1px;
+      }
+
       .value-precision-box {
         position: relative;
         display: inline-flex;
         align-items: center;
         z-index: 100;
       }
-      .val-prec-trigger-btn {
+
+      .prec-badge-btn {
+        background: rgba(36, 208, 198, 0.12);
+        border: 1px solid rgba(36, 208, 198, 0.35);
+        color: var(--neon-cyan);
+        font-size: 10.5px;
+        padding: 2px 7px;
+        cursor: pointer;
+        font-family: "Share Tech Mono", monospace;
+        clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        background: rgba(0, 246, 255, 0.12);
-        border: 1px solid rgba(0, 246, 255, 0.4);
-        border-radius: 6px;
-        padding: 2px 7px;
-        color: #fff;
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
         transition: all 0.15s ease;
-        outline: none;
-        white-space: nowrap;
       }
-      .val-prec-trigger-btn:hover {
-        background: rgba(0, 246, 255, 0.25);
+
+      .prec-badge-btn:hover {
+        background: rgba(36, 208, 198, 0.25);
         border-color: var(--neon-cyan);
+        color: #fff;
       }
-      .val-prec-trigger-btn .caret {
+
+      .prec-badge-btn .caret {
         font-size: 9px;
-        color: var(--neon-cyan);
       }
+
       .val-prec-dropdown-menu {
         position: absolute;
         top: calc(100% + 5px);
@@ -677,6 +1013,7 @@
         flex-direction: column;
         gap: 2px;
       }
+
       .val-prec-item {
         display: flex;
         align-items: center;
@@ -692,47 +1029,49 @@
         text-align: left;
         transition: all 0.12s ease;
       }
+
       .val-prec-item:hover {
         background: rgba(0, 246, 255, 0.2);
         color: #fff;
       }
+
       .val-prec-item.active {
         background: var(--neon-cyan);
         color: #000;
       }
 
-      .reactor-label {
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--neon-cyan);
-        letter-spacing: 1px;
-      }
-
-      .reactor-price-value {
-        font-size: clamp(34px, 7.5vw, 50px);
+      .reactor-total-price {
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(28px, 6vw, 42px);
         font-weight: 900;
-        color: #ffffff;
+        color: var(--neon-gold);
+        text-shadow: 0 0 18px rgba(245, 196, 67, 0.65);
+        letter-spacing: 1px;
         line-height: 1.1;
-        text-shadow: 0 0 16px rgba(0, 246, 255, 0.75);
       }
 
-      .reactor-right {
+      .reactor-right-mult {
         text-align: right;
-        border-left: 1px solid rgba(0, 246, 255, 0.25);
+        border-left: 1px solid rgba(36, 208, 198, 0.25);
         padding-left: 16px;
       }
 
-      .reactor-mult-label {
-        font-size: 12px;
-        font-weight: 800;
-        color: #ff80bf;
+      .reactor-right-mult .mult-tag {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
       }
 
-      .reactor-mult-value {
-        font-size: clamp(24px, 5.5vw, 36px);
+      .reactor-mult-num {
+        font-family: "Share Tech Mono", monospace;
+        font-size: clamp(22px, 5vw, 32px);
         font-weight: 900;
-        color: var(--neon-pink);
-        text-shadow: 0 0 15px rgba(255, 0, 127, 0.7);
+        color: var(--neon-lime);
+        text-shadow: 0 0 16px rgba(56, 232, 136, 0.65);
+        letter-spacing: 1px;
+        line-height: 1.1;
       }
 
       .mutations-header-row {
@@ -922,6 +1261,43 @@
         box-shadow: 0 0 10px var(--neon-lime);
       }
 
+      .cyber-toggle-pill.mini {
+        width: 38px;
+        height: 18px;
+        background: rgba(3, 8, 14, 0.95);
+        border: 1px solid var(--border-cyan);
+        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+        border-radius: 0;
+        position: relative;
+        transition: all 0.25s ease;
+        flex-shrink: 0;
+      }
+
+      .cyber-toggle-pill.mini::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 3px;
+        width: 12px;
+        height: 12px;
+        background: var(--text-dim);
+        clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+        border-radius: 0;
+        box-shadow: none;
+        transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .switch-label-group input:checked + .cyber-toggle-pill.mini {
+        border-color: var(--neon-lime);
+        background: rgba(56, 232, 136, 0.15);
+      }
+
+      .switch-label-group input:checked + .cyber-toggle-pill.mini::after {
+        transform: translateX(18px);
+        background: var(--neon-lime);
+        box-shadow: 0 0 10px rgba(56, 232, 136, 0.6);
+      }
+
       .table-container-3d {
         margin-top: 12px;
         overflow-x: auto;
@@ -957,6 +1333,12 @@
       }
 
       @media (max-width: 520px) {
+        .app-layout {
+          width: min(980px, 100% - 10px);
+        }
+        .panel-3d {
+          padding: 12px 8px;
+        }
         .inputs-3d-grid {
           grid-template-columns: 1fr 1fr;
         }
@@ -965,14 +1347,18 @@
         }
         .crop-grid-3d {
           grid-template-columns: repeat(3, 1fr);
-          gap: 7px;
+          gap: 6px;
         }
         .crop-card-3d {
-          min-height: 54px;
-          padding: 7px 8px;
+          min-height: 56px;
+          padding: 7px 6px;
         }
         .crop-card-name {
-          font-size: 13px;
+          font-size: 13.5px;
+          letter-spacing: 0px;
+        }
+        .crop-card-sub {
+          font-size: 10.5px;
         }
       }
 
@@ -1215,6 +1601,39 @@
         color: rgba(255, 255, 255, 0.2);
         font-size: 10px;
       }
+
+      /* 背景隱密 ASTRA 水印彩蛋 */
+      .stealth-astra-bg {
+        position: fixed;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-8deg);
+        font-family: "Share Tech Mono", "Chakra Petch", monospace;
+        font-size: clamp(80px, 22vw, 240px);
+        font-weight: 900;
+        letter-spacing: clamp(14px, 4vw, 36px);
+        color: rgba(36, 208, 198, 0.035);
+        text-shadow: 0 0 40px rgba(36, 208, 198, 0.05);
+        pointer-events: none;
+        z-index: 1;
+        user-select: none;
+        white-space: nowrap;
+        text-transform: uppercase;
+        filter: blur(0.4px);
+      }
+
+      .stealth-astra-tag {
+        position: fixed;
+        bottom: 14px;
+        left: 16px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 2.5px;
+        color: rgba(36, 208, 198, 0.08);
+        pointer-events: none;
+        z-index: 1;
+        user-select: none;
+      }
     </style>
   </head>
   <body>
@@ -1222,10 +1641,19 @@
     <canvas id="burstCanvas2D"></canvas>
     <div id="screenFlash" class="screen-flash-overlay"></div>
     <div class="holo-overlay"></div>
+    <div class="stealth-astra-bg" aria-hidden="true">ASTRA</div>
+    <div class="stealth-astra-tag" aria-hidden="true">SYS.NAV // ASTRA-0x48</div>
 
     <main class="app-stage">
       <header class="cyber-header-3d">
-        <h1 class="header-title">瘋狂農場•果實計算器</h1>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 24px; height: 24px; border: 1px solid var(--neon-gold); transform: rotate(45deg); display: flex; align-items: center; justify-content: center; background: rgba(245, 196, 67, 0.12); box-shadow: 0 0 10px rgba(245, 196, 67, 0.5);">
+            <span style="transform: rotate(-45deg); font-size: 12px; color: var(--neon-gold);">❖</span>
+          </div>
+          <div>
+            <h1 class="header-title" style="margin: 0; line-height: 1.1;">瘋狂農場•果實計算器</h1>
+          </div>
+        </div>
         <div class="header-actions">
           <button id="soundToggleBtn" class="btn-3d-icon" type="button">
             <span id="soundIconText">🔊 音效</span>
@@ -1234,7 +1662,7 @@
       </header>
 
       <!-- ================================================== -->
-      <!-- 視圖 1：作物清單首頁（7. 下方純淨無計算器殘留）     -->
+      <!-- 視圖 1：作物清單首頁                                -->
       <!-- ================================================== -->
       <section id="pickerView" class="panel-3d">
         <div class="filter-deck">
@@ -1245,7 +1673,7 @@
 
           <!-- 1. 頂部 6 個標籤均分，無須滑動 -->
           <div id="qualityTabs" class="quality-pills-grid">
-            <button class="filter-tab-pill" type="button" data-q="至臻">至臻</button>
+            <button class="filter-tab-pill" type="button" data-q="彩色">彩色</button>
             <button class="filter-tab-pill" type="button" data-q="金色">金色</button>
             <button class="filter-tab-pill" type="button" data-q="紫色">紫色</button>
             <button class="filter-tab-pill" type="button" data-q="藍色">藍色</button>
@@ -1269,22 +1697,22 @@
 
         <!-- 控制艙 -->
         <div class="panel-3d control-pod-3d">
-          <div id="activeCropBanner" class="crop-banner-top q-theme-至臻">
-            <div class="crop-banner-info">
-              <strong id="cropTitleName">-</strong>
-              <span id="cropSubMeta">-</span>
+          <!-- 當前選定作物橫幅 (右上角整合切換作物按鈕，點擊展開下拉清單) -->
+          <div class="active-crop-banner-wrap">
+            <div id="activeCropBanner" class="active-crop-banner q-theme-至臻">
+              <div class="banner-left">
+                <div id="cropTitleName" class="b-name">-</div>
+                <div id="cropSubMeta" class="b-meta">-</div>
+              </div>
+              <button id="dropdownTriggerBtn" class="btn-repick-crop" type="button">
+                切換作物 <span id="repickArrow">❯</span>
+              </button>
             </div>
-          </div>
 
-          <!-- 4. 作物清單：下拉式選單 -->
-          <div class="quick-switch-box">
-            <button id="dropdownTriggerBtn" class="dropdown-trigger-3d" type="button">
-              <span id="dropdownLabelText">作物清單：</span>
-              <span>▼</span>
-            </button>
+            <!-- 作物清單：自橫幅下方平滑展開 -->
             <div id="dropdownMenuList" class="dropdown-menu-3d" hidden>
               <div id="dropdownQualityTabs" class="dropdown-filter-pills quality-pills-grid">
-                <button class="filter-tab-pill" type="button" data-q="至臻">至臻</button>
+                <button class="filter-tab-pill" type="button" data-q="彩色">彩色</button>
                 <button class="filter-tab-pill" type="button" data-q="金色">金色</button>
                 <button class="filter-tab-pill" type="button" data-q="紫色">紫色</button>
                 <button class="filter-tab-pill" type="button" data-q="藍色">藍色</button>
@@ -1295,53 +1723,65 @@
             </div>
           </div>
 
-          <div class="inputs-3d-grid">
-            <div class="field-box">
-              <label>作物重量 (公斤)</label>
-              <input id="weightInput" class="input-num-3d" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" />
+          <!-- 數值輸入矩陣 (公斤與百分比) -->
+          <div class="input-chambers-grid">
+            <div class="chamber-box">
+              <label><span>作物重量</span> <span class="unit-tag">[ KG ]</span></label>
+              <input id="weightInput" class="chamber-input" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" />
             </div>
-            <div class="field-box">
-              <label>重量百分比 (%)</label>
-              <input id="percentInput" class="input-num-3d" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="0" />
-            </div>
-            <div class="field-box field-box-time">
-              <label>預估生長耗時</label>
-              <div id="growthTimeBox" class="time-readout-box">-</div>
+            <div class="chamber-box">
+              <label><span>重量比率</span> <span class="unit-tag">[ % ]</span></label>
+              <input id="percentInput" class="chamber-input" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="100" />
             </div>
           </div>
 
-          <!-- 可輸入超過兩位小數開關列 -->
-          <div class="decimals-bar-3d" style="display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: rgba(5, 12, 28, 0.7); border: 1px solid rgba(0, 246, 255, 0.22); border-radius: 10px;">
-            <span style="font-size: 12px; font-weight: 800; color: var(--neon-cyan);">⚙️ 小數點輸入精度</span>
-            <label class="switch-label-group" for="allowExtraDecimalsToggle" style="gap: 8px; cursor: pointer; margin-bottom: 0;">
-              <span style="font-size: 12px; font-weight: 700; color: #fff;">可輸入超過兩位小數</span>
+          <!-- 耗時讀數 -->
+          <div class="time-hud-box">
+            <span class="time-label">⏱️ 預估生長耗時讀數:</span>
+            <span id="growthTimeBox" class="time-val">-</span>
+          </div>
+
+          <!-- 艦橋開關中樞 (包含您剛要求的兩個獨立暫清原值開關) -->
+          <div class="console-switch-bar">
+            <!-- 左側：輸入時暫清原值開關 (依小數模式互斥顯示) -->
+            <label id="autoClear2Label" class="switch-unit" title="輸入時暫時清除原數值 (2位小數模式)">
+              <input id="autoClear2Toggle" type="checkbox" />
+              <div class="astra-toggle-switch"></div>
+              <span class="switch-label-text">輸入時暫清原值(2)</span>
+            </label>
+            <label id="autoClearMoreLabel" class="switch-unit" style="display: none;" title="輸入時暫時清除原數值 (>2位小數模式)">
+              <input id="autoClearMoreToggle" type="checkbox" />
+              <div class="astra-toggle-switch"></div>
+              <span class="switch-label-text">輸入時暫清原值(&gt;2)</span>
+            </label>
+
+            <!-- 右側：可輸入超過兩位小數開關 -->
+            <label class="switch-unit" for="allowExtraDecimalsToggle">
               <input id="allowExtraDecimalsToggle" type="checkbox" />
-              <div class="cyber-toggle-pill mini"></div>
+              <div class="astra-toggle-switch"></div>
+              <span class="switch-label-text">可輸入超過兩位小數</span>
             </label>
           </div>
 
-          <!-- 8. 更改為 100% 90% 80% 70% 60% 55% -->
-          <div class="field-box">
-            <label>一鍵設定百分比</label>
-            <div class="quick-pct-row">
-              <button class="pct-3d-btn" type="button" data-pct="100">100%</button>
-              <button class="pct-3d-btn" type="button" data-pct="90">90%</button>
-              <button class="pct-3d-btn" type="button" data-pct="80">80%</button>
-              <button class="pct-3d-btn" type="button" data-pct="70">70%</button>
-              <button class="pct-3d-btn" type="button" data-pct="60">60%</button>
-              <button class="pct-3d-btn" type="button" data-pct="55">55%</button>
-            </div>
+          <!-- 快捷設定百分比按鈕艙 -->
+          <div class="quick-pct-dock">
+            <button class="pct-cell pct-3d-btn" type="button" data-pct="100">100%</button>
+            <button class="pct-cell pct-3d-btn" type="button" data-pct="90">90%</button>
+            <button class="pct-cell pct-3d-btn" type="button" data-pct="80">80%</button>
+            <button class="pct-cell pct-3d-btn" type="button" data-pct="70">70%</button>
+            <button class="pct-cell pct-3d-btn" type="button" data-pct="60">60%</button>
+            <button class="pct-cell pct-3d-btn" type="button" data-pct="55">55%</button>
           </div>
         </div>
 
-        <!-- 總價值與詞條總倍率（位於基準拉條與詞條選擇正中間） -->
-        <section class="holo-value-reactor-3d">
-          <div class="reactor-left">
-            <div class="reactor-label-row">
-              <span class="reactor-label">總價值</span>
+        <!-- 能量反應爐 (總價值與總倍率輸出核心) -->
+        <section class="energy-reactor-dock holo-value-reactor-3d">
+          <div class="reactor-val-left">
+            <div class="title-row">
+              <span class="tag">⚡ 總價值</span>
               <div class="value-precision-box">
-                <button id="valPrecTriggerBtn" class="val-prec-trigger-btn" type="button" aria-label="選擇小數顯示位數">
-                  <span>顯示小數到第<span id="valPrecCurrentNum">2</span>位</span>
+                <button id="valPrecTriggerBtn" class="prec-badge-btn" type="button" aria-label="選擇小數顯示位數">
+                  <span>小數: <span id="valPrecCurrentNum">2</span>位</span>
                   <span class="caret">▼</span>
                 </button>
                 <div id="valPrecDropdownMenu" class="val-prec-dropdown-menu" hidden>
@@ -1353,11 +1793,11 @@
                 </div>
               </div>
             </div>
-            <strong id="selectedPriceText" class="reactor-price-value">0</strong>
+            <strong id="selectedPriceText" class="reactor-total-price">0</strong>
           </div>
-          <div class="reactor-right">
-            <div class="reactor-mult-label">詞條總倍率</div>
-            <strong id="totalMultiplierText" class="reactor-mult-value">x0</strong>
+          <div class="reactor-right-mult">
+            <div class="mult-tag">◈ 詞條總倍率</div>
+            <strong id="totalMultiplierText" class="reactor-mult-num">x0</strong>
           </div>
         </section>
 
@@ -1425,7 +1865,7 @@
       <!-- 賽博龐克頁尾資訊 -->
       <footer class="cyber-footer-3d">
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.1.1</span>
+          <span class="footer-badge">V2.3.0</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -1488,6 +1928,8 @@
       const STORAGE_KEY_SORT_MODE = "farm_sort_mode_pref";
       const STORAGE_KEY_SORT_DIR = "farm_sort_dir_pref";
       const STORAGE_KEY_DECIMALS = "farm_decimals_pref";
+      const STORAGE_KEY_AUTOCLEAR_2 = "farm_autoclear_2_pref";
+      const STORAGE_KEY_AUTOCLEAR_MORE = "farm_autoclear_more_pref";
       const STORAGE_KEY_PRICE_DECIMALS = "farm_price_decimals_pref";
 
       const RECIPES = [
@@ -1500,9 +1942,10 @@
       ];
 
       const qualityOrder = ["星空", "流光", "水晶", "金", "银"];
-      const cropQualityRank = { 至臻: 6, 金色: 5, 紫色: 4, 藍色: 3, 綠色: 2, 灰色: 1, 蓝色: 3, 绿色: 2 };
+      const cropQualityRank = { 彩色: 6, 至臻: 6, 金色: 5, 紫色: 4, 藍色: 3, 綠色: 2, 灰色: 1, 蓝色: 3, 绿色: 2 };
 
       const displayNames = {
+        至臻: "彩色", 彩色: "彩色",
         秋水仙: "秋水仙", 土豆: "馬鈴薯", 月灯草: "月燈草", 黄瓜: "黃瓜", 蓝莓: "藍莓",
         牵牛花: "牽牛花", 银辉苔: "銀輝苔", 月环树: "月環樹", 苹果: "蘋果", 星叶菜: "星葉菜",
         车厘子: "櫻桃", 龍櫻: "櫻桃", 龙眼: "龍眼", 猕猴桃: "奇異果", 獼猴桃: "奇異果", 榴莲: "榴槤", 惊奇菇: "驚奇菇",
@@ -1536,6 +1979,8 @@
         dropdownFilterQuality: null, // 下拉選單品階篩選
         soundEnabled: true,
         allowExtraDecimals: false,
+        autoClear2: true,
+        autoClearMore: false,
         lastEditedField: "percent",
         priceDigits: 2
       };
@@ -1570,6 +2015,10 @@
         soundToggleBtn: document.getElementById("soundToggleBtn"),
         soundIconText: document.getElementById("soundIconText"),
         allowExtraDecimalsToggle: document.getElementById("allowExtraDecimalsToggle"),
+        autoClear2Toggle: document.getElementById("autoClear2Toggle"),
+        autoClearMoreToggle: document.getElementById("autoClearMoreToggle"),
+        autoClear2Label: document.getElementById("autoClear2Label"),
+        autoClearMoreLabel: document.getElementById("autoClearMoreLabel"),
         valPrecTriggerBtn: document.getElementById("valPrecTriggerBtn"),
         valPrecCurrentNum: document.getElementById("valPrecCurrentNum"),
         valPrecDropdownMenu: document.getElementById("valPrecDropdownMenu"),
@@ -1912,6 +2361,9 @@
       // 6. 點入作物：數值預設皆為空白 (相當於 0，不顯示 0)
       function chooseCrop(cropName) {
         els.dropdownMenuList.hidden = true;
+        const arrow = document.getElementById("repickArrow");
+        if (arrow) arrow.textContent = "❯";
+        els.dropdownTriggerBtn?.classList.remove("active");
         document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
         state.selectedCropName = cropName;
         const crop = getSelectedCrop();
@@ -2038,13 +2490,15 @@
         const current = getSelectedCrop();
         if (!current) return;
 
-        els.activeCropBanner.className = `crop-banner-top q-theme-${current.quality}`;
+        els.activeCropBanner.className = `active-crop-banner q-theme-${current.quality}`;
         els.cropTitleName.textContent = displayName(current.name);
         const maxTimeSec = (Number(current.growthSpeed) || 0) * Number(current.maxWeight);
         const maxTimeText = maxTimeSec > 0 ? `滿重耗時：約 ${formatDuration(maxTimeSec)}` : `成熟耗時：暫無數據`;
-        els.cropSubMeta.textContent = `品階：${displayName(current.quality)} ｜ 最高重量：${formatNumber(current.maxWeight)} 公斤 ｜ ${maxTimeText}`;
+        els.cropSubMeta.textContent = `MAX: ${formatNumber(current.maxWeight)} KG • ${displayName(current.quality)}品階 • ${maxTimeText}`;
 
-        els.dropdownLabelText.textContent = `作物清單：${displayName(current.name)}（${displayName(current.quality)}）`;
+        if (els.dropdownLabelText) {
+          els.dropdownLabelText.textContent = `作物清單：${displayName(current.name)}（${displayName(current.quality)}）`;
+        }
 
         renderDropdownCrops();
       }
@@ -2268,20 +2722,32 @@
         renderTable();
       }
 
-      // 5. 點擊清空數值，完全退出輸入狀態與游標防呆處理（若開啟允許超過兩位小數則不清空）
+      function updateAutoClearToggleVisibility() {
+        if (state.allowExtraDecimals) {
+          if (els.autoClear2Label) els.autoClear2Label.style.display = "none";
+          if (els.autoClearMoreLabel) els.autoClearMoreLabel.style.display = "flex";
+        } else {
+          if (els.autoClear2Label) els.autoClear2Label.style.display = "flex";
+          if (els.autoClearMoreLabel) els.autoClearMoreLabel.style.display = "none";
+        }
+      }
+
+      // 5. 點擊清空數值，完全退出輸入狀態與游標防呆處理（依據當前小數模式的暫清設定獨立控制）
       function setupAutoClearInput(input, isWeight) {
         input.addEventListener("focus", () => {
-          if (state.allowExtraDecimals) return;
           input.dataset.prevVal = input.value;
+          const shouldClear = state.allowExtraDecimals ? state.autoClearMore : state.autoClear2;
+          if (!shouldClear) return;
           input.value = "";
           input.dataset.justFocused = "true";
           setTimeout(() => { delete input.dataset.justFocused; }, 300);
           renderSelectedCrop();
         });
 
-        // 若游標因任何原因未消失而再次點擊，依然執行清空
+        // 若游標因任何原因未消失而再次點擊，依然依據設定執行清空
         input.addEventListener("click", () => {
-          if (state.allowExtraDecimals) return;
+          const shouldClear = state.allowExtraDecimals ? state.autoClearMore : state.autoClear2;
+          if (!shouldClear) return;
           if (!input.dataset.justFocused) {
             input.dataset.prevVal = input.value;
             input.value = "";
@@ -2379,6 +2845,7 @@
         try {
           localStorage.setItem(STORAGE_KEY_DECIMALS, state.allowExtraDecimals);
         } catch(e){}
+        updateAutoClearToggleVisibility();
         CyberAudio.tap(state.allowExtraDecimals ? 880 : 620);
         vibrate(10);
         const crop = getSelectedCrop();
@@ -2406,6 +2873,28 @@
           }
         }
       });
+
+      if (els.autoClear2Toggle) {
+        els.autoClear2Toggle.addEventListener("change", () => {
+          state.autoClear2 = els.autoClear2Toggle.checked;
+          try {
+            localStorage.setItem(STORAGE_KEY_AUTOCLEAR_2, state.autoClear2);
+          } catch(e){}
+          CyberAudio.tap(state.autoClear2 ? 880 : 620);
+          vibrate(10);
+        });
+      }
+
+      if (els.autoClearMoreToggle) {
+        els.autoClearMoreToggle.addEventListener("change", () => {
+          state.autoClearMore = els.autoClearMoreToggle.checked;
+          try {
+            localStorage.setItem(STORAGE_KEY_AUTOCLEAR_MORE, state.autoClearMore);
+          } catch(e){}
+          CyberAudio.tap(state.autoClearMore ? 880 : 620);
+          vibrate(10);
+        });
+      }
 
       // 2. 退回作物清單
       els.backToPickerBtn.addEventListener("click", () => {
@@ -2495,9 +2984,13 @@
         if (card) chooseCrop(card.dataset.crop);
       });
 
-      els.dropdownTriggerBtn.addEventListener("click", () => {
+      els.dropdownTriggerBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
         const willOpen = els.dropdownMenuList.hidden;
         els.dropdownMenuList.hidden = !willOpen;
+        const arrow = document.getElementById("repickArrow");
+        if (arrow) arrow.textContent = willOpen ? "▼" : "❯";
+        els.dropdownTriggerBtn.classList.toggle("active", willOpen);
         document.querySelector(".control-pod-3d")?.classList.toggle("dropdown-open", willOpen);
         if (willOpen) {
           state.dropdownFilterQuality = null;
@@ -2570,12 +3063,16 @@
       });
 
       document.addEventListener("click", (e) => {
-        if (!document.querySelector(".quick-switch-box").contains(e.target)) {
+        if (!e.target.closest("#dropdownTriggerBtn") && !e.target.closest("#dropdownMenuList")) {
           els.dropdownMenuList.hidden = true;
+          const arrow = document.getElementById("repickArrow");
+          if (arrow) arrow.textContent = "❯";
+          els.dropdownTriggerBtn?.classList.remove("active");
           document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
         }
         if (els.valPrecDropdownMenu && !document.querySelector(".value-precision-box")?.contains(e.target)) {
           els.valPrecDropdownMenu.hidden = true;
+          document.querySelector(".energy-reactor-dock")?.classList.remove("precision-dropdown-open");
           document.querySelector(".holo-value-reactor-3d")?.classList.remove("precision-dropdown-open");
         }
       });
@@ -2636,6 +3133,24 @@
         }
         els.allowExtraDecimalsToggle.checked = state.allowExtraDecimals;
 
+        const savedAutoClear2 = localStorage.getItem(STORAGE_KEY_AUTOCLEAR_2);
+        if (savedAutoClear2 !== null) {
+          state.autoClear2 = (savedAutoClear2 === "true");
+        } else {
+          state.autoClear2 = true;
+        }
+        if (els.autoClear2Toggle) els.autoClear2Toggle.checked = state.autoClear2;
+
+        const savedAutoClearMore = localStorage.getItem(STORAGE_KEY_AUTOCLEAR_MORE);
+        if (savedAutoClearMore !== null) {
+          state.autoClearMore = (savedAutoClearMore === "true");
+        } else {
+          state.autoClearMore = false;
+        }
+        if (els.autoClearMoreToggle) els.autoClearMoreToggle.checked = state.autoClearMore;
+
+        updateAutoClearToggleVisibility();
+
         const savedPriceDecimals = localStorage.getItem(STORAGE_KEY_PRICE_DECIMALS);
         if (savedPriceDecimals !== null && [2, 3, 4, 5, 6].includes(Number(savedPriceDecimals))) {
           state.priceDigits = Number(savedPriceDecimals);
@@ -2667,11 +3182,11 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        const floorGrid = new THREE.GridHelper(1800, 44, 0x00f6ff, 0x0a224e);
+        const floorGrid = new THREE.GridHelper(1800, 44, 0x24d0c6, 0x071e2e);
         floorGrid.position.y = -210;
         scene.add(floorGrid);
 
-        const ceilingGrid = new THREE.GridHelper(1800, 44, 0xff007f, 0x1a0933);
+        const ceilingGrid = new THREE.GridHelper(1800, 44, 0x0b3248, 0x030d17);
         ceilingGrid.position.y = 260;
         scene.add(ceilingGrid);
 
@@ -2680,22 +3195,79 @@
         reactorGroup.position.set(0, 20, -120);
         scene.add(reactorGroup);
 
-        const coreGeo = new THREE.OctahedronGeometry(68, 1);
-        const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f6ff, wireframe: true, transparent: true, opacity: 0.35 });
-        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-        reactorGroup.add(coreMesh);
+        // ==========================================
+        // 全新 3D 建模：超大超酷炫群星天體 (Astra Mega Celestial Star & Armillary Dyson Sphere)
+        // ==========================================
+        const celestialGroup = new THREE.Group();
+        reactorGroup.add(celestialGroup);
 
-        const ring1Geo = new THREE.TorusGeometry(115, 1.5, 12, 64);
-        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0xff007f, wireframe: true, transparent: true, opacity: 0.38 });
-        const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
-        ring1.rotation.x = Math.PI / 2.6;
-        reactorGroup.add(ring1);
+        // B-1. 恆星晶耀內核
+        const starCoreGeo = new THREE.IcosahedronGeometry(72, 2);
+        const starCoreMat = new THREE.MeshBasicMaterial({ color: 0xf5c443, wireframe: true, transparent: true, opacity: 0.45 });
+        const starCoreMesh = new THREE.Mesh(starCoreGeo, starCoreMat);
+        celestialGroup.add(starCoreMesh);
 
-        const ring2Geo = new THREE.TorusGeometry(148, 1.2, 10, 64);
-        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.28 });
-        const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
-        ring2.rotation.y = Math.PI / 3;
-        reactorGroup.add(ring2);
+        // 恆星等離子日冕冠
+        const coronaGeo = new THREE.DodecahedronGeometry(88, 1);
+        const coronaMat = new THREE.MeshBasicMaterial({ color: 0x24d0c6, wireframe: true, transparent: true, opacity: 0.28 });
+        const coronaMesh = new THREE.Mesh(coronaGeo, coronaMat);
+        celestialGroup.add(coronaMesh);
+
+        // 恆星日冕耀斑輻射芒刺
+        const spikesGroup = new THREE.Group();
+        const spikeMat = new THREE.LineBasicMaterial({ color: 0xff3377, transparent: true, opacity: 0.4 });
+        for (let i = 0; i < 16; i++) {
+          const sGeo = new THREE.BufferGeometry();
+          const theta = (i / 16) * Math.PI * 2;
+          const r1 = 65, r2 = 108 + (i % 2 === 0 ? 32 : 0);
+          const pts = new Float32Array([
+            Math.cos(theta) * r1, Math.sin(theta) * r1, (i % 3 - 1) * 20,
+            Math.cos(theta) * r2, Math.sin(theta) * r2, (i % 3 - 1) * 40
+          ]);
+          sGeo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+          const line = new THREE.Line(sGeo, spikeMat);
+          spikesGroup.add(line);
+        }
+        celestialGroup.add(spikesGroup);
+
+        // 多軸天體渾天儀星環 (Armillary Dyson Rings)
+        const bRing1Geo = new THREE.TorusGeometry(125, 1.8, 12, 80);
+        const bRing1Mat = new THREE.MeshBasicMaterial({ color: 0xf5c443, wireframe: true, transparent: true, opacity: 0.5 });
+        const bRing1 = new THREE.Mesh(bRing1Geo, bRing1Mat);
+        bRing1.rotation.x = Math.PI / 2;
+        celestialGroup.add(bRing1);
+
+        const bRing2Geo = new THREE.TorusGeometry(158, 1.6, 12, 80);
+        const bRing2Mat = new THREE.MeshBasicMaterial({ color: 0x24d0c6, wireframe: true, transparent: true, opacity: 0.42 });
+        const bRing2 = new THREE.Mesh(bRing2Geo, bRing2Mat);
+        bRing2.rotation.x = Math.PI / 3.2;
+        bRing2.rotation.y = Math.PI / 4;
+        celestialGroup.add(bRing2);
+
+        const bRing3Geo = new THREE.TorusGeometry(192, 1.4, 12, 80);
+        const bRing3Mat = new THREE.MeshBasicMaterial({ color: 0x38e888, wireframe: true, transparent: true, opacity: 0.35 });
+        const bRing3 = new THREE.Mesh(bRing3Geo, bRing3Mat);
+        bRing3.rotation.x = -Math.PI / 3.5;
+        bRing3.rotation.z = Math.PI / 5;
+        celestialGroup.add(bRing3);
+
+        const bRing4Geo = new THREE.TorusGeometry(228, 1.0, 8, 96);
+        const bRing4Mat = new THREE.MeshBasicMaterial({ color: 0xb76cff, wireframe: true, transparent: true, opacity: 0.28 });
+        const bRing4 = new THREE.Mesh(bRing4Geo, bRing4Mat);
+        bRing4.rotation.y = Math.PI / 2.4;
+        celestialGroup.add(bRing4);
+
+        // 軌道哨站微光衛星節點
+        const satelliteGroup = new THREE.Group();
+        const satGeo = new THREE.OctahedronGeometry(6, 0);
+        const satMat = new THREE.MeshBasicMaterial({ color: 0x00f6ff, wireframe: true });
+        const satellites = [];
+        for (let i = 0; i < 4; i++) {
+          const sat = new THREE.Mesh(satGeo, satMat);
+          satelliteGroup.add(sat);
+          satellites.push({ mesh: sat, orbitR: 125 + i * 32, speed: 0.6 + i * 0.3, phase: (i * Math.PI) / 2 });
+        }
+        celestialGroup.add(satelliteGroup);
 
         // 超新星能量碎片系統 (600顆三維立體粒子)
         const debrisCount = 600;
@@ -2703,7 +3275,7 @@
         const debrisPos = new Float32Array(debrisCount * 3);
         const debrisVel = new Float32Array(debrisCount * 3);
         const debrisColors = new Float32Array(debrisCount * 3);
-        const debrisPalette = [new THREE.Color(0x00f6ff), new THREE.Color(0xff007f), new THREE.Color(0xffbb00), new THREE.Color(0x00ff88), new THREE.Color(0xffffff)];
+        const debrisPalette = [new THREE.Color(0x24d0c6), new THREE.Color(0xf5c443), new THREE.Color(0xb76cff), new THREE.Color(0x38e888), new THREE.Color(0xffffff)];
 
         for (let i = 0; i < debrisCount; i++) {
           debrisPos[i * 3] = 0;
@@ -2729,7 +3301,7 @@
         const starGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(starCount * 3);
         const colors = new Float32Array(starCount * 3);
-        const palette = [new THREE.Color(0x00f6ff), new THREE.Color(0xff007f), new THREE.Color(0xb53cff), new THREE.Color(0x00ff88)];
+        const palette = [new THREE.Color(0x24d0c6), new THREE.Color(0xf5c443), new THREE.Color(0xb76cff), new THREE.Color(0x38e888)];
 
         for (let i = 0; i < starCount; i++) {
           positions[i * 3] = (Math.random() - 0.5) * 1400;
@@ -2745,12 +3317,14 @@
         scene.add(stars);
 
         let warpSpeed = 1;
-        const qualityColorHex = { 至臻: 0x00f6ff, 金色: 0xffd000, 紫色: 0xd946ef, 藍色: 0x00d4ff, 綠色: 0x00ff88, 灰色: 0xa0aec0 };
+        const qualityColorHex = { 彩色: 0xff3377, 至臻: 0xff3377, 金色: 0xf5c443, 紫色: 0xb76cff, 藍色: 0x24d0c6, 綠色: 0x38e888, 灰色: 0x8ea4ad };
 
         window.pulse3DReactor = function(qualityName) {
           warpSpeed = 4;
-          const hex = qualityColorHex[qualityName] || 0x00f6ff;
-          coreMat.color.setHex(hex);
+          const hex = qualityColorHex[qualityName] || 0x24d0c6;
+          starCoreMat.color.setHex(hex);
+          coronaMat.color.setHex(hex);
+          spikeMat.color.setHex(hex);
           if (window.gsap) {
             gsap.fromTo(reactorGroup.scale,
               { x: 1.3, y: 1.3, z: 1.3 },
@@ -2790,9 +3364,7 @@
             setTimeout(() => flash.classList.remove("active"), 140);
           }
 
-          coreMesh.visible = false;
-          ring1.visible = false;
-          ring2.visible = false;
+          celestialGroup.visible = false;
           debrisMat.opacity = 1;
 
           const pArr = debrisGeo.attributes.position.array;
@@ -2950,8 +3522,11 @@
             if (shakeEnergy > 20) {
               reactorGroup.position.x += (Math.random() - 0.5) * (shakeEnergy * 0.22);
               reactorGroup.position.y += (Math.random() - 0.5) * (shakeEnergy * 0.22);
-              ring1.rotation.z -= 0.09 * shakeEnergy;
-              ring2.rotation.x += 0.09 * shakeEnergy;
+              bRing1.rotation.z -= 0.09 * shakeEnergy;
+              bRing2.rotation.y += 0.09 * shakeEnergy;
+              bRing3.rotation.x += 0.09 * shakeEnergy;
+              bRing4.rotation.z += 0.09 * shakeEnergy;
+              spikesGroup.rotation.z += 0.12 * shakeEnergy;
             }
             // 搖太大力或晃太久觸發大爆炸！
             if (shakeEnergy > 70) {
@@ -2995,16 +3570,14 @@
             }
             debrisGeo.attributes.position.needsUpdate = true;
 
-            // 全部粒子匯聚回中心，重生核心！
+            // 全部粒子匯聚回中心，重生群星天體！
             if (allReturned) {
               explosionState = "IDLE";
               debrisMat.opacity = 0;
-              coreMesh.visible = true;
-              ring1.visible = true;
-              ring2.visible = true;
+              celestialGroup.visible = true;
               shakeEnergy = 0;
               vibrate(30);
-              if (window.pulse3DReactor) window.pulse3DReactor("至臻");
+              if (window.pulse3DReactor) window.pulse3DReactor("彩色");
             }
           }
 
@@ -3012,11 +3585,25 @@
           floorGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
           ceilingGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
 
-          // 常規旋轉
-          coreMesh.rotation.x += 0.45 * dt * warpSpeed;
-          coreMesh.rotation.y += 0.65 * dt * warpSpeed;
-          ring1.rotation.z -= 0.5 * dt * warpSpeed;
-          ring2.rotation.x += 0.35 * dt * warpSpeed;
+          // 超大超酷炫群星天體常規旋轉
+          starCoreMesh.rotation.x += 0.35 * dt * warpSpeed;
+          starCoreMesh.rotation.y += 0.55 * dt * warpSpeed;
+          coronaMesh.rotation.x -= 0.25 * dt * warpSpeed;
+          coronaMesh.rotation.z += 0.4 * dt * warpSpeed;
+          spikesGroup.rotation.z += 0.3 * dt * warpSpeed;
+          bRing1.rotation.z -= 0.45 * dt * warpSpeed;
+          bRing2.rotation.y += 0.4 * dt * warpSpeed;
+          bRing3.rotation.x += 0.35 * dt * warpSpeed;
+          bRing4.rotation.z += 0.25 * dt * warpSpeed;
+
+          satellites.forEach(s => {
+            const ang = elapsed * s.speed * warpSpeed + s.phase;
+            s.mesh.position.x = Math.cos(ang) * s.orbitR;
+            s.mesh.position.z = Math.sin(ang) * s.orbitR;
+            s.mesh.position.y = Math.sin(ang * 1.5) * (s.orbitR * 0.25);
+            s.mesh.rotation.x += 1.5 * dt;
+            s.mesh.rotation.y += 2.0 * dt;
+          });
 
           renderer.render(scene, camera);
         }
