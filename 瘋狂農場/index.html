@@ -136,7 +136,7 @@
 
       .app-stage {
         position: relative;
-        z-index: 2;
+        z-index: 3;
         width: min(980px, 100% - 16px);
         margin: 0 auto;
         padding: max(env(safe-area-inset-top, 10px), 10px) 0 max(env(safe-area-inset-bottom, 24px), 36px);
@@ -535,7 +535,13 @@
       }
 
       .control-pod-3d.dropdown-open {
-        z-index: 999;
+        z-index: 9999 !important;
+        clip-path: none !important;
+        overflow: visible !important;
+      }
+
+      .control-pod-3d.dropdown-open .active-crop-banner-wrap {
+        z-index: 10000 !important;
       }
 
       /* Astra 作物資訊橫幅與切換按鈕整合包裝 */
@@ -565,12 +571,31 @@
         min-width: 0;
       }
 
+      .active-crop-banner .banner-title-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
       .active-crop-banner .b-name {
         font-size: 19px;
         font-weight: 900;
         color: #fff;
         letter-spacing: 1px;
         line-height: 1.2;
+      }
+
+      .active-crop-banner .b-quality-badge {
+        font-size: 11px;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 0;
+        clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+        background: rgba(36, 208, 198, 0.15);
+        border: 1px solid rgba(36, 208, 198, 0.35);
+        color: var(--neon-cyan);
+        letter-spacing: 0.5px;
       }
 
       .active-crop-banner .b-meta {
@@ -640,30 +665,31 @@
         top: calc(100% + 6px);
         left: 0;
         right: 0;
-        max-height: 280px;
+        max-height: clamp(300px, 62vh, 460px);
         overflow-y: auto;
         background: rgba(4, 10, 26, 0.98);
         border: 1px solid var(--border-cyan);
         clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
         padding: 8px;
-        z-index: 1000;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.98), 0 0 25px rgba(36, 208, 198, 0.25);
+        z-index: 10001 !important;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.98), 0 0 30px rgba(36, 208, 198, 0.35);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
       }
 
       #dropdownCropsContainer {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
         gap: 6px;
       }
 
       .dropdown-item-btn {
         width: 100%;
-        padding: 8px 4px;
-        min-height: 52px;
+        padding: 7px 5px;
+        min-height: 54px;
         border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 8px;
+        border-radius: 0;
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
         color: #fff;
         display: flex;
         flex-direction: column;
@@ -758,7 +784,8 @@
       .time-hud-box {
         background: rgba(4, 14, 24, 0.65);
         border: 1px dashed rgba(36, 208, 198, 0.35);
-        border-radius: 6px;
+        border-radius: 0;
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
         padding: 9px 14px;
         display: flex;
         justify-content: space-between;
@@ -878,15 +905,25 @@
         transform: scale(0.94);
       }
 
-      /* 全作物對比基準拉條 */
+      .pct-cell.active {
+        background: linear-gradient(135deg, rgba(36, 208, 198, 0.35) 0%, rgba(36, 208, 198, 0.16) 100%);
+        border-color: var(--neon-cyan);
+        color: #fff;
+        box-shadow: 0 0 10px rgba(36, 208, 198, 0.45), inset 0 0 6px rgba(36, 208, 198, 0.25);
+        text-shadow: 0 0 8px rgba(36, 208, 198, 0.8);
+      }
+
+      /* 全作物對比基準拉條 (Astra Compare Slider Bar) */
       .compare-slider-bar {
-        padding: 10px 12px;
-        border-radius: 10px;
-        background: rgba(5, 12, 28, 0.82);
-        border: 1px solid rgba(0, 246, 255, 0.25);
+        padding: 12px 14px;
+        border-radius: 0;
+        clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        background: linear-gradient(180deg, rgba(8, 20, 36, 0.8) 0%, rgba(4, 10, 20, 0.92) 100%);
+        border: 1px solid rgba(36, 208, 198, 0.25);
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
       }
 
       .slider-top-labels {
@@ -894,11 +931,16 @@
         justify-content: space-between;
         align-items: center;
         font-size: 12px;
-        font-weight: 700;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.5px;
       }
 
       .slider-top-labels strong {
         color: var(--neon-lime);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 14px;
+        text-shadow: 0 0 10px rgba(56, 232, 136, 0.5);
       }
 
       .cyber-range {
@@ -906,19 +948,42 @@
         appearance: none;
         width: 100%;
         height: 6px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+        border-radius: 0;
+        clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+        background: linear-gradient(
+          to right,
+          var(--neon-cyan) 0%,
+          var(--neon-lime) var(--slider-val, 100%),
+          rgba(255, 255, 255, 0.12) var(--slider-val, 100%),
+          rgba(255, 255, 255, 0.12) 100%
+        );
         outline: none;
       }
 
       .cyber-range::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
         background: #fff;
-        border: 2px solid var(--neon-cyan);
+        border: 1.5px solid var(--neon-cyan);
+        box-shadow: 0 0 10px var(--neon-cyan);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .cyber-range::-webkit-slider-thumb:hover {
+        transform: scale(1.15);
+        box-shadow: 0 0 14px var(--neon-cyan);
+      }
+
+      .cyber-range::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+        background: #fff;
+        border: 1.5px solid var(--neon-cyan);
         box-shadow: 0 0 10px var(--neon-cyan);
         cursor: pointer;
       }
@@ -947,7 +1012,13 @@
       }
 
       .energy-reactor-dock.precision-dropdown-open {
-        z-index: 1000;
+        z-index: 9999 !important;
+        clip-path: none !important;
+        overflow: visible !important;
+      }
+
+      .energy-reactor-dock.precision-dropdown-open .value-precision-box {
+        z-index: 10000 !important;
       }
 
       .reactor-val-left .title-row {
@@ -1003,15 +1074,16 @@
         min-width: 140px;
         background: rgba(3, 10, 26, 0.98);
         border: 1.5px solid var(--neon-cyan);
-        border-radius: 8px;
-        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.95), 0 0 20px rgba(0, 246, 255, 0.35);
+        border-radius: 0;
+        clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.95), 0 0 24px rgba(0, 246, 255, 0.45);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        z-index: 1000;
-        padding: 4px;
+        z-index: 10001 !important;
+        padding: 5px;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 3px;
       }
 
       .val-prec-item {
@@ -1019,7 +1091,8 @@
         align-items: center;
         justify-content: space-between;
         padding: 6px 10px;
-        border-radius: 5px;
+        border-radius: 0;
+        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
         background: transparent;
         border: none;
         color: #c9e9ff;
@@ -1091,26 +1164,65 @@
       .btn-reset-mutations {
         padding: 6px 14px;
         font-size: 12px;
-        border-radius: 10px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        border-radius: 0;
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+        border: 1px solid rgba(255, 60, 120, 0.5);
+        background: linear-gradient(135deg, rgba(60, 12, 30, 0.85) 0%, rgba(30, 6, 18, 0.95) 100%);
+        color: #ff99c8;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-reset-mutations:hover {
+        background: linear-gradient(135deg, rgba(110, 20, 50, 0.9) 0%, rgba(65, 10, 30, 0.95) 100%);
+        border-color: #ff3377;
+        color: #fff;
+        box-shadow: 0 0 12px rgba(255, 51, 119, 0.5);
+      }
+
+      .btn-reset-mutations:active {
+        transform: scale(0.95);
       }
 
       .mutation-group-3d {
         margin-bottom: 12px;
-        padding: 12px;
-        border-radius: 12px;
-        background: rgba(5, 11, 26, 0.72);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 12px 14px;
+        border-radius: 0;
+        clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        background: linear-gradient(180deg, rgba(10, 24, 40, 0.78) 0%, rgba(5, 12, 22, 0.9) 100%);
+        border: 1px solid rgba(36, 208, 198, 0.22);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        position: relative;
       }
 
       .mutation-group-3d:last-child {
         margin-bottom: 0;
       }
 
+      .mutation-group-3d::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 24px;
+        height: 2px;
+        background: var(--neon-cyan);
+        box-shadow: 0 0 6px var(--neon-cyan);
+        pointer-events: none;
+      }
+
       .mutation-group-title {
         font-size: 12px;
         font-weight: 800;
-        color: var(--text-muted);
-        margin-bottom: 8px;
+        color: var(--neon-cyan);
+        letter-spacing: 0.8px;
+        margin-bottom: 9px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
       /* 3. 基礎詞條第一排 5 個網格 */
@@ -1129,10 +1241,11 @@
 
       .chip-3d {
         min-height: 35px;
-        padding: 5px 1px;
-        border-radius: 8px;
-        border: 1px solid var(--chip-border, rgba(255, 255, 255, 0.2));
-        background: var(--chip-bg, rgba(14, 25, 54, 0.75));
+        padding: 5px 2px;
+        border-radius: 0;
+        clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+        border: 1px solid var(--chip-border, rgba(255, 255, 255, 0.18));
+        background: var(--chip-bg, rgba(10, 20, 36, 0.8));
         color: var(--chip-text, #fff);
         font-size: 11px;
         font-weight: 800;
@@ -1145,7 +1258,14 @@
         overflow: hidden;
         text-overflow: ellipsis;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-        transition: all 0.12s ease;
+        transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        position: relative;
+      }
+
+      .chip-3d:hover:not(.disabled):not(.selected) {
+        border-color: rgba(255, 255, 255, 0.45);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
       }
 
       .chip-3d:active:not(.disabled) {
@@ -1156,7 +1276,7 @@
         background: var(--chip-active-bg, var(--neon-cyan));
         color: #030814 !important;
         font-weight: 900;
-        border-color: #fff;
+        border-color: #ffffff;
         box-shadow: 0 0 14px var(--chip-glow, var(--neon-cyan));
       }
 
@@ -1167,12 +1287,12 @@
       }
 
       /* 詞條品質顏色體系 */
-      .chip-color-彩色 {
-        --chip-border: rgba(0, 246, 255, 0.5);
-        --chip-bg: linear-gradient(135deg, rgba(0, 246, 255, 0.25), rgba(255, 0, 127, 0.25));
+      .chip-color-彩色, .chip-color-至臻 {
+        --chip-border: rgba(255, 0, 127, 0.6);
+        --chip-bg: linear-gradient(135deg, rgba(0, 246, 255, 0.22), rgba(255, 0, 127, 0.22));
         --chip-active-bg: linear-gradient(135deg, #00f6ff, #ff007f);
-        --chip-glow: #00f6ff;
-        --chip-text: #e6ffff;
+        --chip-glow: #ff007f;
+        --chip-text: #ffffff;
       }
       .chip-color-金色 {
         --chip-border: rgba(255, 187, 0, 0.5);
@@ -1219,22 +1339,29 @@
       .switch-label-group {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         font-size: 14px;
         font-weight: 800;
-        color: var(--neon-cyan);
+        color: #fff;
         cursor: pointer;
+        user-select: none;
+        letter-spacing: 0.6px;
+      }
+      .switch-label-group:hover span {
+        color: var(--neon-cyan);
       }
       .switch-label-group input { display: none; }
 
       .cyber-toggle-pill {
         width: 44px;
         height: 22px;
-        background: rgba(5, 12, 28, 0.95);
-        border: 1.5px solid var(--neon-cyan);
-        border-radius: 999px;
+        background: rgba(3, 8, 14, 0.95);
+        border: 1.5px solid var(--border-cyan);
+        clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+        border-radius: 0;
         position: relative;
         transition: all 0.25s ease;
+        flex-shrink: 0;
       }
 
       .cyber-toggle-pill::after {
@@ -1244,21 +1371,23 @@
         left: 3px;
         width: 15px;
         height: 15px;
-        border-radius: 50%;
-        background: var(--neon-cyan);
-        box-shadow: 0 0 8px var(--neon-cyan);
-        transition: transform 0.25s ease;
+        background: var(--text-dim);
+        clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+        border-radius: 0;
+        box-shadow: none;
+        transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
       }
 
       .switch-label-group input:checked + .cyber-toggle-pill {
         border-color: var(--neon-lime);
-        background: rgba(0, 255, 136, 0.2);
+        background: rgba(56, 232, 136, 0.18);
+        box-shadow: 0 0 12px rgba(56, 232, 136, 0.35);
       }
 
       .switch-label-group input:checked + .cyber-toggle-pill::after {
-        transform: translateX(20px);
+        transform: translateX(21px);
         background: var(--neon-lime);
-        box-shadow: 0 0 10px var(--neon-lime);
+        box-shadow: 0 0 10px rgba(56, 232, 136, 0.8);
       }
 
       .cyber-toggle-pill.mini {
@@ -1298,12 +1427,30 @@
         box-shadow: 0 0 10px rgba(56, 232, 136, 0.6);
       }
 
+      .input-num-3d, .cyber-select-3d {
+        border: 1px solid rgba(36, 208, 198, 0.35);
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+        background: rgba(4, 12, 22, 0.92);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .input-num-3d:focus, .cyber-select-3d:focus {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 12px rgba(36, 208, 198, 0.4);
+      }
+
       .table-container-3d {
         margin-top: 12px;
         overflow-x: auto;
-        border-radius: 10px;
-        border: 1px solid rgba(0, 246, 255, 0.25);
-        background: rgba(3, 8, 20, 0.85);
+        border-radius: 0;
+        clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        border: 1px solid rgba(36, 208, 198, 0.25);
+        background: rgba(4, 10, 20, 0.88);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
       }
 
       table.cyber-table-3d {
@@ -1314,17 +1461,24 @@
       }
 
       table.cyber-table-3d th {
-        background: rgba(6, 16, 38, 0.95);
+        background: rgba(8, 22, 38, 0.95);
         color: var(--neon-cyan);
         font-weight: 800;
-        padding: 9px 10px;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        padding: 10px 12px;
         text-align: left;
+        border-bottom: 1px solid rgba(36, 208, 198, 0.3);
       }
 
       table.cyber-table-3d td {
-        padding: 9px 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 9px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         font-weight: 700;
+      }
+
+      table.cyber-table-3d tr:hover td {
+        background: rgba(36, 208, 198, 0.06);
       }
 
       .td-price-highlight {
@@ -1348,6 +1502,20 @@
         .crop-grid-3d {
           grid-template-columns: repeat(3, 1fr);
           gap: 6px;
+        }
+        #dropdownCropsContainer {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 6px;
+        }
+        .dropdown-item-btn {
+          min-height: 52px;
+          padding: 7px 4px;
+        }
+        .dropdown-item-btn span:first-child {
+          font-size: 13px;
+        }
+        .dropdown-item-btn span:last-child {
+          font-size: 10.5px;
         }
         .crop-card-3d {
           min-height: 56px;
@@ -1409,10 +1577,20 @@
         max-height: 85vh;
         display: flex;
         flex-direction: column;
-        background: linear-gradient(145deg, rgba(10, 22, 52, 0.98), rgba(5, 12, 30, 0.96));
+        background: linear-gradient(145deg, rgba(8, 20, 42, 0.98), rgba(4, 10, 24, 0.96));
         border: 1px solid var(--border-cyan);
-        border-radius: 18px;
-        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 0 0 32px rgba(0, 246, 255, 0.22);
+        border-radius: 0;
+        clip-path: polygon(
+          14px 0,
+          calc(100% - 14px) 0,
+          100% 14px,
+          100% calc(100% - 14px),
+          calc(100% - 14px) 100%,
+          14px 100%,
+          0 calc(100% - 14px),
+          0 14px
+        );
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 0 0 32px rgba(36, 208, 198, 0.25);
         transform: scale(0.92) translateY(12px);
         transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         overflow: hidden;
@@ -1442,20 +1620,22 @@
       }
 
       .modal-close-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        font-size: 20px;
-        font-weight: 700;
+        background: rgba(36, 208, 198, 0.1);
+        border: 1px solid rgba(36, 208, 198, 0.3);
+        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+        color: var(--neon-cyan);
+        font-size: 16px;
+        font-weight: 800;
         cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 6px;
+        padding: 4px 10px;
         line-height: 1;
-        transition: color 0.15s ease, background 0.15s ease;
+        transition: all 0.15s ease;
       }
       .modal-close-btn:hover {
         color: #fff;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 60, 120, 0.25);
+        border-color: #ff3377;
+        box-shadow: 0 0 8px rgba(255, 51, 119, 0.4);
       }
 
       .modal-body-3d {
@@ -1471,10 +1651,11 @@
       }
 
       .modal-section-card {
-        background: rgba(255, 255, 255, 0.035);
-        border: 1px solid rgba(0, 246, 255, 0.12);
-        border-radius: 10px;
-        padding: 11px 13px;
+        background: rgba(10, 24, 40, 0.7);
+        border: 1px solid rgba(36, 208, 198, 0.2);
+        border-radius: 0;
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+        padding: 12px 14px;
       }
 
       .modal-section-card h4 {
@@ -1502,31 +1683,44 @@
       }
 
       .modal-confirm-btn {
-        padding: 8px 20px;
-        background: linear-gradient(135deg, rgba(0, 246, 255, 0.25), rgba(0, 246, 255, 0.1));
+        padding: 8px 22px;
+        background: linear-gradient(135deg, rgba(36, 208, 198, 0.25), rgba(4, 12, 22, 0.9));
         border: 1px solid var(--neon-cyan);
-        border-radius: 10px;
+        border-radius: 0;
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
         color: var(--neon-cyan);
         font-size: 13px;
         font-weight: 800;
+        letter-spacing: 0.5px;
         cursor: pointer;
-        box-shadow: 0 0 15px rgba(0, 246, 255, 0.2);
+        box-shadow: 0 0 15px rgba(36, 208, 198, 0.2);
         transition: all 0.15s ease;
       }
       .modal-confirm-btn:hover {
         background: var(--neon-cyan);
         color: #030612;
-        box-shadow: 0 0 20px rgba(0, 246, 255, 0.5);
+        box-shadow: 0 0 20px rgba(36, 208, 198, 0.6);
       }
 
       /* 賽博龐克頁尾 (Cyber Footer) */
       .cyber-footer-3d {
+        position: relative;
         margin-top: 26px;
         padding: 18px 16px;
         text-align: center;
-        border: 1px solid rgba(0, 246, 255, 0.16);
+        border: 1px solid rgba(36, 208, 198, 0.2);
         background: linear-gradient(180deg, rgba(8, 16, 36, 0.55), rgba(4, 8, 20, 0.88));
-        border-radius: 14px;
+        border-radius: 0;
+        clip-path: polygon(
+          12px 0,
+          calc(100% - 12px) 0,
+          100% 12px,
+          100% calc(100% - 12px),
+          calc(100% - 12px) 100%,
+          12px 100%,
+          0 calc(100% - 12px),
+          0 12px
+        );
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         display: flex;
@@ -1534,6 +1728,44 @@
         align-items: center;
         gap: 9px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      .footer-badge-row,
+      .footer-copyright,
+      .footer-links-row {
+        position: relative;
+        z-index: 1;
+      }
+
+      .footer-astra-tag {
+        position: absolute;
+        bottom: 12px;
+        left: 16px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        color: rgba(36, 208, 198, 0.22);
+        text-shadow: none;
+        pointer-events: none;
+        z-index: 0;
+        user-select: none;
+      }
+
+      .mobile-only {
+        display: none !important;
+      }
+      .desktop-only {
+        display: block !important;
+      }
+
+      @media (max-width: 768px) {
+        .mobile-only {
+          display: block !important;
+        }
+        .desktop-only {
+          display: none !important;
+        }
       }
 
       .footer-badge-row {
@@ -1547,11 +1779,12 @@
       .footer-badge {
         font-size: 11px;
         font-weight: 800;
-        padding: 2px 8px;
-        border-radius: 6px;
-        background: rgba(0, 246, 255, 0.12);
+        padding: 3px 9px;
+        border-radius: 0;
+        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+        background: rgba(36, 208, 198, 0.12);
         color: var(--neon-cyan);
-        border: 1px solid rgba(0, 246, 255, 0.3);
+        border: 1px solid rgba(36, 208, 198, 0.35);
         letter-spacing: 0.5px;
       }
 
@@ -1612,26 +1845,27 @@
         font-size: clamp(80px, 22vw, 240px);
         font-weight: 900;
         letter-spacing: clamp(14px, 4vw, 36px);
-        color: rgba(36, 208, 198, 0.035);
-        text-shadow: 0 0 40px rgba(36, 208, 198, 0.05);
+        color: rgba(36, 208, 198, 0.095);
+        text-shadow: 0 0 45px rgba(36, 208, 198, 0.22), 0 0 90px rgba(0, 246, 255, 0.12);
         pointer-events: none;
         z-index: 1;
         user-select: none;
         white-space: nowrap;
         text-transform: uppercase;
-        filter: blur(0.4px);
       }
 
       .stealth-astra-tag {
         position: fixed;
-        bottom: 14px;
-        left: 16px;
+        bottom: 16px;
+        left: 20px;
         font-family: "Share Tech Mono", monospace;
-        font-size: 10px;
-        letter-spacing: 2.5px;
-        color: rgba(36, 208, 198, 0.08);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        color: rgba(36, 208, 198, 0.22);
+        text-shadow: none;
         pointer-events: none;
-        z-index: 1;
+        z-index: 2;
         user-select: none;
       }
     </style>
@@ -1642,7 +1876,7 @@
     <div id="screenFlash" class="screen-flash-overlay"></div>
     <div class="holo-overlay"></div>
     <div class="stealth-astra-bg" aria-hidden="true">ASTRA</div>
-    <div class="stealth-astra-tag" aria-hidden="true">SYS.NAV // ASTRA-0x48</div>
+    <div class="stealth-astra-tag desktop-only" aria-hidden="true">Astra</div>
 
     <main class="app-stage">
       <header class="cyber-header-3d">
@@ -1673,7 +1907,7 @@
 
           <!-- 1. 頂部 6 個標籤均分，無須滑動 -->
           <div id="qualityTabs" class="quality-pills-grid">
-            <button class="filter-tab-pill" type="button" data-q="彩色">彩色</button>
+            <button class="filter-tab-pill" type="button" data-q="至臻">至臻</button>
             <button class="filter-tab-pill" type="button" data-q="金色">金色</button>
             <button class="filter-tab-pill" type="button" data-q="紫色">紫色</button>
             <button class="filter-tab-pill" type="button" data-q="藍色">藍色</button>
@@ -1701,7 +1935,10 @@
           <div class="active-crop-banner-wrap">
             <div id="activeCropBanner" class="active-crop-banner q-theme-至臻">
               <div class="banner-left">
-                <div id="cropTitleName" class="b-name">-</div>
+                <div class="banner-title-row">
+                  <span id="cropTitleName" class="b-name">-</span>
+                  <span id="cropQualityBadge" class="b-quality-badge">-</span>
+                </div>
                 <div id="cropSubMeta" class="b-meta">-</div>
               </div>
               <button id="dropdownTriggerBtn" class="btn-repick-crop" type="button">
@@ -1712,7 +1949,7 @@
             <!-- 作物清單：自橫幅下方平滑展開 -->
             <div id="dropdownMenuList" class="dropdown-menu-3d" hidden>
               <div id="dropdownQualityTabs" class="dropdown-filter-pills quality-pills-grid">
-                <button class="filter-tab-pill" type="button" data-q="彩色">彩色</button>
+                <button class="filter-tab-pill" type="button" data-q="至臻">至臻</button>
                 <button class="filter-tab-pill" type="button" data-q="金色">金色</button>
                 <button class="filter-tab-pill" type="button" data-q="紫色">紫色</button>
                 <button class="filter-tab-pill" type="button" data-q="藍色">藍色</button>
@@ -1749,17 +1986,17 @@
               <div class="astra-toggle-switch"></div>
               <span class="switch-label-text">輸入時暫清原值(2)</span>
             </label>
-            <label id="autoClearMoreLabel" class="switch-unit" style="display: none;" title="輸入時暫時清除原數值 (>2位小數模式)">
+            <label id="autoClearMoreLabel" class="switch-unit" style="display: none;" title="輸入時暫時清除原數值 (6位小數模式)">
               <input id="autoClearMoreToggle" type="checkbox" />
               <div class="astra-toggle-switch"></div>
-              <span class="switch-label-text">輸入時暫清原值(&gt;2)</span>
+              <span class="switch-label-text">輸入時暫清原值(6)</span>
             </label>
 
-            <!-- 右側：可輸入超過兩位小數開關 -->
+            <!-- 右側：可輸入到小數第六位開關 -->
             <label class="switch-unit" for="allowExtraDecimalsToggle">
               <input id="allowExtraDecimalsToggle" type="checkbox" />
               <div class="astra-toggle-switch"></div>
-              <span class="switch-label-text">可輸入超過兩位小數</span>
+              <span class="switch-label-text">可輸入到小數第六位</span>
             </label>
           </div>
 
@@ -1823,22 +2060,19 @@
           </div>
 
           <div id="comparisonTableSection" hidden>
-            <!-- 全作物對比基準拉條 -->
+            <!-- 全作物重量拉條 -->
             <div class="compare-slider-bar" style="margin-top: 12px;">
               <div class="slider-top-labels">
-                <span>全作物對比基準拉條</span>
+                <span>全作物重量拉條</span>
                 <strong id="comparePercentLabel">100%</strong>
               </div>
-              <input id="comparePercentSlider" class="cyber-range" type="range" min="1" max="100" value="100" />
+              <input id="comparePercentSlider" class="cyber-range" type="range" min="1" max="100" value="100" style="--slider-val: 100%;" />
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 8px;">
               <span style="font-size: 12px; font-weight: 800; color: var(--text-muted);">排序方式：</span>
               <div style="display: flex; gap: 8px;">
-                <select id="sortModeSelect" class="input-num-3d" style="width: auto; min-height: 36px; font-size: 12px; padding: 4px 8px;">
-                  <option value="price">依價值排序</option>
-                  <option value="quality">依品階排序</option>
-                </select>
+                <button id="sortModeBtn" class="btn-3d-icon" type="button">依價值排序</button>
                 <button id="sortDirBtn" class="btn-3d-icon" type="button">高到低 ▼</button>
               </div>
             </div>
@@ -1864,8 +2098,9 @@
 
       <!-- 賽博龐克頁尾資訊 -->
       <footer class="cyber-footer-3d">
+        <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.3.0</span>
+          <span class="footer-badge">V2.3.5</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -1945,7 +2180,7 @@
       const cropQualityRank = { 彩色: 6, 至臻: 6, 金色: 5, 紫色: 4, 藍色: 3, 綠色: 2, 灰色: 1, 蓝色: 3, 绿色: 2 };
 
       const displayNames = {
-        至臻: "彩色", 彩色: "彩色",
+        至臻: "至臻", 彩色: "至臻",
         秋水仙: "秋水仙", 土豆: "馬鈴薯", 月灯草: "月燈草", 黄瓜: "黃瓜", 蓝莓: "藍莓",
         牵牛花: "牽牛花", 银辉苔: "銀輝苔", 月环树: "月環樹", 苹果: "蘋果", 星叶菜: "星葉菜",
         车厘子: "櫻桃", 龍櫻: "櫻桃", 龙眼: "龍眼", 猕猴桃: "奇異果", 獼猴桃: "奇異果", 榴莲: "榴槤", 惊奇菇: "驚奇菇",
@@ -1973,6 +2208,7 @@
         selectedMutations: new Set(),
         selectedCropName: "",
         sortDirection: "desc",
+        sortMode: "price",
         showComparison: false,
         view: "picker",
         currentFilterQuality: null, // 預設無標籤
@@ -1982,6 +2218,8 @@
         autoClear2: true,
         autoClearMore: false,
         lastEditedField: "percent",
+        activeQuickPct: null,
+        lastManualInput: null,
         priceDigits: 2
       };
 
@@ -1995,6 +2233,7 @@
         resetMutationsBtn: document.getElementById("resetMutationsBtn"),
         activeCropBanner: document.getElementById("activeCropBanner"),
         cropTitleName: document.getElementById("cropTitleName"),
+        cropQualityBadge: document.getElementById("cropQualityBadge"),
         cropSubMeta: document.getElementById("cropSubMeta"),
         dropdownTriggerBtn: document.getElementById("dropdownTriggerBtn"),
         dropdownLabelText: document.getElementById("dropdownLabelText"),
@@ -2010,7 +2249,7 @@
         showComparisonToggle: document.getElementById("showComparisonToggle"),
         comparisonTableSection: document.getElementById("comparisonTableSection"),
         comparisonTableBody: document.getElementById("comparisonTableBody"),
-        sortModeSelect: document.getElementById("sortModeSelect"),
+        sortModeBtn: document.getElementById("sortModeBtn"),
         sortDirBtn: document.getElementById("sortDirBtn"),
         soundToggleBtn: document.getElementById("soundToggleBtn"),
         soundIconText: document.getElementById("soundIconText"),
@@ -2167,8 +2406,8 @@
         const hours = Math.floor(total / 3600);
         const mins = Math.floor((total % 3600) / 60);
         const s = total % 60;
-        if (hours > 0) return mins > 0 ? `${hours}小時 ${mins}分` : `${hours}小時`;
-        if (mins > 0) return s > 0 ? `${mins}分 ${s}秒` : `${mins}分鐘`;
+        if (hours > 0) return mins > 0 ? `${hours}小時${mins}分` : `${hours}小時`;
+        if (mins > 0) return s > 0 ? `${mins}分${s}秒` : `${mins}分鐘`;
         return `${s}秒`;
       }
 
@@ -2337,6 +2576,15 @@
       function setView(view) {
         state.view = view;
         if (view === "picker") {
+          if (els.dropdownMenuList) els.dropdownMenuList.hidden = true;
+          if (els.valPrecDropdownMenu) els.valPrecDropdownMenu.hidden = true;
+          const arrow = document.getElementById("repickArrow");
+          if (arrow) arrow.textContent = "❯";
+          els.dropdownTriggerBtn?.classList.remove("active");
+          document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
+          document.querySelector(".energy-reactor-dock")?.classList.remove("precision-dropdown-open");
+          document.querySelector(".holo-value-reactor-3d")?.classList.remove("precision-dropdown-open");
+
           els.pickerView.hidden = false;
           els.calculatorView.hidden = true;
           els.pickerView.style.display = "block";
@@ -2371,6 +2619,9 @@
         
         els.percentInput.value = "";
         els.weightInput.value = "";
+        state.activeQuickPct = null;
+        state.lastManualInput = null;
+        updateQuickPctButtons();
         
         CyberAudio.activate();
         vibrate(18);
@@ -2492,9 +2743,13 @@
 
         els.activeCropBanner.className = `active-crop-banner q-theme-${current.quality}`;
         els.cropTitleName.textContent = displayName(current.name);
+        if (els.cropQualityBadge) {
+          els.cropQualityBadge.textContent = `${displayName(current.quality)}品階`;
+          els.cropQualityBadge.className = `b-quality-badge q-theme-${current.quality}`;
+        }
         const maxTimeSec = (Number(current.growthSpeed) || 0) * Number(current.maxWeight);
-        const maxTimeText = maxTimeSec > 0 ? `滿重耗時：約 ${formatDuration(maxTimeSec)}` : `成熟耗時：暫無數據`;
-        els.cropSubMeta.textContent = `MAX: ${formatNumber(current.maxWeight)} KG • ${displayName(current.quality)}品階 • ${maxTimeText}`;
+        const maxTimeText = maxTimeSec > 0 ? `滿重耗時:約${formatDuration(maxTimeSec)}` : `成熟耗時:暫無數據`;
+        els.cropSubMeta.textContent = `MAX:${formatNumber(current.maxWeight)}KG•${maxTimeText}`;
 
         if (els.dropdownLabelText) {
           els.dropdownLabelText.textContent = `作物清單：${displayName(current.name)}（${displayName(current.quality)}）`;
@@ -2527,7 +2782,7 @@
             (c) => `
               <button class="dropdown-item-btn q-theme-${c.quality} ${c.name === state.selectedCropName ? 'selected' : ''}" type="button" data-crop="${escapeHtml(c.name)}">
                 <span>${escapeHtml(displayName(c.name))}</span>
-                <span style="font-size: 11px; opacity: 0.9;">${escapeHtml(displayName(c.quality))} · ${formatNumber(c.maxWeight)}kg</span>
+                <span>${escapeHtml(displayName(c.quality))} · ${formatNumber(c.maxWeight)}kg</span>
               </button>
             `
           )
@@ -2551,7 +2806,7 @@
           const totalSeconds = safeWeight * speed;
           const secPerPct = totalSeconds / 100;
           const rateText = secPerPct >= 60 ? formatDuration(secPerPct) : `${formatNumber(secPerPct, 1)}秒`;
-          els.growthTimeBox.textContent = `約 ${formatDuration(totalSeconds)}（${rateText}/1%）`;
+          els.growthTimeBox.textContent = `約${formatDuration(totalSeconds)}（${rateText}/1%）`;
         } else {
           els.growthTimeBox.textContent = "-";
         }
@@ -2674,6 +2929,7 @@
       function renderTable() {
         const percent = Number(els.comparePercentSlider.value) || 100;
         els.comparePercentLabel.textContent = `${percent}%`;
+        els.comparePercentSlider.style.setProperty("--slider-val", `${percent}%`);
 
         if (!state.showComparison) {
           els.comparisonTableBody.innerHTML = "";
@@ -2686,7 +2942,11 @@
           return { crop, weight, result };
         });
 
-        if (els.sortModeSelect.value === "quality") {
+        if (els.sortModeBtn) {
+          els.sortModeBtn.textContent = state.sortMode === "quality" ? "依品階排序" : "依價值排序";
+        }
+
+        if (state.sortMode === "quality") {
           rows.sort((a, b) => compareCropsForPicker(a.crop, b.crop));
         } else {
           rows.sort((a, b) => b.result.price - a.result.price || compareCropsForPicker(a.crop, b.crop));
@@ -2701,7 +2961,7 @@
             return `
               <tr>
                 <td><strong>${escapeHtml(displayName(crop.name))}</strong></td>
-                <td><span class="q-theme-${crop.quality}" style="padding: 2px 6px; border-radius: 4px; font-size: 11px;">${escapeHtml(displayName(crop.quality))}</span></td>
+                <td><span class="q-theme-${crop.quality}" style="padding: 2px 8px; clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); font-size: 11px; font-weight: 800; display: inline-block;">${escapeHtml(displayName(crop.quality))}</span></td>
                 <td>${formatNumber(weight)} kg</td>
                 <td class="td-price-highlight">${result.formattedPrice}</td>
                 <td style="color: var(--neon-pink);">x${formatNumber(totalMult)}</td>
@@ -2813,14 +3073,14 @@
         }
       });
 
-      // 限制數值小數點位數（若開啟允許超過兩位小數則不限制）
+      // 限制數值小數點位數（預設 2 位，開啟開關時上限為 6 位）
       function limitDecimalPlaces(input) {
-        if (state.allowExtraDecimals) return;
+        const maxDecimals = state.allowExtraDecimals ? 6 : 2;
         let val = input.value;
         if (val.includes(".")) {
           const parts = val.split(".");
-          if (parts[1].length > 2) {
-            input.value = parts[0] + "." + parts[1].slice(0, 2);
+          if (parts[1].length > maxDecimals) {
+            input.value = parts[0] + "." + parts[1].slice(0, maxDecimals);
           }
         }
       }
@@ -2830,12 +3090,18 @@
 
       els.weightInput.addEventListener("input", () => {
         state.lastEditedField = "weight";
+        state.activeQuickPct = null;
+        updateQuickPctButtons();
         limitDecimalPlaces(els.weightInput);
+        state.lastManualInput = { field: "weight", val: els.weightInput.value };
         setPercentFromWeight(getSelectedCrop());
       });
       els.percentInput.addEventListener("input", () => {
         state.lastEditedField = "percent";
+        state.activeQuickPct = null;
+        updateQuickPctButtons();
         limitDecimalPlaces(els.percentInput);
+        state.lastManualInput = { field: "percent", val: els.percentInput.value };
         setWeightFromPercent(getSelectedCrop());
       });
 
@@ -2862,6 +3128,8 @@
             }
           }
         } else {
+          limitDecimalPlaces(els.weightInput);
+          limitDecimalPlaces(els.percentInput);
           if (state.lastEditedField === "weight") {
             if (els.weightInput.value.trim() !== "") {
               setPercentFromWeight(crop);
@@ -2967,15 +3235,51 @@
         }
       });
 
-      // 8. 六個一鍵百分比快捷鍵
+      // 8. 六個一鍵百分比快捷鍵（再次點擊取消並回到上次輸入的值）
+      function updateQuickPctButtons() {
+        document.querySelectorAll(".pct-3d-btn").forEach((btn) => {
+          const isMatch = state.activeQuickPct !== null && Number(btn.dataset.pct) === Number(state.activeQuickPct);
+          btn.classList.toggle("active", isMatch);
+        });
+      }
+
       document.querySelectorAll(".pct-3d-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-          state.lastEditedField = "percent";
+          const crop = getSelectedCrop();
           const pct = Number(btn.dataset.pct);
-          els.percentInput.value = pct;
-          CyberAudio.tap(920);
-          vibrate(10);
-          setWeightFromPercent(getSelectedCrop(), { clamp: true });
+
+          if (state.activeQuickPct === pct) {
+            // 再次點擊相同快捷按鈕：取消快捷狀態，回到上次輸入的值
+            state.activeQuickPct = null;
+            updateQuickPctButtons();
+            CyberAudio.cancel();
+            vibrate(10);
+
+            if (state.lastManualInput && state.lastManualInput.val !== "") {
+              if (state.lastManualInput.field === "weight") {
+                state.lastEditedField = "weight";
+                els.weightInput.value = state.lastManualInput.val;
+                setPercentFromWeight(crop, { clamp: true });
+              } else {
+                state.lastEditedField = "percent";
+                els.percentInput.value = state.lastManualInput.val;
+                setWeightFromPercent(crop, { clamp: true });
+              }
+            } else {
+              els.weightInput.value = "";
+              els.percentInput.value = "";
+              renderSelectedCrop();
+            }
+          } else {
+            // 點擊快捷按鈕：設定數值並高亮
+            state.activeQuickPct = pct;
+            updateQuickPctButtons();
+            state.lastEditedField = "percent";
+            els.percentInput.value = pct;
+            CyberAudio.tap(920);
+            vibrate(10);
+            setWeightFromPercent(crop, { clamp: true });
+          }
         });
       });
 
@@ -2993,6 +3297,9 @@
         els.dropdownTriggerBtn.classList.toggle("active", willOpen);
         document.querySelector(".control-pod-3d")?.classList.toggle("dropdown-open", willOpen);
         if (willOpen) {
+          if (els.valPrecDropdownMenu) els.valPrecDropdownMenu.hidden = true;
+          document.querySelector(".energy-reactor-dock")?.classList.remove("precision-dropdown-open");
+          document.querySelector(".holo-value-reactor-3d")?.classList.remove("precision-dropdown-open");
           state.dropdownFilterQuality = null;
           renderDropdownCrops();
         }
@@ -3038,7 +3345,15 @@
         e.stopPropagation();
         const isOpen = !els.valPrecDropdownMenu.hidden;
         els.valPrecDropdownMenu.hidden = isOpen;
+        document.querySelector(".energy-reactor-dock")?.classList.toggle("precision-dropdown-open", !isOpen);
         document.querySelector(".holo-value-reactor-3d")?.classList.toggle("precision-dropdown-open", !isOpen);
+        if (!isOpen) {
+          if (els.dropdownMenuList) els.dropdownMenuList.hidden = true;
+          const arrow = document.getElementById("repickArrow");
+          if (arrow) arrow.textContent = "❯";
+          els.dropdownTriggerBtn?.classList.remove("active");
+          document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
+        }
         updateValPrecMenuUI();
         CyberAudio.tap(780);
       });
@@ -3054,6 +3369,7 @@
           } catch(err){}
           updateValPrecMenuUI();
           els.valPrecDropdownMenu.hidden = true;
+          document.querySelector(".energy-reactor-dock")?.classList.remove("precision-dropdown-open");
           document.querySelector(".holo-value-reactor-3d")?.classList.remove("precision-dropdown-open");
           CyberAudio.tap(880);
           vibrate(10);
@@ -3087,8 +3403,11 @@
         renderAll();
       });
 
-      els.sortModeSelect.addEventListener("change", () => {
-        try { localStorage.setItem(STORAGE_KEY_SORT_MODE, els.sortModeSelect.value); } catch(e){}
+      els.sortModeBtn.addEventListener("click", () => {
+        state.sortMode = state.sortMode === "quality" ? "price" : "quality";
+        try { localStorage.setItem(STORAGE_KEY_SORT_MODE, state.sortMode); } catch(e){}
+        CyberAudio.tap(760);
+        vibrate(10);
         renderTable();
       });
       els.sortDirBtn.addEventListener("click", () => {
@@ -3120,7 +3439,8 @@
         if (savedCompare !== null) state.showComparison = (savedCompare === "true");
 
         const savedSortMode = localStorage.getItem(STORAGE_KEY_SORT_MODE);
-        if (savedSortMode !== null) els.sortModeSelect.value = savedSortMode;
+        if (savedSortMode === "quality" || savedSortMode === "price") state.sortMode = savedSortMode;
+        if (els.sortModeBtn) els.sortModeBtn.textContent = state.sortMode === "quality" ? "依品階排序" : "依價值排序";
 
         const savedSortDir = localStorage.getItem(STORAGE_KEY_SORT_DIR);
         if (savedSortDir !== null) state.sortDirection = savedSortDir;
@@ -3460,13 +3780,6 @@
           window.addEventListener("click", reqTouch, { once: true });
         }
 
-        // 解決手機無空白處解法 1：頁面自然滾動慣性聯動！滑動頁面時核心自動上下彈跳
-        let lastScrY = window.scrollY;
-        window.addEventListener("scroll", () => {
-          const dy = window.scrollY - lastScrY;
-          velY -= dy * 0.4;
-          lastScrY = window.scrollY;
-        }, { passive: true });
 
         // 解決手機無空白處解法 2：全螢幕雙指任意滑動 (在卡片/表格/按鈕上均可直接轉動3D空間)
         let lastTouchMidX = 0, lastTouchMidY = 0;
@@ -3577,7 +3890,7 @@
               celestialGroup.visible = true;
               shakeEnergy = 0;
               vibrate(30);
-              if (window.pulse3DReactor) window.pulse3DReactor("彩色");
+              if (window.pulse3DReactor) window.pulse3DReactor("至臻");
             }
           }
 
