@@ -1696,6 +1696,7 @@
 
       /* 賽博龐克頁尾 (Cyber Footer) */
       .cyber-footer-3d {
+        position: relative;
         margin-top: 26px;
         padding: 18px 16px;
         text-align: center;
@@ -1719,6 +1720,44 @@
         align-items: center;
         gap: 9px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+
+      .footer-badge-row,
+      .footer-copyright,
+      .footer-links-row {
+        position: relative;
+        z-index: 1;
+      }
+
+      .footer-astra-tag {
+        position: absolute;
+        bottom: 12px;
+        left: 16px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: rgba(36, 208, 198, 0.55);
+        text-shadow: 0 0 10px rgba(36, 208, 198, 0.35);
+        pointer-events: none;
+        z-index: 0;
+        user-select: none;
+      }
+
+      .mobile-only {
+        display: none !important;
+      }
+      .desktop-only {
+        display: block !important;
+      }
+
+      @media (max-width: 768px) {
+        .mobile-only {
+          display: block !important;
+        }
+        .desktop-only {
+          display: none !important;
+        }
       }
 
       .footer-badge-row {
@@ -1809,14 +1848,14 @@
 
       .stealth-astra-tag {
         position: fixed;
-        bottom: clamp(74px, 8.8vh, 92px);
-        left: clamp(20px, 4.5vw, 32px);
+        bottom: 16px;
+        left: 20px;
         font-family: "Share Tech Mono", monospace;
         font-size: 14px;
         font-weight: 700;
         letter-spacing: 2px;
-        color: rgba(36, 208, 198, 0.6);
-        text-shadow: 0 0 10px rgba(36, 208, 198, 0.4);
+        color: rgba(36, 208, 198, 0.55);
+        text-shadow: 0 0 10px rgba(36, 208, 198, 0.35);
         pointer-events: none;
         z-index: 2;
         user-select: none;
@@ -1829,7 +1868,7 @@
     <div id="screenFlash" class="screen-flash-overlay"></div>
     <div class="holo-overlay"></div>
     <div class="stealth-astra-bg" aria-hidden="true">ASTRA</div>
-    <div class="stealth-astra-tag" aria-hidden="true">Astra</div>
+    <div class="stealth-astra-tag desktop-only" aria-hidden="true">Astra</div>
 
     <main class="app-stage">
       <header class="cyber-header-3d">
@@ -2051,8 +2090,9 @@
 
       <!-- 賽博龐克頁尾資訊 -->
       <footer class="cyber-footer-3d">
+        <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.3.3</span>
+          <span class="footer-badge">V2.3.5</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
