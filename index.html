@@ -2381,8 +2381,8 @@
         } catch(e){}
         CyberAudio.tap(state.allowExtraDecimals ? 880 : 620);
         vibrate(10);
+        const crop = getSelectedCrop();
         if (!state.allowExtraDecimals) {
-          const crop = getSelectedCrop();
           if (state.lastEditedField === "weight") {
             if (els.weightInput.value.trim() !== "") {
               els.weightInput.value = roundTo2(els.weightInput.value);
@@ -2391,6 +2391,16 @@
           } else {
             if (els.percentInput.value.trim() !== "") {
               els.percentInput.value = roundTo2(els.percentInput.value);
+              setWeightFromPercent(crop);
+            }
+          }
+        } else {
+          if (state.lastEditedField === "weight") {
+            if (els.weightInput.value.trim() !== "") {
+              setPercentFromWeight(crop);
+            }
+          } else {
+            if (els.percentInput.value.trim() !== "") {
               setWeightFromPercent(crop);
             }
           }
