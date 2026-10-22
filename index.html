@@ -136,7 +136,7 @@
 
       .app-stage {
         position: relative;
-        z-index: 2;
+        z-index: 3;
         width: min(980px, 100% - 16px);
         margin: 0 auto;
         padding: max(env(safe-area-inset-top, 10px), 10px) 0 max(env(safe-area-inset-bottom, 24px), 36px);
@@ -679,17 +679,17 @@
 
       #dropdownCropsContainer {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 5px;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 6px;
       }
 
       .dropdown-item-btn {
         width: 100%;
-        padding: 6px 2px;
-        min-height: 48px;
+        padding: 7px 5px;
+        min-height: 54px;
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 0;
-        clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
         color: #fff;
         display: flex;
         flex-direction: column;
@@ -703,19 +703,18 @@
       }
 
       .dropdown-item-btn span:first-child {
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 800;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         width: 100%;
-        letter-spacing: -0.2px;
       }
 
       .dropdown-item-btn span:last-child {
-        font-size: 10px;
+        font-size: 10.5px;
         opacity: 0.9;
-        margin-top: 1px;
+        margin-top: 2px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1496,6 +1495,20 @@
           grid-template-columns: repeat(3, 1fr);
           gap: 6px;
         }
+        #dropdownCropsContainer {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 6px;
+        }
+        .dropdown-item-btn {
+          min-height: 52px;
+          padding: 7px 4px;
+        }
+        .dropdown-item-btn span:first-child {
+          font-size: 13px;
+        }
+        .dropdown-item-btn span:last-child {
+          font-size: 10.5px;
+        }
         .crop-card-3d {
           min-height: 56px;
           padding: 7px 6px;
@@ -1796,16 +1809,16 @@
 
       .stealth-astra-tag {
         position: fixed;
-        bottom: 14px;
-        left: 16px;
+        bottom: clamp(74px, 8.8vh, 92px);
+        left: clamp(20px, 4.5vw, 32px);
         font-family: "Share Tech Mono", monospace;
         font-size: 14px;
         font-weight: 700;
         letter-spacing: 2px;
-        color: rgba(36, 208, 198, 0.5);
-        text-shadow: 0 0 10px rgba(36, 208, 198, 0.35);
+        color: rgba(36, 208, 198, 0.6);
+        text-shadow: 0 0 10px rgba(36, 208, 198, 0.4);
         pointer-events: none;
-        z-index: 1;
+        z-index: 2;
         user-select: none;
       }
     </style>
@@ -2682,8 +2695,8 @@
           els.cropQualityBadge.className = `b-quality-badge q-theme-${current.quality}`;
         }
         const maxTimeSec = (Number(current.growthSpeed) || 0) * Number(current.maxWeight);
-        const maxTimeText = maxTimeSec > 0 ? `滿重耗時：約${formatDuration(maxTimeSec)}` : `成熟耗時：暫無數據`;
-        els.cropSubMeta.textContent = `MAX:${formatNumber(current.maxWeight)}KG • ${maxTimeText}`;
+        const maxTimeText = maxTimeSec > 0 ? `滿重耗時:約${formatDuration(maxTimeSec)}` : `成熟耗時:暫無數據`;
+        els.cropSubMeta.textContent = `MAX:${formatNumber(current.maxWeight)}KG•${maxTimeText}`;
 
         if (els.dropdownLabelText) {
           els.dropdownLabelText.textContent = `作物清單：${displayName(current.name)}（${displayName(current.quality)}）`;
@@ -3670,13 +3683,6 @@
           window.addEventListener("click", reqTouch, { once: true });
         }
 
-        // 解決手機無空白處解法 1：頁面自然滾動慣性聯動！滑動頁面時核心自動上下彈跳
-        let lastScrY = window.scrollY;
-        window.addEventListener("scroll", () => {
-          const dy = window.scrollY - lastScrY;
-          velY -= dy * 0.4;
-          lastScrY = window.scrollY;
-        }, { passive: true });
 
         // 解決手機無空白處解法 2：全螢幕雙指任意滑動 (在卡片/表格/按鈕上均可直接轉動3D空間)
         let lastTouchMidX = 0, lastTouchMidY = 0;
