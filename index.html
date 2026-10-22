@@ -922,6 +922,23 @@
         box-shadow: 0 0 10px var(--neon-lime);
       }
 
+      .cyber-toggle-pill.mini {
+        width: 34px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+
+      .cyber-toggle-pill.mini::after {
+        top: 1.5px;
+        left: 2.5px;
+        width: 12px;
+        height: 12px;
+      }
+
+      .switch-label-group input:checked + .cyber-toggle-pill.mini::after {
+        transform: translateX(15px);
+      }
+
       .table-container-3d {
         margin-top: 12px;
         overflow-x: auto;
@@ -1310,9 +1327,21 @@
             </div>
           </div>
 
-          <!-- 可輸入超過兩位小數開關列 -->
-          <div class="decimals-bar-3d" style="display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: rgba(5, 12, 28, 0.7); border: 1px solid rgba(0, 246, 255, 0.22); border-radius: 10px;">
-            <span style="font-size: 12px; font-weight: 800; color: var(--neon-cyan);">⚙️ 小數點輸入精度</span>
+          <!-- 小數點精度與輸入清除設定列 -->
+          <div class="decimals-bar-3d" style="display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: rgba(5, 12, 28, 0.7); border: 1px solid rgba(0, 246, 255, 0.22); border-radius: 10px; gap: 8px; flex-wrap: wrap;">
+            <!-- 左側：輸入時暫清原值開關（依是否開啟超2位小數切換顯示 (2) 或 (>2)） -->
+            <label id="autoClear2Label" class="switch-label-group" for="autoClear2Toggle" style="gap: 6px; cursor: pointer; margin-bottom: 0;" title="輸入時暫時清除原數值 (2位小數模式)">
+              <span style="font-size: 12px; font-weight: 700; color: #fff;">輸入時暫清原值(2)</span>
+              <input id="autoClear2Toggle" type="checkbox" />
+              <div class="cyber-toggle-pill mini"></div>
+            </label>
+            <label id="autoClearMoreLabel" class="switch-label-group" for="autoClearMoreToggle" style="gap: 6px; cursor: pointer; margin-bottom: 0; display: none;" title="輸入時暫時清除原數值 (>2位小數模式)">
+              <span style="font-size: 12px; font-weight: 700; color: #fff;">輸入時暫清原值(&gt;2)</span>
+              <input id="autoClearMoreToggle" type="checkbox" />
+              <div class="cyber-toggle-pill mini"></div>
+            </label>
+
+            <!-- 右側：可輸入超過兩位小數開關 -->
             <label class="switch-label-group" for="allowExtraDecimalsToggle" style="gap: 8px; cursor: pointer; margin-bottom: 0;">
               <span style="font-size: 12px; font-weight: 700; color: #fff;">可輸入超過兩位小數</span>
               <input id="allowExtraDecimalsToggle" type="checkbox" />
@@ -1425,7 +1454,7 @@
       <!-- 賽博龐克頁尾資訊 -->
       <footer class="cyber-footer-3d">
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.1.1</span>
+          <span class="footer-badge">V2.1.2</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -1488,6 +1517,8 @@
       const STORAGE_KEY_SORT_MODE = "farm_sort_mode_pref";
       const STORAGE_KEY_SORT_DIR = "farm_sort_dir_pref";
       const STORAGE_KEY_DECIMALS = "farm_decimals_pref";
+      const STORAGE_KEY_AUTOCLEAR_2 = "farm_autoclear_2_pref";
+      const STORAGE_KEY_AUTOCLEAR_MORE = "farm_autoclear_more_pref";
       const STORAGE_KEY_PRICE_DECIMALS = "farm_price_decimals_pref";
 
       const RECIPES = [
@@ -1536,6 +1567,8 @@
         dropdownFilterQuality: null, // 下拉選單品階篩選
         soundEnabled: true,
         allowExtraDecimals: false,
+        autoClear2: true,
+        autoClearMore: false,
         lastEditedField: "percent",
         priceDigits: 2
       };
@@ -1570,6 +1603,10 @@
         soundToggleBtn: document.getElementById("soundToggleBtn"),
         soundIconText: document.getElementById("soundIconText"),
         allowExtraDecimalsToggle: document.getElementById("allowExtraDecimalsToggle"),
+        autoClear2Toggle: document.getElementById("autoClear2Toggle"),
+        autoClearMoreToggle: document.getElementById("autoClearMoreToggle"),
+        autoClear2Label: document.getElementById("autoClear2Label"),
+        autoClearMoreLabel: document.getElementById("autoClearMoreLabel"),
         valPrecTriggerBtn: document.getElementById("valPrecTriggerBtn"),
         valPrecCurrentNum: document.getElementById("valPrecCurrentNum"),
         valPrecDropdownMenu: document.getElementById("valPrecDropdownMenu"),
@@ -2268,20 +2305,32 @@
         renderTable();
       }
 
-      // 5. 點擊清空數值，完全退出輸入狀態與游標防呆處理（若開啟允許超過兩位小數則不清空）
+      function updateAutoClearToggleVisibility() {
+        if (state.allowExtraDecimals) {
+          if (els.autoClear2Label) els.autoClear2Label.style.display = "none";
+          if (els.autoClearMoreLabel) els.autoClearMoreLabel.style.display = "flex";
+        } else {
+          if (els.autoClear2Label) els.autoClear2Label.style.display = "flex";
+          if (els.autoClearMoreLabel) els.autoClearMoreLabel.style.display = "none";
+        }
+      }
+
+      // 5. 點擊清空數值，完全退出輸入狀態與游標防呆處理（依據當前小數模式的暫清設定獨立控制）
       function setupAutoClearInput(input, isWeight) {
         input.addEventListener("focus", () => {
-          if (state.allowExtraDecimals) return;
           input.dataset.prevVal = input.value;
+          const shouldClear = state.allowExtraDecimals ? state.autoClearMore : state.autoClear2;
+          if (!shouldClear) return;
           input.value = "";
           input.dataset.justFocused = "true";
           setTimeout(() => { delete input.dataset.justFocused; }, 300);
           renderSelectedCrop();
         });
 
-        // 若游標因任何原因未消失而再次點擊，依然執行清空
+        // 若游標因任何原因未消失而再次點擊，依然依據設定執行清空
         input.addEventListener("click", () => {
-          if (state.allowExtraDecimals) return;
+          const shouldClear = state.allowExtraDecimals ? state.autoClearMore : state.autoClear2;
+          if (!shouldClear) return;
           if (!input.dataset.justFocused) {
             input.dataset.prevVal = input.value;
             input.value = "";
@@ -2379,6 +2428,7 @@
         try {
           localStorage.setItem(STORAGE_KEY_DECIMALS, state.allowExtraDecimals);
         } catch(e){}
+        updateAutoClearToggleVisibility();
         CyberAudio.tap(state.allowExtraDecimals ? 880 : 620);
         vibrate(10);
         const crop = getSelectedCrop();
@@ -2406,6 +2456,28 @@
           }
         }
       });
+
+      if (els.autoClear2Toggle) {
+        els.autoClear2Toggle.addEventListener("change", () => {
+          state.autoClear2 = els.autoClear2Toggle.checked;
+          try {
+            localStorage.setItem(STORAGE_KEY_AUTOCLEAR_2, state.autoClear2);
+          } catch(e){}
+          CyberAudio.tap(state.autoClear2 ? 880 : 620);
+          vibrate(10);
+        });
+      }
+
+      if (els.autoClearMoreToggle) {
+        els.autoClearMoreToggle.addEventListener("change", () => {
+          state.autoClearMore = els.autoClearMoreToggle.checked;
+          try {
+            localStorage.setItem(STORAGE_KEY_AUTOCLEAR_MORE, state.autoClearMore);
+          } catch(e){}
+          CyberAudio.tap(state.autoClearMore ? 880 : 620);
+          vibrate(10);
+        });
+      }
 
       // 2. 退回作物清單
       els.backToPickerBtn.addEventListener("click", () => {
@@ -2635,6 +2707,24 @@
           state.allowExtraDecimals = false;
         }
         els.allowExtraDecimalsToggle.checked = state.allowExtraDecimals;
+
+        const savedAutoClear2 = localStorage.getItem(STORAGE_KEY_AUTOCLEAR_2);
+        if (savedAutoClear2 !== null) {
+          state.autoClear2 = (savedAutoClear2 === "true");
+        } else {
+          state.autoClear2 = true;
+        }
+        if (els.autoClear2Toggle) els.autoClear2Toggle.checked = state.autoClear2;
+
+        const savedAutoClearMore = localStorage.getItem(STORAGE_KEY_AUTOCLEAR_MORE);
+        if (savedAutoClearMore !== null) {
+          state.autoClearMore = (savedAutoClearMore === "true");
+        } else {
+          state.autoClearMore = false;
+        }
+        if (els.autoClearMoreToggle) els.autoClearMoreToggle.checked = state.autoClearMore;
+
+        updateAutoClearToggleVisibility();
 
         const savedPriceDecimals = localStorage.getItem(STORAGE_KEY_PRICE_DECIMALS);
         if (savedPriceDecimals !== null && [2, 3, 4, 5, 6].includes(Number(savedPriceDecimals))) {
