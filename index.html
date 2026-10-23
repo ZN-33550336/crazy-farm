@@ -15,7 +15,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://zn-33550336.github.io/crazy-farm/" />
     <meta property="og:title" content="瘋狂農場 • 果實計算器" />
-    <meta property="og:description" content="精準計算果實售價、全47種詞條加成、全作物同屏對比、生長耗時分析，專為農場島主打造的果實試算工具！" />
+    <meta property="og:description" content="精準計算果實售價、全47種詞條加成、全作物同屏對比、生長耗時分析，專為農場島主打造的智能果實試算工具！" />
     <meta property="og:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
     <meta property="og:locale" content="zh_TW" />
 
@@ -1631,6 +1631,93 @@
         box-shadow: 0 0 20px rgba(36, 208, 198, 0.6);
       }
 
+      /* 農場黑名單專屬樣式 */
+      .btn-blacklist {
+        border-color: rgba(255, 42, 122, 0.45);
+        background: rgba(255, 42, 122, 0.12);
+        color: #ff6599;
+      }
+      .btn-blacklist:hover {
+        background: rgba(255, 42, 122, 0.28);
+        border-color: var(--neon-pink);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(255, 42, 122, 0.45);
+      }
+      .blacklist-table-wrap {
+        overflow-x: auto;
+        border: 1px solid rgba(255, 42, 122, 0.25);
+        background: rgba(4, 10, 20, 0.85);
+        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+        margin-top: 4px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .blacklist-table-3d {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12.5px;
+        text-align: left;
+      }
+      .blacklist-table-3d th {
+        padding: 10px 12px;
+        background: rgba(255, 42, 122, 0.14);
+        color: #ff9bbb;
+        font-weight: 800;
+        font-size: 11.5px;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid rgba(255, 42, 122, 0.28);
+        white-space: nowrap;
+      }
+      .blacklist-table-3d td {
+        padding: 9px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-light);
+        vertical-align: middle;
+      }
+      .blacklist-table-3d tr:last-child td {
+        border-bottom: none;
+      }
+      .blacklist-table-3d tr:hover {
+        background: rgba(255, 42, 122, 0.08);
+      }
+      .bl-name {
+        font-weight: 700;
+        color: #fff;
+        word-break: break-all;
+      }
+      .bl-id {
+        font-family: "Share Tech Mono", monospace;
+        color: var(--neon-cyan);
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        background: rgba(36, 208, 198, 0.08);
+        padding: 2px 6px;
+        border: 1px solid rgba(36, 208, 198, 0.2);
+        display: inline-block;
+      }
+      .bl-id-unknown {
+        color: var(--text-dim);
+        font-size: 11px;
+        font-style: italic;
+      }
+      .bl-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.35;
+        border-radius: 2px;
+      }
+      .bl-tag-danger {
+        background: rgba(255, 42, 122, 0.18);
+        border: 1px solid rgba(255, 42, 122, 0.4);
+        color: #ff6599;
+      }
+      .bl-tag-warn {
+        background: rgba(245, 196, 67, 0.15);
+        border: 1px solid rgba(245, 196, 67, 0.35);
+        color: var(--neon-gold);
+      }
+
       /* 賽博龐克頁尾 (Cyber Footer) */
       .cyber-footer-3d {
         position: relative;
@@ -1674,7 +1761,7 @@
         font-size: 13px;
         font-weight: 600;
         letter-spacing: 2px;
-        color: rgba(36, 208, 198, 0.22);
+        color: rgba(36, 208, 198, 0.11);
         text-shadow: none;
         pointer-events: none;
         z-index: 0;
@@ -1791,7 +1878,7 @@
         font-size: 13px;
         font-weight: 600;
         letter-spacing: 2px;
-        color: rgba(36, 208, 198, 0.22);
+        color: rgba(36, 208, 198, 0.11);
         text-shadow: none;
         pointer-events: none;
         z-index: 2;
@@ -1818,6 +1905,9 @@
           </div>
         </div>
         <div class="header-actions">
+          <button id="blacklistBtn" class="btn-3d-icon btn-blacklist" type="button" aria-label="查看農場黑名單">
+            <span>🚨 農場黑名單</span>
+          </button>
           <button id="soundToggleBtn" class="btn-3d-icon" type="button">
             <span id="soundIconText">🔊 音效</span>
           </button>
@@ -2029,7 +2119,7 @@
       <footer class="cyber-footer-3d">
         <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.3.6</span>
+          <span class="footer-badge">V2.3.7</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -2076,6 +2166,88 @@
         </div>
         <div class="modal-footer-3d">
           <button id="disclaimerConfirmBtn" class="modal-confirm-btn" type="button">我已瞭解並同意</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 農場黑名單彈窗 -->
+    <div id="blacklistModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="blacklistTitle">
+      <div class="modal-card-3d" style="max-width: 640px;">
+        <div class="modal-header-3d" style="border-bottom-color: rgba(255, 42, 122, 0.35); background: rgba(255, 42, 122, 0.08);">
+          <div id="blacklistTitle" class="modal-title-3d" style="color: #ff759f; text-shadow: 0 0 10px rgba(255, 42, 122, 0.5);">
+            <span>🚨</span> 農場通報黑名單
+          </div>
+          <button id="blacklistCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
+        </div>
+        <div class="modal-body-3d">
+          <div class="modal-section-card" style="border-color: rgba(255, 42, 122, 0.35); background: rgba(30, 10, 20, 0.65);">
+            <h4 style="color: #ff6599;">⚠️ 社群通報聲明</h4>
+            <p style="font-size: 12.5px; color: #dfc8d4; line-height: 1.65; margin: 0;">
+              本名單資料由玩家交流群組成員共同蒐集、發現並回報彙整，旨在提醒廣大農場島主留意交易安全與防範損失，<strong style="color: #fff;">非工具作者本人之個人立場與指控</strong>。若名單資訊有誤、雙方已達成和解或欲申請更正更新，請隨時聯繫社群管理進行反饋。
+            </p>
+          </div>
+
+          <div class="blacklist-table-wrap">
+            <table class="blacklist-table-3d">
+              <thead>
+                <tr>
+                  <th style="width: 28%;">玩家暱稱</th>
+                  <th style="width: 32%;">玩家 ID</th>
+                  <th style="width: 40%;">通報事由</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="bl-name">睡不醒喵</span></td>
+                  <td><code class="bl-id">0744712827</code></td>
+                  <td><span class="bl-tag bl-tag-danger">騙作物</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">#0乘</span></td>
+                  <td><span class="bl-id-unknown">未知</span></td>
+                  <td><span class="bl-tag bl-tag-danger">騙作物</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">乘</span></td>
+                  <td><code class="bl-id">1139752798</code></td>
+                  <td><span class="bl-tag bl-tag-danger">騙作物</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">菲</span></td>
+                  <td><code class="bl-id">1105813830</code></td>
+                  <td><span class="bl-tag bl-tag-warn">在旁邊附和幫忙騙作物</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">#c7093DB時透</span></td>
+                  <td><code class="bl-id">1133806328</code></td>
+                  <td><span class="bl-tag bl-tag-danger">騙大量蛋幣</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">无敌凤凰666</span></td>
+                  <td><code class="bl-id">1132615498</code></td>
+                  <td><span class="bl-tag bl-tag-danger">騙作物&amp;金灑</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">雅清月江254</span></td>
+                  <td><code class="bl-id">1140352543</code></td>
+                  <td><span class="bl-tag bl-tag-danger">騙作物</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">#B天空”</span></td>
+                  <td><span class="bl-id-unknown">未知</span></td>
+                  <td><span class="bl-tag bl-tag-warn">亂放流星仗</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">菇桃</span></td>
+                  <td><code class="bl-id">0021810911</code></td>
+                  <td><span class="bl-tag bl-tag-warn">三大象佔別人三塊地</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer-3d">
+          <button id="blacklistConfirmBtn" class="modal-confirm-btn" type="button" style="border-color: #ff3377; color: #ff6599; background: linear-gradient(135deg, rgba(255, 42, 122, 0.25), rgba(20, 6, 12, 0.9));">我已瞭解</button>
         </div>
       </div>
     </div>
@@ -2191,7 +2363,11 @@
         valPrecDropdownMenu: document.getElementById("valPrecDropdownMenu"),
         disclaimerModal: document.getElementById("disclaimerModal"),
         disclaimerCloseBtn: document.getElementById("disclaimerCloseBtn"),
-        disclaimerConfirmBtn: document.getElementById("disclaimerConfirmBtn")
+        disclaimerConfirmBtn: document.getElementById("disclaimerConfirmBtn"),
+        blacklistBtn: document.getElementById("blacklistBtn"),
+        blacklistModal: document.getElementById("blacklistModal"),
+        blacklistCloseBtn: document.getElementById("blacklistCloseBtn"),
+        blacklistConfirmBtn: document.getElementById("blacklistConfirmBtn")
       };
 
       // 音效引擎
@@ -3166,9 +3342,42 @@
         });
       }
 
+      // 農場黑名單彈窗交互
+      function openBlacklistModal() {
+        if (els.blacklistModal) {
+          els.blacklistModal.classList.add("active");
+          CyberAudio.tap(740);
+          vibrate(12);
+        }
+      }
+
+      function closeBlacklistModal() {
+        if (els.blacklistModal) {
+          els.blacklistModal.classList.remove("active");
+          CyberAudio.cancel();
+        }
+      }
+
+      if (els.blacklistBtn) els.blacklistBtn.addEventListener("click", openBlacklistModal);
+      if (els.blacklistCloseBtn) els.blacklistCloseBtn.addEventListener("click", closeBlacklistModal);
+      if (els.blacklistConfirmBtn) els.blacklistConfirmBtn.addEventListener("click", closeBlacklistModal);
+
+      if (els.blacklistModal) {
+        els.blacklistModal.addEventListener("click", (e) => {
+          if (e.target === els.blacklistModal) {
+            closeBlacklistModal();
+          }
+        });
+      }
+
       window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && els.disclaimerModal && els.disclaimerModal.classList.contains("active")) {
-          closeDisclaimerModal();
+        if (e.key === "Escape") {
+          if (els.disclaimerModal && els.disclaimerModal.classList.contains("active")) {
+            closeDisclaimerModal();
+          }
+          if (els.blacklistModal && els.blacklistModal.classList.contains("active")) {
+            closeBlacklistModal();
+          }
         }
       });
 
