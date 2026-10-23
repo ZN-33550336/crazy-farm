@@ -14,7 +14,7 @@
     <!-- Open Graph (LINE / Discord / Facebook 預覽卡片) -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://zn-33550336.github.io/crazy-farm/" />
-    <meta property="og:title" content="瘋狂農場•果實試算 ｜ 黑科技專業計算器" />
+    <meta property="og:title" content="瘋狂農場 • 果實計算器" />
     <meta property="og:description" content="精準計算果實售價、全47種詞條加成、全作物同屏對比、生長耗時分析，專為農場島主打造的果實試算工具！" />
     <meta property="og:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
     <meta property="og:locale" content="zh_TW" />
@@ -2100,7 +2100,7 @@
       <footer class="cyber-footer-3d">
         <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.3.5</span>
+          <span class="footer-badge">V2.3.6</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -2389,7 +2389,13 @@
       }
 
       function formatNumber(val, digits = (typeof state !== "undefined" && state.allowExtraDecimals ? 6 : 2)) {
-        return Number(val).toFixed(digits).replace(/\.?0+$/, "");
+        const n = Number(val);
+        if (!Number.isFinite(n)) return "";
+        let str = n.toFixed(digits).replace(/\.?0+$/, "");
+        if (n > 0 && (str === "" || str === "0")) {
+          str = n.toFixed(6).replace(/\.?0+$/, "");
+        }
+        return str;
       }
 
       function formatPrice(val, digits = (typeof state !== "undefined" && state.priceDigits ? state.priceDigits : 2)) {
@@ -2423,8 +2429,13 @@
         return String(Math.round(n * 100) / 100);
       }
 
-      function minWeight(crop) { return Number(crop.maxWeight) / 34; }
-      function minPercent(crop) { return Math.ceil((minWeight(crop) / Number(crop.maxWeight)) * 100); }
+      function minPercent(crop) {
+        return (typeof state !== "undefined" && state.allowExtraDecimals) ? 0.000001 : 0.01;
+      }
+      function minWeight(crop) {
+        if (!crop) return 0;
+        return (minPercent(crop) / 100) * Number(crop.maxWeight);
+      }
 
       function getSelectedCrop() {
         return state.crops.find((c) => c.name === state.selectedCropName) || state.crops[0];
@@ -3119,12 +3130,16 @@
           if (state.lastEditedField === "weight") {
             if (els.weightInput.value.trim() !== "") {
               els.weightInput.value = roundTo2(els.weightInput.value);
-              setPercentFromWeight(crop);
+              setPercentFromWeight(crop, { clamp: true });
             }
           } else {
             if (els.percentInput.value.trim() !== "") {
-              els.percentInput.value = roundTo2(els.percentInput.value);
-              setWeightFromPercent(crop);
+              let rounded = Number(roundTo2(els.percentInput.value));
+              if (Number(els.percentInput.value) > 0 && rounded < minPercent(crop)) {
+                rounded = minPercent(crop);
+              }
+              els.percentInput.value = formatNumber(rounded);
+              setWeightFromPercent(crop, { clamp: true });
             }
           }
         } else {
