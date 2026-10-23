@@ -313,15 +313,6 @@
         transform: translateY(-1px);
       }
 
-      .rainbow-q-text {
-        background: linear-gradient(90deg, #ff0055 0%, #ff7700 20%, #ffee00 40%, #00ff88 60%, #00f6ff 80%, #b53cff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-        font-weight: 900;
-        text-shadow: none;
-      }
-
       .filter-tab-pill[data-q="彩色"].active,
       .filter-tab-pill[data-q="至臻"].active {
         border-color: rgba(0, 246, 255, 0.75);
@@ -1390,59 +1381,6 @@
         box-shadow: 0 0 10px rgba(56, 232, 136, 0.8);
       }
 
-      .cyber-toggle-pill.mini {
-        width: 38px;
-        height: 18px;
-        background: rgba(3, 8, 14, 0.95);
-        border: 1px solid var(--border-cyan);
-        clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
-        border-radius: 0;
-        position: relative;
-        transition: all 0.25s ease;
-        flex-shrink: 0;
-      }
-
-      .cyber-toggle-pill.mini::after {
-        content: "";
-        position: absolute;
-        top: 2px;
-        left: 3px;
-        width: 12px;
-        height: 12px;
-        background: var(--text-dim);
-        clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
-        border-radius: 0;
-        box-shadow: none;
-        transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
-      }
-
-      .switch-label-group input:checked + .cyber-toggle-pill.mini {
-        border-color: var(--neon-lime);
-        background: rgba(56, 232, 136, 0.15);
-      }
-
-      .switch-label-group input:checked + .cyber-toggle-pill.mini::after {
-        transform: translateX(18px);
-        background: var(--neon-lime);
-        box-shadow: 0 0 10px rgba(56, 232, 136, 0.6);
-      }
-
-      .input-num-3d, .cyber-select-3d {
-        border: 1px solid rgba(36, 208, 198, 0.35);
-        clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
-        background: rgba(4, 12, 22, 0.92);
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        outline: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .input-num-3d:focus, .cyber-select-3d:focus {
-        border-color: var(--neon-cyan);
-        box-shadow: 0 0 12px rgba(36, 208, 198, 0.4);
-      }
-
       .table-container-3d {
         margin-top: 12px;
         overflow-x: auto;
@@ -1487,17 +1425,8 @@
       }
 
       @media (max-width: 520px) {
-        .app-layout {
-          width: min(980px, 100% - 10px);
-        }
         .panel-3d {
           padding: 12px 8px;
-        }
-        .inputs-3d-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .field-box-time {
-          grid-column: span 2;
         }
         .crop-grid-3d {
           grid-template-columns: repeat(3, 1fr);
@@ -2236,7 +2165,6 @@
         cropQualityBadge: document.getElementById("cropQualityBadge"),
         cropSubMeta: document.getElementById("cropSubMeta"),
         dropdownTriggerBtn: document.getElementById("dropdownTriggerBtn"),
-        dropdownLabelText: document.getElementById("dropdownLabelText"),
         dropdownMenuList: document.getElementById("dropdownMenuList"),
         weightInput: document.getElementById("weightInput"),
         percentInput: document.getElementById("percentInput"),
@@ -2261,7 +2189,6 @@
         valPrecTriggerBtn: document.getElementById("valPrecTriggerBtn"),
         valPrecCurrentNum: document.getElementById("valPrecCurrentNum"),
         valPrecDropdownMenu: document.getElementById("valPrecDropdownMenu"),
-        disclaimerOpenBtn: document.getElementById("disclaimerOpenBtn"),
         disclaimerModal: document.getElementById("disclaimerModal"),
         disclaimerCloseBtn: document.getElementById("disclaimerCloseBtn"),
         disclaimerConfirmBtn: document.getElementById("disclaimerConfirmBtn")
@@ -2762,10 +2689,6 @@
         const maxTimeText = maxTimeSec > 0 ? `滿重耗時:約${formatDuration(maxTimeSec)}` : `成熟耗時:暫無數據`;
         els.cropSubMeta.textContent = `MAX:${formatNumber(current.maxWeight)}KG•${maxTimeText}`;
 
-        if (els.dropdownLabelText) {
-          els.dropdownLabelText.textContent = `作物清單：${displayName(current.name)}（${displayName(current.quality)}）`;
-        }
-
         renderDropdownCrops();
       }
 
@@ -3231,7 +3154,6 @@
       }
 
       const footerDisclaimerBtn = document.getElementById("footerDisclaimerBtn");
-      if (els.disclaimerOpenBtn) els.disclaimerOpenBtn.addEventListener("click", openDisclaimerModal);
       if (footerDisclaimerBtn) footerDisclaimerBtn.addEventListener("click", openDisclaimerModal);
       if (els.disclaimerCloseBtn) els.disclaimerCloseBtn.addEventListener("click", closeDisclaimerModal);
       if (els.disclaimerConfirmBtn) els.disclaimerConfirmBtn.addEventListener("click", closeDisclaimerModal);
