@@ -3300,12 +3300,6 @@
               <div class="astra-toggle-switch"></div>
             </label>
           </div>
-
-          <!-- 4. 爆炸特效測試 -->
-          <div class="settings-clean-row">
-            <span class="settings-clean-label">💥 爆炸特效</span>
-            <button id="testSupernovaBtn" class="settings-mini-btn btn-danger-action" type="button">測試</button>
-          </div>
         </div>
         <div class="modal-footer-3d">
           <button id="settingsConfirmBtn" class="modal-confirm-btn" type="button">確定</button>
@@ -3429,7 +3423,6 @@
         themeDarkBtn: document.getElementById("themeDarkBtn"),
         themeLightBtn: document.getElementById("themeLightBtn"),
         settingGyroToggle: document.getElementById("settingGyroToggle"),
-        testSupernovaBtn: document.getElementById("testSupernovaBtn"),
         headerLogoGem: document.getElementById("headerLogoGem"),
         allowExtraDecimalsToggle: document.getElementById("allowExtraDecimalsToggle"),
         autoClear2Toggle: document.getElementById("autoClear2Toggle"),
@@ -4554,15 +4547,6 @@
             CyberAudio.cancel();
             vibrate(10);
           }
-        });
-      }
-
-      if (els.testSupernovaBtn) {
-        els.testSupernovaBtn.addEventListener("click", () => {
-          closeSettingsModal();
-          setTimeout(() => {
-            if (window.triggerSupernova) window.triggerSupernova();
-          }, 200);
         });
       }
 
