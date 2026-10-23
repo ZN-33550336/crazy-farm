@@ -2241,11 +2241,26 @@
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
       }
       body.theme-light .chip-color-彩色, body.theme-light .chip-color-至臻 {
-        --chip-border: rgba(225, 29, 72, 0.35);
-        --chip-bg: rgba(255, 228, 230, 0.85);
+        --chip-border: #d946ef;
+        --chip-bg: linear-gradient(135deg, rgba(255, 228, 230, 0.95) 0%, rgba(254, 249, 195, 0.9) 35%, rgba(224, 242, 254, 0.9) 70%, rgba(243, 232, 255, 0.95) 100%);
         --chip-active-bg: linear-gradient(135deg, #0284c7, #e11d48);
         --chip-glow: rgba(225, 29, 72, 0.25);
-        --chip-text: #9f1239;
+        --chip-text: #701a75;
+        background: 
+          linear-gradient(135deg, rgba(255, 228, 230, 0.95) 0%, rgba(254, 249, 195, 0.9) 35%, rgba(224, 242, 254, 0.9) 70%, rgba(243, 232, 255, 0.95) 100%) padding-box,
+          linear-gradient(135deg, #0284c7 0%, #06b6d4 20%, #10b981 40%, #f59e0b 60%, #ec4899 80%, #a855f7 100%) border-box !important;
+        border: 2px solid transparent !important;
+        box-shadow: 0 2px 8px rgba(217, 70, 239, 0.18) !important;
+      }
+      body.theme-light .chip-color-彩色:hover:not(.disabled):not(.selected),
+      body.theme-light .chip-color-至臻:hover:not(.disabled):not(.selected) {
+        box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3) !important;
+        transform: translateY(-1px);
+      }
+      body.theme-light .chip-color-彩色.selected, body.theme-light .chip-color-至臻.selected {
+        background: linear-gradient(135deg, #0284c7, #e11d48) !important;
+        border: 2px solid #ffffff !important;
+        color: #ffffff !important;
       }
       body.theme-light .chip-color-金色 {
         --chip-border: rgba(217, 119, 6, 0.35);
@@ -2977,12 +2992,12 @@
           <!-- 數值輸入矩陣 (公斤與百分比) -->
           <div class="input-chambers-grid">
             <div class="chamber-box">
-              <label><span>作物重量</span> <span class="unit-tag">[ KG ]</span></label>
+              <label><span id="weightRangeLabel">作物重量</span> <span class="unit-tag">[ KG ]</span></label>
               <input id="weightInput" class="chamber-input" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" />
             </div>
             <div class="chamber-box">
-              <label><span>重量比率</span> <span class="unit-tag">[ % ]</span></label>
-              <input id="percentInput" class="chamber-input" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="100" />
+              <label><span id="percentRangeLabel">3-100%</span> <span class="unit-tag">[ % ]</span></label>
+              <input id="percentInput" class="chamber-input" type="number" min="3" max="100" step="any" inputmode="decimal" placeholder="100" />
             </div>
           </div>
 
@@ -3080,7 +3095,7 @@
                 <span>全作物重量拉條</span>
                 <strong id="comparePercentLabel">100%</strong>
               </div>
-              <input id="comparePercentSlider" class="cyber-range" type="range" min="1" max="100" value="100" style="--slider-val: 100%;" />
+              <input id="comparePercentSlider" class="cyber-range" type="range" min="3" max="100" value="100" style="--slider-val: 100%;" />
             </div>
 
             <div class="compare-sort-bar" style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 8px; flex-wrap: wrap;">
@@ -3128,7 +3143,7 @@
       <footer class="cyber-footer-3d">
         <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">V2.4.0</span>
+          <span class="footer-badge">V3.4.1</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -3216,11 +3231,6 @@
                 </tr>
                 <tr>
                   <td><span class="bl-name">#0乘</span></td>
-                  <td><span class="bl-id-unknown">未知（歡迎提供）</span></td>
-                  <td><span class="bl-tag">騙作物</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">乘</span></td>
                   <td><code class="bl-id">1139752798</code></td>
                   <td><span class="bl-tag">騙作物</span></td>
                 </tr>
@@ -3246,13 +3256,18 @@
                 </tr>
                 <tr>
                   <td><span class="bl-name">#B天空”</span></td>
-                  <td><span class="bl-id-unknown">未知（歡迎提供）</span></td>
+                  <td><code class="bl-id">1139211491</code></td>
                   <td><span class="bl-tag">亂放流星仗</span></td>
                 </tr>
                 <tr>
                   <td><span class="bl-name">菇桃</span></td>
                   <td><code class="bl-id">0021810911</code></td>
                   <td><span class="bl-tag">三大象佔別人三塊地</span></td>
+                </tr>
+                <tr>
+                  <td><span class="bl-name">帥宸</span></td>
+                  <td><code class="bl-id">0342011115</code></td>
+                  <td><span class="bl-tag">大王菊捅地</span></td>
                 </tr>
               </tbody>
             </table>
@@ -3294,17 +3309,11 @@
 
           <!-- 3. 允許陀螺儀權限開關 -->
           <div class="settings-clean-row">
-            <span class="settings-clean-label">允許陀螺儀權限</span>
+            <span class="settings-clean-label">允許陀螺儀權限(背景互動)</span>
             <label class="switch-unit" style="margin: 0; cursor: pointer;">
               <input id="settingGyroToggle" type="checkbox" />
               <div class="astra-toggle-switch"></div>
             </label>
-          </div>
-
-          <!-- 4. 爆炸特效測試 -->
-          <div class="settings-clean-row">
-            <span class="settings-clean-label">💥 爆炸特效</span>
-            <button id="testSupernovaBtn" class="settings-mini-btn btn-danger-action" type="button">測試</button>
           </div>
         </div>
         <div class="modal-footer-3d">
@@ -3405,6 +3414,8 @@
         cropSubMeta: document.getElementById("cropSubMeta"),
         dropdownTriggerBtn: document.getElementById("dropdownTriggerBtn"),
         dropdownMenuList: document.getElementById("dropdownMenuList"),
+        weightRangeLabel: document.getElementById("weightRangeLabel"),
+        percentRangeLabel: document.getElementById("percentRangeLabel"),
         weightInput: document.getElementById("weightInput"),
         percentInput: document.getElementById("percentInput"),
         growthTimeBox: document.getElementById("growthTimeBox"),
@@ -3429,7 +3440,6 @@
         themeDarkBtn: document.getElementById("themeDarkBtn"),
         themeLightBtn: document.getElementById("themeLightBtn"),
         settingGyroToggle: document.getElementById("settingGyroToggle"),
-        testSupernovaBtn: document.getElementById("testSupernovaBtn"),
         headerLogoGem: document.getElementById("headerLogoGem"),
         allowExtraDecimalsToggle: document.getElementById("allowExtraDecimalsToggle"),
         autoClear2Toggle: document.getElementById("autoClear2Toggle"),
@@ -3611,7 +3621,7 @@
       }
 
       function minPercent(crop) {
-        return (typeof state !== "undefined" && state.allowExtraDecimals) ? 0.000001 : 0.01;
+        return 3;
       }
       function minWeight(crop) {
         if (!crop) return 0;
@@ -3943,6 +3953,15 @@
         const maxTimeSec = (Number(current.growthSpeed) || 0) * Number(current.maxWeight);
         const maxTimeText = maxTimeSec > 0 ? `滿重耗時:約${formatDuration(maxTimeSec)}` : `成熟耗時:暫無數據`;
         els.cropSubMeta.textContent = `MAX:${formatNumber(current.maxWeight)}KG•${maxTimeText}`;
+
+        if (els.weightRangeLabel) {
+          const minW = formatNumber(minWeight(current));
+          const maxW = formatNumber(current.maxWeight);
+          els.weightRangeLabel.textContent = `${minW}kg ~ ${maxW}kg`;
+        }
+        if (els.percentRangeLabel) {
+          els.percentRangeLabel.textContent = `3-100%`;
+        }
 
         renderDropdownCrops();
       }
@@ -4554,15 +4573,6 @@
             CyberAudio.cancel();
             vibrate(10);
           }
-        });
-      }
-
-      if (els.testSupernovaBtn) {
-        els.testSupernovaBtn.addEventListener("click", () => {
-          closeSettingsModal();
-          setTimeout(() => {
-            if (window.triggerSupernova) window.triggerSupernova();
-          }, 200);
         });
       }
 
