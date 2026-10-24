@@ -886,11 +886,17 @@
         transition: all 0.2s;
       }
 
-      .pct-cell:hover {
-        background: rgba(36, 208, 198, 0.22);
-        border-color: var(--neon-cyan);
-        color: #fff;
-        box-shadow: 0 0 8px rgba(36, 208, 198, 0.3);
+      .pct-cell:focus {
+        outline: none;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .pct-cell:hover {
+          background: rgba(36, 208, 198, 0.12);
+          border-color: rgba(36, 208, 198, 0.45);
+          color: #e2e8f0;
+          box-shadow: none;
+        }
       }
 
       .pct-cell:active {
@@ -898,11 +904,11 @@
       }
 
       .pct-cell.active {
-        background: linear-gradient(135deg, rgba(36, 208, 198, 0.35) 0%, rgba(36, 208, 198, 0.16) 100%);
-        border-color: var(--neon-cyan);
-        color: #fff;
-        box-shadow: 0 0 10px rgba(36, 208, 198, 0.45), inset 0 0 6px rgba(36, 208, 198, 0.25);
-        text-shadow: 0 0 8px rgba(36, 208, 198, 0.8);
+        background: linear-gradient(135deg, rgba(36, 208, 198, 0.35) 0%, rgba(36, 208, 198, 0.16) 100%) !important;
+        border-color: var(--neon-cyan) !important;
+        color: #fff !important;
+        box-shadow: 0 0 10px rgba(36, 208, 198, 0.45), inset 0 0 6px rgba(36, 208, 198, 0.25) !important;
+        text-shadow: 0 0 8px rgba(36, 208, 198, 0.8) !important;
       }
 
       /* 全作物對比基準拉條 (Astra Compare Slider Bar) */
@@ -2275,9 +2281,11 @@
         color: #1e293b;
         font-weight: 700;
       }
-      body.theme-light .pct-cell:hover {
-        background: #e2e8f0;
-        color: #0f172a;
+      @media (hover: hover) and (pointer: fine) {
+        body.theme-light .pct-cell:hover {
+          background: #e2e8f0;
+          color: #0f172a;
+        }
       }
       body.theme-light .pct-cell.active {
         background: #0284c7;
@@ -4999,9 +5007,10 @@
           const pct = Number(btn.dataset.pct);
 
           if (state.activeQuickPct === pct) {
-            // 再次點擊相同快捷按鈕：取消快捷狀態，回到上次輸入的值
+            // 再次點擊相同快捷按鈕：取消快捷狀態，熄滅按鈕，回到上次輸入的值
             state.activeQuickPct = null;
             updateQuickPctButtons();
+            btn.blur();
             CyberAudio.cancel();
             vibrate(10);
 
