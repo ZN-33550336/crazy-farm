@@ -3143,7 +3143,7 @@
       <footer class="cyber-footer-3d">
         <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">V3.4.1</span>
+          <span class="footer-badge">V3.4.2</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -3463,14 +3463,37 @@
         let ctx = null;
         function getCtx() {
           if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-          if (ctx.state === "suspended") ctx.resume();
+          if (ctx.state === "suspended") {
+            ctx.resume().catch(() => {});
+          }
           return ctx;
         }
+
+        function isUnlocked() {
+          return !!ctx && ctx.state === "running";
+        }
+
+        // 監聽使用者首次手勢解鎖音訊上下文（包含 pointermove/mousemove/wheel 等任意互動）
+        function unlockAudio() {
+          try {
+            const c = getCtx();
+            if (c.state === "suspended") {
+              c.resume().catch(() => {});
+            }
+          } catch(e) {}
+        }
+        ["click", "touchstart", "touchend", "pointerdown", "pointermove", "mousemove", "wheel", "keydown"].forEach((evt) => {
+          window.addEventListener(evt, unlockAudio, { passive: true });
+        });
+
         return {
+          unlock: unlockAudio,
+          isUnlocked: isUnlocked,
           tap: function(freq = 860) {
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") return; // 若尚未被瀏覽器解鎖，避免積壓延遲播放
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "sine";
@@ -3488,6 +3511,7 @@
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") return;
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "triangle";
@@ -3505,6 +3529,7 @@
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") return;
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "sine";
@@ -3522,6 +3547,13 @@
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") {
+                // 嘗試喚醒；若未喚醒則直接放棄該次播放，杜絕延遲播放
+                c.resume().then(() => {
+                  if (c.state === "running") CyberAudio.explode();
+                }).catch(() => {});
+                return;
+              }
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "sawtooth";
@@ -3554,6 +3586,7 @@
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") return;
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "sine";
@@ -5117,13 +5150,68 @@
         let explosionState = "IDLE"; // IDLE, EXPLODING, COLLAPSING
         let explosionTimer = 0;
 
-        // 電腦滑鼠移動互動
+        // 電腦滑鼠移動互動與劇烈來回快速晃動蓄能爆炸
+        let lastMouseX = null, lastMouseY = null;
+        let lastMouseTime = performance.now();
+        let lastMouseVx = 0, lastMouseVy = 0;
+        let lastDirX = 0, lastDirY = 0;
+        let mouseReversals = 0;
+        let lastReversalTime = 0;
+
         window.addEventListener("pointermove", (e) => {
           if (e.pointerType === "mouse") {
             const mx = (e.clientX - window.innerWidth / 2);
             const my = (e.clientY - window.innerHeight / 2);
             velX += mx * 0.008;
             velY -= my * 0.008;
+
+            const now = performance.now();
+            const dtMouse = Math.max(10, now - lastMouseTime); // 避免極短時間除以 0
+            if (lastMouseX !== null) {
+              const dx = e.clientX - lastMouseX;
+              const dy = e.clientY - lastMouseY;
+              const dist = Math.hypot(dx, dy);
+              const vx = (dx / dtMouse) * 1000; // px / 秒
+              const vy = (dy / dtMouse) * 1000;
+              const speed = Math.hypot(vx, vy);
+
+              // 只有大幅度、快速移動（移動距離 > 45px 且 速度 > 2400px/s）才計算方向
+              if (dist > 45 && speed > 2400) {
+                const curDirX = Math.sign(dx);
+                const curDirY = Math.sign(dy);
+
+                // 檢測方向反轉 (例如向左急轉向右，或向右急轉向左)
+                const isReversalX = (lastDirX !== 0 && curDirX !== 0 && curDirX !== lastDirX);
+                const isReversalY = (lastDirY !== 0 && curDirY !== 0 && curDirY !== lastDirY);
+
+                if (isReversalX || isReversalY) {
+                  // 如果距離上次反轉在 650ms 內，計為連續折返來回
+                  if (now - lastReversalTime < 650) {
+                    mouseReversals++;
+                  } else {
+                    mouseReversals = 1;
+                  }
+                  lastReversalTime = now;
+
+                  // 必須至少快速來回 2~3 次折返（mouseReversals >= 2），才累積爆炸能量
+                  if (mouseReversals >= 2) {
+                    shakeEnergy += 28;
+                  }
+                }
+
+                lastDirX = curDirX;
+                lastDirY = curDirY;
+              } else if (now - lastReversalTime > 800) {
+                // 超過 800ms 沒有快速折返，重置折返計數
+                mouseReversals = 0;
+              }
+
+              lastMouseVx = vx;
+              lastMouseVy = vy;
+            }
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            lastMouseTime = now;
           }
         }, { passive: true });
 
@@ -5354,7 +5442,9 @@
         const clock = new THREE.Clock();
         function animate3D() {
           requestAnimationFrame(animate3D);
-          const dt = clock.getDelta();
+          const rawDt = clock.getDelta();
+          // 防呆：初次載入或分頁切換時限制每幀最大步長，保證持續穩定自轉
+          const dt = (rawDt > 0 && rawDt < 0.1) ? rawDt : (1 / 60);
           const elapsed = clock.getElapsedTime();
 
           // 1. 彈簧阻尼運動學 (核心實體晃動跟隨與彈回)
@@ -5439,6 +5529,11 @@
               vibrate(30);
               if (window.pulse3DReactor) window.pulse3DReactor("至臻");
             }
+          }
+
+          // 脈衝超光速常規自然平滑衰減回常態 1
+          if (warpSpeed > 1) {
+            warpSpeed = Math.max(1, warpSpeed - dt * 3.5);
           }
 
           // 地平線網格推進
