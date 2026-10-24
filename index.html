@@ -1639,7 +1639,155 @@
       .changelog-card {
         margin-bottom: 12px;
         padding: 12px 14px;
+        transition: all 0.2s ease;
       }
+
+      /* 最新版本（V3.5.0）：專屬極光青／電光青邊框與高辨識呼吸微光 */
+      .changelog-card.changelog-latest-release {
+        background: linear-gradient(135deg, rgba(0, 246, 255, 0.14) 0%, rgba(6, 32, 54, 0.85) 100%);
+        border: 2px solid var(--neon-cyan);
+        box-shadow: 0 0 16px rgba(0, 246, 255, 0.32), inset 0 0 12px rgba(0, 246, 255, 0.12);
+      }
+      .changelog-card.changelog-latest-release .changelog-version-header {
+        border-bottom: 1px dashed rgba(0, 246, 255, 0.45);
+      }
+      .changelog-card.changelog-latest-release .changelog-version-badge {
+        color: var(--neon-cyan);
+        text-shadow: 0 0 10px rgba(0, 246, 255, 0.7);
+      }
+      .changelog-card.changelog-latest-release .changelog-version-tag {
+        background: rgba(0, 246, 255, 0.25);
+        border: 1px solid var(--neon-cyan);
+        color: #ffffff;
+        box-shadow: 0 0 8px rgba(0, 246, 255, 0.4);
+      }
+
+      /* 3.4.0 之後（常規公開發布版本）：科技紫晶／星河曜紫外框，與天青/翡翠/灰青鮮明區隔 */
+      .changelog-card.changelog-post-release {
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(20, 10, 36, 0.8) 100%);
+        border: 1.5px solid rgba(192, 132, 252, 0.65);
+        box-shadow: 0 0 14px rgba(168, 85, 247, 0.2);
+      }
+      .changelog-card.changelog-post-release .changelog-version-header {
+        border-bottom: 1px dashed rgba(192, 132, 252, 0.4);
+      }
+      .changelog-card.changelog-post-release .changelog-version-badge {
+        color: #d8b4fe;
+        text-shadow: 0 0 6px rgba(192, 132, 252, 0.45);
+      }
+      .changelog-card.changelog-post-release .changelog-version-tag {
+        background: rgba(168, 85, 247, 0.22);
+        border: 1px solid rgba(192, 132, 252, 0.6);
+        color: #f3e8ff;
+      }
+
+      /* 3.4.0（最特別里程碑版本）：翡翠霓光專屬醒目厚框與高光輝光 */
+      .changelog-card.changelog-milestone-release {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(5, 46, 32, 0.88) 100%);
+        border: 2px solid #10b981;
+        box-shadow: 0 0 18px rgba(16, 185, 129, 0.35), inset 0 0 14px rgba(16, 185, 129, 0.15);
+      }
+      .changelog-card.changelog-milestone-release .changelog-version-header {
+        border-bottom: 1px dashed rgba(16, 185, 129, 0.55);
+      }
+      .changelog-card.changelog-milestone-release .changelog-version-badge {
+        color: #34d399;
+        text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+      }
+      .changelog-card.changelog-milestone-release .changelog-version-tag {
+        background: rgba(16, 185, 129, 0.28);
+        border: 1px solid #10b981;
+        color: #a7f3d0;
+      }
+
+      /* 3.4.0 之前（歷史封測版本）：沈穩內斂暗岩灰青框 */
+      .changelog-card.changelog-pre-release {
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+      }
+      .changelog-card.changelog-pre-release .changelog-version-header {
+        border-bottom: 1px dashed rgba(148, 163, 184, 0.25);
+      }
+      .changelog-card.changelog-pre-release .changelog-version-badge {
+        color: #94a3b8;
+      }
+      .changelog-card.changelog-pre-release .changelog-version-tag {
+        background: rgba(148, 163, 184, 0.14);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        color: #cbd5e1;
+      }
+
+      /* 淺色模式下跟隨色系適配 */
+      body.theme-light .changelog-card.changelog-latest-release {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%) !important;
+        border: 2px solid #0284c7 !important;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28) !important;
+      }
+      body.theme-light .changelog-card.changelog-latest-release .changelog-version-header {
+        border-bottom-color: #38bdf8 !important;
+      }
+      body.theme-light .changelog-card.changelog-latest-release .changelog-version-badge {
+        color: #0369a1 !important;
+        text-shadow: none !important;
+      }
+      body.theme-light .changelog-card.changelog-latest-release .changelog-version-tag {
+        background: #0284c7 !important;
+        border-color: #0369a1 !important;
+        color: #ffffff !important;
+      }
+
+      body.theme-light .changelog-card.changelog-post-release {
+        background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%) !important;
+        border: 1.5px solid #a855f7 !important;
+        box-shadow: 0 2px 10px rgba(168, 85, 247, 0.18) !important;
+      }
+      body.theme-light .changelog-card.changelog-post-release .changelog-version-header {
+        border-bottom-color: #d8b4fe !important;
+      }
+      body.theme-light .changelog-card.changelog-post-release .changelog-version-badge {
+        color: #7e22ce !important;
+      }
+      body.theme-light .changelog-card.changelog-post-release .changelog-version-tag {
+        background: rgba(168, 85, 247, 0.14) !important;
+        border-color: #a855f7 !important;
+        color: #6b21a8 !important;
+      }
+
+      body.theme-light .changelog-card.changelog-milestone-release {
+        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+        border: 2px solid #059669 !important;
+        box-shadow: 0 3px 12px rgba(5, 150, 105, 0.22) !important;
+      }
+      body.theme-light .changelog-card.changelog-milestone-release .changelog-version-header {
+        border-bottom-color: #6ee7b7 !important;
+      }
+      body.theme-light .changelog-card.changelog-milestone-release .changelog-version-badge {
+        color: #047857 !important;
+        text-shadow: none !important;
+      }
+      body.theme-light .changelog-card.changelog-milestone-release .changelog-version-tag {
+        background: #10b981 !important;
+        border-color: #059669 !important;
+        color: #ffffff !important;
+      }
+
+      body.theme-light .changelog-card.changelog-pre-release {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+      }
+      body.theme-light .changelog-card.changelog-pre-release .changelog-version-header {
+        border-bottom-color: #e2e8f0 !important;
+      }
+      body.theme-light .changelog-card.changelog-pre-release .changelog-version-badge {
+        color: #475569 !important;
+      }
+      body.theme-light .changelog-card.changelog-pre-release .changelog-version-tag {
+        background: #e2e8f0 !important;
+        border-color: #cbd5e1 !important;
+        color: #475569 !important;
+      }
+
       .changelog-version-header {
         display: flex;
         align-items: center;
@@ -3424,7 +3572,7 @@
             </p>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-latest-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V3.5.0</span>
               <span class="changelog-version-tag">最新版本</span>
@@ -3438,7 +3586,7 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-post-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V3.4.2</span>
               <span class="changelog-version-tag">公開發布</span>
@@ -3448,19 +3596,18 @@
               <li><strong>動態重量範圍與百分比標示</strong>：輸入欄頂部提示文字改進，依據小數第六位開關動態切換高精度（如 1.356kg～45.2kg）與標準精度（如 1.36kg～45.2kg），百分比統一規範為 <code>3~100%</code>。</li>
               <li><strong>生長耗時讀數文字精簡</strong>：將「預估生長耗時讀數」精簡為「生長耗時:」，大幅釋放行動裝置螢幕排版空間。</li>
               <li><strong>至臻彩色詞條邊框光效調優</strong>：深色模式詞條外框回歸均衡深邃質感；白色背景下使用雙層漸層技術，使「星空 / 流光 / 霓虹」呈現流暢通透之彩色霓虹漸變外框。</li>
-              <li><strong>電腦端滑鼠甩動超載爆發機制</strong>：3D 空間動力學引擎升級，支援電腦滑鼠快速來回甩動累積能量，引發超新星大爆炸。</li>
               <li><strong>黑名單資料庫擴充與校驗</strong>：新增玩家「帥宸」（ID：<code>0342011115</code>，大王菊捅地）；更新玩家「#B天空”」遊戲 ID 為 <code>1139211491</code>；整併重複項。</li>
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-milestone-release">
             <div class="changelog-version-header">
-              <span class="changelog-version-badge" style="color: #38e888;">V3.4.0</span>
-              <span class="changelog-version-tag" style="background: rgba(56, 232, 136, 0.18); border-color: #38e888; color: #38e888; font-weight: 800;">正式公開發布版</span>
+              <span class="changelog-version-badge">V3.4.0</span>
+              <span class="changelog-version-tag">正式公開發布版</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>🌟 首次全網公開發行</strong>：本工具歷經多輪內部封測後，正式面向全體農場玩家公開上線之里程碑版本！</li>
-              <li><strong>農場黑名單系統首發實裝</strong>：正式新增右上角「🚨 農場黑名單」專屬 3D 警示視窗，內建表格記錄已知違規偷菜玩家名單與行徑說明，附帶客觀嚴謹社群免責聲明。</li>
+              <li><strong>農場黑名單系統首發實裝</strong>：正式新增右上角「🚨 農場黑名單」專屬警示視窗，內建表格記錄已知違規玩家名單與行徑說明，以及社群通報聲明。</li>
               <li><strong>3D 空間動力學超新星天體</strong>：搭載全新 3D 巨型超新星天體與星雲粒子，支援游標傾角追蹤、手機姿態陀螺儀即時擺動與超新星過載大爆炸。</li>
               <li><strong>雙向高精度試算引擎</strong>：支援重量與百分比雙向即時精確推估、詞條加成矩陣與生長耗時即時推算。</li>
               <li><strong>全作物即時比對系統</strong>：展開下方所有作物的價值對比表格，支援依品階或價值排序，附帶自訂全作物重量比率滑桿。</li>
@@ -3469,10 +3616,10 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V3.3.5</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>柔和護眼淺色主題導入</strong>：採用低反光灰白紙質色階（<code>#edf1f6</code>～<code>#e2e8f0</code>），告別螢光死白；全站面板、卡片與輸入框重構高對比淺色適配。</li>
@@ -3481,10 +3628,10 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V3.3.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>全作物即時比對表格實裝</strong>：展開下方所有作物的價值對比表格，支援依品階或價值循環排序，附帶專屬小數 2～6 位精度切換。</li>
@@ -3494,10 +3641,10 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V3.2.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>總價值反應艙 2~6 位自訂精度</strong>：總價值艙右上方新增「小數: 2位」精確度切換下拉選單，支援自訂 2～6 位數即時切換與外點自動收合。</li>
@@ -3506,10 +3653,10 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V3.1.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>滿重生長耗時即時逆推</strong>：依據作物生長速度公式逆向推算單顆成熟與滿重所需總耗時，精準格式化為日時分秒。</li>
@@ -3518,23 +3665,23 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V3.0.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>3D 空間動力學引擎首次引入</strong>：導入 3D 空間天體動力學引擎，實裝核心恆星天體、渾天軌道環與星雲光點粒子。</li>
               <li><strong>游標傾角追蹤與手機陀螺儀響應</strong>：支援滑鼠游標三維動態傾角追蹤，以及行動裝置陀螺儀重力感應即時擺動。</li>
               <li><strong>科幻戰術 HUD 視覺語言奠定</strong>：全螢幕疊加戰術座標網格、掃描線微光與曜石深空底層（<code>#020712</code>）。</li>
-              <li><strong>超新星巨型深空背景浮水印</strong>：深空底部新增隱密文字浮水印，營造深邃空間沉浸感。</li>
+              <li><strong>超新星巨型深空背景浮水印</strong>：深空底部新增文字浮水印，營造深邃空間沉浸感。</li>
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V2.6.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>作物切換選單網格化重構</strong>：下拉切換作物選單重構為一排 4 欄緊湊響應式卡片網格，大幅提升換菜效率。</li>
@@ -3542,10 +3689,10 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V2.5.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>多詞條乘數複合加成矩陣</strong>：完善金色、彩色、紫色等多詞條加成矩陣疊加運算邏輯，精準符合遊戲真實結算。</li>
@@ -3555,10 +3702,10 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V2.1.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>初版詞條加成矩陣實裝</strong>：初步實裝多詞條加成矩陣運算法，支援多詞條複合疊加試算。</li>
@@ -3566,10 +3713,10 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V2.0.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+              <span class="changelog-version-tag">內部封測</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>架構全面現代化重構</strong>：程式碼擴充至約 1500 行，全面翻新前端結構為響應式卡片網格佈局。</li>
@@ -3579,10 +3726,10 @@
             </ul>
           </div>
 
-          <div class="modal-section-card changelog-card">
+          <div class="modal-section-card changelog-card changelog-pre-release">
             <div class="changelog-version-header">
               <span class="changelog-version-badge">V1.0.0</span>
-              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">最初原型</span>
+              <span class="changelog-version-tag">最初原型</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>初生原型誕生成型</strong>：誕生版本，最初僅約 500 行純 HTML/CSS/JS 代碼之極簡單頁試算原型。</li>
