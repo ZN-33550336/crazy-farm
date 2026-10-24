@@ -1973,7 +1973,7 @@
           align-items: center;
           justify-content: space-between;
           gap: 10px;
-          font-size: 11px;
+          font-size: 12px;
           color: var(--text-light);
           line-height: 1.5;
         }
@@ -1982,6 +1982,17 @@
           display: flex;
           align-items: center;
           gap: 4px;
+        }
+        @media (max-width: 768px) {
+          .settings-memory-tip-card {
+            font-size: 10px;
+            padding: 6px 9px;
+            line-height: 1.45;
+          }
+          .settings-memory-tip-btn {
+            font-size: 10.5px;
+            padding: 2.5px 8px;
+          }
         }
         .settings-memory-tip-btn {
           padding: 3px 10px;
