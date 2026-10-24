@@ -1737,8 +1737,124 @@
         color: #ff6599;
       }
 
-      /* Header 與按鈕防擠壓不折行最佳化 */
-      .header-title-box {
+        /* 首頁記憶提示卡片 (標籤與作物之間) */
+        .settings-memory-tip-card {
+          margin: 6px 0 10px 0;
+          padding: 8px 12px;
+          background: rgba(6, 18, 30, 0.7);
+          border: 1px solid rgba(36, 208, 198, 0.28);
+          border-left: 3px solid var(--neon-cyan);
+          clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          flex-wrap: wrap;
+          font-size: 12px;
+          color: var(--text-light);
+          line-height: 1.4;
+        }
+        .settings-memory-tip-text {
+          flex: 1 1 240px;
+        }
+        .settings-memory-tip-btn {
+          padding: 3px 10px;
+          font-size: 11.5px;
+          font-weight: 700;
+          color: var(--neon-cyan);
+          background: rgba(36, 208, 198, 0.12);
+          border: 1px solid rgba(36, 208, 198, 0.4);
+          cursor: pointer;
+          border-radius: 3px;
+          white-space: nowrap;
+          transition: all 0.15s ease;
+        }
+        .settings-memory-tip-btn:hover {
+          background: rgba(36, 208, 198, 0.25);
+          color: #fff;
+        }
+        body.theme-light .settings-memory-tip-card {
+          background: #f0fdf4;
+          border-color: #bbf7d0;
+          border-left-color: #10b981;
+          color: #166534;
+        }
+        body.theme-light .settings-memory-tip-btn {
+          background: #dcfce7;
+          border-color: #86efac;
+          color: #15803d;
+        }
+        body.theme-light .settings-memory-tip-btn:hover {
+          background: #bbf7d0;
+          color: #14532d;
+        }
+
+        /* 開關說明表格專屬樣式 */
+        .guide-table-wrap {
+          overflow-x: auto;
+          border: 1px solid rgba(36, 208, 198, 0.25);
+          background: rgba(4, 10, 20, 0.85);
+          clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+          margin-top: 4px;
+          -webkit-overflow-scrolling: touch;
+        }
+        .guide-table-3d {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 12.5px;
+          text-align: left;
+        }
+        .guide-table-3d th {
+          padding: 9px 12px;
+          background: rgba(36, 208, 198, 0.14);
+          color: var(--neon-cyan);
+          font-weight: 800;
+          font-size: 11.5px;
+          letter-spacing: 0.5px;
+          border-bottom: 1px solid rgba(36, 208, 198, 0.28);
+          white-space: nowrap;
+        }
+        .guide-table-3d td {
+          padding: 8px 12px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          color: var(--text-light);
+          vertical-align: middle;
+          line-height: 1.45;
+        }
+        .guide-table-3d tr:last-child td {
+          border-bottom: none;
+        }
+        .guide-table-3d tr:hover {
+          background: rgba(36, 208, 198, 0.06);
+        }
+        .guide-badge-name {
+          font-weight: 700;
+          color: var(--text-white);
+          white-space: nowrap;
+        }
+        body.theme-light .guide-table-wrap {
+          background: #ffffff !important;
+          border: 1px solid #cbd5e1 !important;
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
+        }
+        body.theme-light .guide-table-3d th {
+          background: #f1f5f9 !important;
+          color: #0284c7 !important;
+          border-bottom: 1px solid #cbd5e1 !important;
+        }
+        body.theme-light .guide-table-3d td {
+          background: #ffffff !important;
+          border-bottom: 1px solid #e2e8f0 !important;
+          color: #0f172a !important;
+        }
+        body.theme-light .guide-table-3d tr:hover td {
+          background: #f8fafc !important;
+        }
+        body.theme-light .guide-badge-name {
+          color: #0f172a !important;
+        }
+
+        .header-title-box {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -2710,11 +2826,12 @@
         color: #0284c7;
       }
 
-      /* 左下 Astra 標籤在淺色下微隱呈現 */
+      /* 左下 Astra 標籤在淺色下清楚呈現 */
       body.theme-light .stealth-astra-tag,
       body.theme-light .footer-astra-tag {
-        color: rgba(100, 116, 139, 0.14) !important;
-        font-weight: 600 !important;
+        color: rgba(2, 132, 199, 0.65) !important;
+        text-shadow: 0 0 10px rgba(2, 132, 199, 0.15) !important;
+        font-weight: 700 !important;
       }
       /* 背景中央 Astra 巨大浮水印清楚顯色 */
       body.theme-light .stealth-astra-bg {
@@ -2764,12 +2881,12 @@
         left: 16px;
         font-family: "Share Tech Mono", monospace;
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 2px;
-        color: rgba(36, 208, 198, 0.11);
-        text-shadow: none;
+        color: rgba(36, 208, 198, 0.35);
+        text-shadow: 0 0 10px rgba(36, 208, 198, 0.2);
         pointer-events: none;
-        z-index: 0;
+        z-index: 2;
         user-select: none;
       }
 
@@ -2881,12 +2998,12 @@
         left: 20px;
         font-family: "Share Tech Mono", monospace;
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: 2px;
-        color: rgba(36, 208, 198, 0.11);
-        text-shadow: none;
+        color: rgba(36, 208, 198, 0.35);
+        text-shadow: 0 0 10px rgba(36, 208, 198, 0.2);
         pointer-events: none;
-        z-index: 2;
+        z-index: 10;
         user-select: none;
       }
     </style>
@@ -2943,6 +3060,14 @@
             <button class="filter-tab-pill" type="button" data-q="綠色">綠色</button>
             <button class="filter-tab-pill" type="button" data-q="灰色">灰色</button>
           </div>
+
+          <!-- 標籤與作物之間的設定記憶提示卡片 -->
+          <div id="settingsMemoryTipCard" class="settings-memory-tip-card">
+            <span class="settings-memory-tip-text">
+              💡 本版開關細節較多，所有開關設定只需操作一次即會自動記憶，下次進入自動還原，無需重複設定。各項開關說明請見開關說明。
+            </span>
+            <button id="tipGuideBtn" class="settings-memory-tip-btn" type="button">開關說明</button>
+          </div>
         </div>
 
         <div id="pickerGrid" class="crop-grid-3d"></div>
@@ -2996,14 +3121,14 @@
               <input id="weightInput" class="chamber-input" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" />
             </div>
             <div class="chamber-box">
-              <label><span id="percentRangeLabel">3-100%</span> <span class="unit-tag">[ % ]</span></label>
+              <label><span id="percentRangeLabel">3~100%</span> <span class="unit-tag">[ % ]</span></label>
               <input id="percentInput" class="chamber-input" type="number" min="3" max="100" step="any" inputmode="decimal" placeholder="100" />
             </div>
           </div>
 
           <!-- 耗時讀數 -->
           <div class="time-hud-box">
-            <span class="time-label">⏱️ 預估生長耗時讀數:</span>
+            <span class="time-label">⏱️ 生長耗時:</span>
             <span id="growthTimeBox" class="time-val">-</span>
           </div>
 
@@ -3143,7 +3268,7 @@
       <footer class="cyber-footer-3d">
         <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">V3.4.1</span>
+          <span class="footer-badge">V3.4.3</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -3167,6 +3292,10 @@
           <button id="disclaimerCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
         </div>
         <div class="modal-body-3d">
+          <div class="modal-section-card">
+            <h4>🤝 使用視同同意聲明</h4>
+            <p>凡造訪或使用本計算器，即視為您已完整閱讀、瞭解並同意本免責聲明與版權宣告之全部內容；若您不同意本條款之任一部分，請立即停止使用本工具。</p>
+          </div>
           <div class="modal-section-card">
             <h4>💡 工具性質聲明</h4>
             <p>本工具為玩家社群愛好者自製之免費非官方輔助試算工具，旨在提供數值推估與作物收益參考，並非《蛋仔派對》（Eggy Party）或網易公司（NetEase Games）之官方應用程式或合作產品。</p>
@@ -3307,17 +3436,92 @@
             </label>
           </div>
 
-          <!-- 3. 允許陀螺儀權限開關 -->
+          <!-- 3. 背景互動開關 (電腦顯示滑鼠互動，手機顯示陀螺儀權限) -->
           <div class="settings-clean-row">
-            <span class="settings-clean-label">允許陀螺儀權限(背景互動)</span>
+            <span id="settingGyroLabel" class="settings-clean-label">允許滑鼠互動(背景互動)</span>
             <label class="switch-unit" style="margin: 0; cursor: pointer;">
               <input id="settingGyroToggle" type="checkbox" />
               <div class="astra-toggle-switch"></div>
             </label>
           </div>
+
+          <!-- 4. 隱藏提示開關 (隱藏標籤與作物之間的提示卡片，預設關閉) -->
+          <div class="settings-clean-row">
+            <span class="settings-clean-label">隱藏提示(首頁功能提示)</span>
+            <label class="switch-unit" style="margin: 0; cursor: pointer;">
+              <input id="settingHideTipToggle" type="checkbox" />
+              <div class="astra-toggle-switch"></div>
+            </label>
+          </div>
+
+          <!-- 5. 各開關功能說明按鈕 (隱藏提示打開後才在設定中顯示) -->
+          <div id="settingGuideRow" class="settings-clean-row" style="display: none;">
+            <span class="settings-clean-label">📖 各開關說明</span>
+            <button id="openSwitchGuideBtn" class="settings-mini-btn" type="button">說明</button>
+          </div>
         </div>
         <div class="modal-footer-3d">
           <button id="settingsConfirmBtn" class="modal-confirm-btn" type="button">確定</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 開關功能說明彈窗 -->
+    <div id="switchGuideModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="switchGuideTitle">
+      <div class="modal-card-3d" style="max-width: 600px;">
+        <div class="modal-header-3d">
+          <div id="switchGuideTitle" class="modal-title-3d">
+            <span>📖</span> 開關與按鈕功能說明
+          </div>
+          <button id="switchGuideCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
+        </div>
+        <div class="modal-body-3d">
+          <p style="font-size: 12.5px; color: var(--text-dim); margin-bottom: 8px;">
+            本工具所有功能均具備自動記憶功能，設定一次即持久生效：
+          </p>
+          <div class="guide-table-wrap">
+            <table class="guide-table-3d">
+              <thead>
+                <tr>
+                  <th style="width: 32%;">名稱</th>
+                  <th>功能說明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="guide-badge-name">輸入時暫清原值(2/6)</span></td>
+                  <td>點擊重量或比率輸入框時自動暫時清空舊數值方便重新鍵入；若未輸入並移開游標則自動還原原值。2位與6位模式各自獨立記憶。</td>
+                </tr>
+                <tr>
+                  <td><span class="guide-badge-name">可輸入到小數第六位</span></td>
+                  <td>開啟後作物重量與比率可精確輸入至小數後 6 位，且重量範圍顯示對應高精度數值；關閉時限制為 2 位小數。</td>
+                </tr>
+                <tr>
+                  <td><span class="guide-badge-name">小數: 2~6位</span></td>
+                  <td>設定計算機「總價值」或全作物比較表的「預估價值」顯示小數點位數（支援 2～6 位精確切換）。</td>
+                </tr>
+                <tr>
+                  <td><span class="guide-badge-name">全作物比較</span></td>
+                  <td>開啟後展開下方所有作物的價值對比表格，支援依品階或預估價值排序，並附帶全作物重量比率滑桿。</td>
+                </tr>
+                <tr>
+                  <td><span id="guideInteractiveName" class="guide-badge-name">允許滑鼠互動</span></td>
+                  <td id="guideInteractiveDesc">啟用電腦滑鼠互動，滑鼠游標移動時背景 3D 超新星會隨動力學即時傾角動態響應。</td>
+                </tr>
+                <tr>
+                  <td><span class="guide-badge-name">隱藏提示</span></td>
+                  <td>開啟後將隱藏首頁品階標籤與作物之間的「記憶與操作提示卡片」，並在設定中提供開關說明按鈕。</td>
+                </tr>
+                <tr>
+                  <td><span class="guide-badge-name">快捷百分比(100~55%)</span></td>
+                  <td>快速將當前作物設定為指定重量百分比，再次點擊相同按鈕可取消並還原上次輸入的自訂數值。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer-3d">
+          <button id="switchGuideConfirmBtn" class="modal-confirm-btn" type="button">我已瞭解</button>
         </div>
       </div>
     </div>
@@ -3340,6 +3544,7 @@
       const STORAGE_KEY_COMPARE_PRICE_DECIMALS = "farm_compare_price_decimals_pref";
       const STORAGE_KEY_THEME = "farm_theme_pref";
       const STORAGE_KEY_GYRO = "farm_gyro_pref";
+      const STORAGE_KEY_HIDE_TIP = "farm_hide_tip_pref";
 
       const RECIPES = [
         { ingredients: ["生机", "潮湿"], result: "琥珀" },
@@ -3397,6 +3602,7 @@
         priceDigits: 2,
         comparePriceDigits: 2,
         gyroEnabled: true,
+        hideTip: false,
         theme: "dark"
       };
 
@@ -3405,6 +3611,7 @@
         calculatorView: document.getElementById("calculatorView"),
         pickerSearch: document.getElementById("pickerSearch"),
         qualityTabs: document.getElementById("qualityTabs"),
+        settingsMemoryTipCard: document.getElementById("settingsMemoryTipCard"),
         pickerGrid: document.getElementById("pickerGrid"),
         backToPickerBtn: document.getElementById("backToPickerBtn"),
         resetMutationsBtn: document.getElementById("resetMutationsBtn"),
@@ -3439,7 +3646,12 @@
         settingSoundToggle: document.getElementById("settingSoundToggle"),
         themeDarkBtn: document.getElementById("themeDarkBtn"),
         themeLightBtn: document.getElementById("themeLightBtn"),
+        settingGyroLabel: document.getElementById("settingGyroLabel"),
         settingGyroToggle: document.getElementById("settingGyroToggle"),
+        settingHideTipToggle: document.getElementById("settingHideTipToggle"),
+        settingGuideRow: document.getElementById("settingGuideRow"),
+        guideInteractiveName: document.getElementById("guideInteractiveName"),
+        guideInteractiveDesc: document.getElementById("guideInteractiveDesc"),
         headerLogoGem: document.getElementById("headerLogoGem"),
         allowExtraDecimalsToggle: document.getElementById("allowExtraDecimalsToggle"),
         autoClear2Toggle: document.getElementById("autoClear2Toggle"),
@@ -3449,6 +3661,11 @@
         valPrecTriggerBtn: document.getElementById("valPrecTriggerBtn"),
         valPrecCurrentNum: document.getElementById("valPrecCurrentNum"),
         valPrecDropdownMenu: document.getElementById("valPrecDropdownMenu"),
+        switchGuideModal: document.getElementById("switchGuideModal"),
+        switchGuideCloseBtn: document.getElementById("switchGuideCloseBtn"),
+        switchGuideConfirmBtn: document.getElementById("switchGuideConfirmBtn"),
+        openSwitchGuideBtn: document.getElementById("openSwitchGuideBtn"),
+        tipGuideBtn: document.getElementById("tipGuideBtn"),
         disclaimerModal: document.getElementById("disclaimerModal"),
         disclaimerCloseBtn: document.getElementById("disclaimerCloseBtn"),
         disclaimerConfirmBtn: document.getElementById("disclaimerConfirmBtn"),
@@ -3463,14 +3680,37 @@
         let ctx = null;
         function getCtx() {
           if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-          if (ctx.state === "suspended") ctx.resume();
+          if (ctx.state === "suspended") {
+            ctx.resume().catch(() => {});
+          }
           return ctx;
         }
+
+        function isUnlocked() {
+          return !!ctx && ctx.state === "running";
+        }
+
+        // 監聽使用者首次手勢解鎖音訊上下文（包含 pointermove/mousemove/wheel 等任意互動）
+        function unlockAudio() {
+          try {
+            const c = getCtx();
+            if (c.state === "suspended") {
+              c.resume().catch(() => {});
+            }
+          } catch(e) {}
+        }
+        ["click", "touchstart", "touchend", "pointerdown", "pointermove", "mousemove", "wheel", "keydown"].forEach((evt) => {
+          window.addEventListener(evt, unlockAudio, { passive: true });
+        });
+
         return {
+          unlock: unlockAudio,
+          isUnlocked: isUnlocked,
           tap: function(freq = 860) {
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") return; // 若尚未被瀏覽器解鎖，避免積壓延遲播放
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "sine";
@@ -3488,6 +3728,7 @@
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") return;
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "triangle";
@@ -3505,6 +3746,7 @@
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") return;
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "sine";
@@ -3522,6 +3764,13 @@
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") {
+                // 嘗試喚醒；若未喚醒則直接放棄該次播放，杜絕延遲播放
+                c.resume().then(() => {
+                  if (c.state === "running") CyberAudio.explode();
+                }).catch(() => {});
+                return;
+              }
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "sawtooth";
@@ -3554,6 +3803,7 @@
             if (!state.soundEnabled) return;
             try {
               const c = getCtx();
+              if (c.state === "suspended") return;
               const osc = c.createOscillator();
               const g = c.createGain();
               osc.type = "sine";
@@ -3960,7 +4210,7 @@
           els.weightRangeLabel.textContent = `${minW}kg ~ ${maxW}kg`;
         }
         if (els.percentRangeLabel) {
-          els.percentRangeLabel.textContent = `3-100%`;
+          els.percentRangeLabel.textContent = `3~100%`;
         }
 
         renderDropdownCrops();
@@ -4324,6 +4574,11 @@
         CyberAudio.tap(state.allowExtraDecimals ? 880 : 620);
         vibrate(10);
         const crop = getSelectedCrop();
+        if (els.weightRangeLabel) {
+          const minW = formatNumber(minWeight(crop));
+          const maxW = formatNumber(crop.maxWeight);
+          els.weightRangeLabel.textContent = `${minW}kg ~ ${maxW}kg`;
+        }
         if (!state.allowExtraDecimals) {
           if (state.lastEditedField === "weight") {
             if (els.weightInput.value.trim() !== "") {
@@ -4482,13 +4737,84 @@
         });
       }
 
+      // 裝置偵測：精準判斷電腦 (PC) 與行動裝置 (手機/平板)
+      function detectIsMobile() {
+        const ua = navigator.userAgent || "";
+        // 1. 若為 Windows 桌面作業系統（含觸控筆電、二合一筆電、桌機），一律視為電腦 (PC)
+        if (/Windows NT/i.test(ua) && !/Windows Phone|IEMobile/i.test(ua)) {
+          return false;
+        }
+        // 2. 若為 Mac 電腦（排除具備多點觸控之 iPad）
+        const isMac = /Macintosh/i.test(ua);
+        const isIPad = /iPad/i.test(ua) || (isMac && (navigator.maxTouchPoints > 1));
+        if (isMac && !isIPad) {
+          return false;
+        }
+        // 3. 若為 Linux 桌機（排除 Android 行動系統）
+        if (/Linux/i.test(ua) && !/Android/i.test(ua)) {
+          return false;
+        }
+        // 4. 行動裝置 UA 判定 (Android, iPhone, iPod, iPad, BlackBerry, IEMobile 等)
+        if (/Android|iPhone|iPod|iPad|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua) || isIPad) {
+          return true;
+        }
+        // 5. 備用判定：支援精細游標與 hover 者為電腦
+        if (window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          return false;
+        }
+        return ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+      }
+
+      let isMobileDevice = detectIsMobile();
+
+      function updateDeviceSpecificUI() {
+        if (els.settingGyroLabel) {
+          els.settingGyroLabel.textContent = isMobileDevice 
+            ? "允許陀螺儀權限(背景互動)" 
+            : "允許滑鼠互動(背景互動)";
+        }
+        if (els.guideInteractiveName) {
+          els.guideInteractiveName.textContent = isMobileDevice 
+            ? "允許陀螺儀權限" 
+            : "允許滑鼠互動";
+        }
+        if (els.guideInteractiveDesc) {
+          els.guideInteractiveDesc.textContent = isMobileDevice 
+            ? "啟用行動裝置姿態感應，晃動或傾斜裝置時背景 3D 超新星會隨動力學即時傾角擺動。(開啟電腦版網站更清楚)" 
+            : "啟用電腦滑鼠互動，滑鼠游標移動時背景 3D 超新星會隨動力學即時傾角動態響應。";
+        }
+      }
+
+      // 立即執行一次確保介面初始文字與裝置匹配
+      updateDeviceSpecificUI();
+
+      // 若偵測到滑鼠指標實體移動且當前誤判為行動模式，立即校正為滑鼠模式
+      window.addEventListener("pointermove", (e) => {
+        if (e.pointerType === "mouse" && isMobileDevice) {
+          isMobileDevice = false;
+          updateDeviceSpecificUI();
+        }
+      }, { passive: true });
+
+      function updateHideTipVisibility() {
+        if (els.settingsMemoryTipCard) {
+          els.settingsMemoryTipCard.style.display = state.hideTip ? "none" : "";
+        }
+        // 設定裡面的開關說明：隱藏提示打開後才在設定介面顯示
+        if (els.settingGuideRow) {
+          els.settingGuideRow.style.display = state.hideTip ? "flex" : "none";
+        }
+      }
+
       // 系統設定彈窗交互
       function openSettingsModal() {
         if (els.settingsModal) {
+          updateDeviceSpecificUI();
           if (els.settingSoundToggle) els.settingSoundToggle.checked = state.soundEnabled;
           if (els.themeDarkBtn) els.themeDarkBtn.classList.toggle("active", state.theme === "dark");
           if (els.themeLightBtn) els.themeLightBtn.classList.toggle("active", state.theme === "light");
           if (els.settingGyroToggle) els.settingGyroToggle.checked = state.gyroEnabled;
+          if (els.settingHideTipToggle) els.settingHideTipToggle.checked = state.hideTip;
           els.settingsModal.classList.add("active");
           CyberAudio.tap(800);
           vibrate(10);
@@ -4505,6 +4831,36 @@
       if (els.settingsBtn) els.settingsBtn.addEventListener("click", openSettingsModal);
       if (els.settingsCloseBtn) els.settingsCloseBtn.addEventListener("click", closeSettingsModal);
       if (els.settingsConfirmBtn) els.settingsConfirmBtn.addEventListener("click", closeSettingsModal);
+
+      // 開關功能說明彈窗交互
+      function openSwitchGuideModal() {
+        if (els.switchGuideModal) {
+          updateDeviceSpecificUI();
+          els.switchGuideModal.classList.add("active");
+          CyberAudio.tap(800);
+          vibrate(10);
+        }
+      }
+
+      function closeSwitchGuideModal() {
+        if (els.switchGuideModal) {
+          els.switchGuideModal.classList.remove("active");
+          CyberAudio.cancel();
+        }
+      }
+
+      if (els.openSwitchGuideBtn) els.openSwitchGuideBtn.addEventListener("click", openSwitchGuideModal);
+      if (els.tipGuideBtn) els.tipGuideBtn.addEventListener("click", openSwitchGuideModal);
+      if (els.switchGuideCloseBtn) els.switchGuideCloseBtn.addEventListener("click", closeSwitchGuideModal);
+      if (els.switchGuideConfirmBtn) els.switchGuideConfirmBtn.addEventListener("click", closeSwitchGuideModal);
+
+      if (els.switchGuideModal) {
+        els.switchGuideModal.addEventListener("click", (e) => {
+          if (e.target === els.switchGuideModal) {
+            closeSwitchGuideModal();
+          }
+        });
+      }
 
       if (els.settingSoundToggle) {
         els.settingSoundToggle.addEventListener("change", () => {
@@ -4576,6 +4932,16 @@
         });
       }
 
+      if (els.settingHideTipToggle) {
+        els.settingHideTipToggle.addEventListener("change", () => {
+          state.hideTip = els.settingHideTipToggle.checked;
+          try { localStorage.setItem(STORAGE_KEY_HIDE_TIP, state.hideTip); } catch (e) {}
+          updateHideTipVisibility();
+          CyberAudio.tap(state.hideTip ? 880 : 620);
+          vibrate(10);
+        });
+      }
+
       // 彩蛋：三擊頂部 Logo Gem 觸發超新星大爆炸
       let logoClickCount = 0;
       let logoClickTimer = null;
@@ -4612,6 +4978,9 @@
           }
           if (els.settingsModal && els.settingsModal.classList.contains("active")) {
             closeSettingsModal();
+          }
+          if (els.switchGuideModal && els.switchGuideModal.classList.contains("active")) {
+            closeSwitchGuideModal();
           }
         }
       });
@@ -4928,6 +5297,16 @@
           state.gyroEnabled = true; // 預設開啟
         }
         if (els.settingGyroToggle) els.settingGyroToggle.checked = state.gyroEnabled;
+
+        const savedHideTip = localStorage.getItem(STORAGE_KEY_HIDE_TIP);
+        if (savedHideTip !== null) {
+          state.hideTip = (savedHideTip === "true");
+        } else {
+          state.hideTip = false; // 預設關閉
+        }
+        if (els.settingHideTipToggle) els.settingHideTipToggle.checked = state.hideTip;
+        updateHideTipVisibility();
+        updateDeviceSpecificUI();
       } catch(e){}
 
       // 初始化：進來固定為首頁且不預選標籤
@@ -5117,13 +5496,69 @@
         let explosionState = "IDLE"; // IDLE, EXPLODING, COLLAPSING
         let explosionTimer = 0;
 
-        // 電腦滑鼠移動互動
+        // 電腦滑鼠移動互動與劇烈來回快速晃動蓄能爆炸
+        let lastMouseX = null, lastMouseY = null;
+        let lastMouseTime = performance.now();
+        let lastMouseVx = 0, lastMouseVy = 0;
+        let lastDirX = 0, lastDirY = 0;
+        let mouseReversals = 0;
+        let lastReversalTime = 0;
+
         window.addEventListener("pointermove", (e) => {
           if (e.pointerType === "mouse") {
+            if (typeof state !== "undefined" && !state.gyroEnabled) return;
             const mx = (e.clientX - window.innerWidth / 2);
             const my = (e.clientY - window.innerHeight / 2);
             velX += mx * 0.008;
             velY -= my * 0.008;
+
+            const now = performance.now();
+            const dtMouse = Math.max(10, now - lastMouseTime); // 避免極短時間除以 0
+            if (lastMouseX !== null) {
+              const dx = e.clientX - lastMouseX;
+              const dy = e.clientY - lastMouseY;
+              const dist = Math.hypot(dx, dy);
+              const vx = (dx / dtMouse) * 1000; // px / 秒
+              const vy = (dy / dtMouse) * 1000;
+              const speed = Math.hypot(vx, vy);
+
+              // 只有大幅度、快速移動（移動距離 > 45px 且 速度 > 2400px/s）才計算方向
+              if (dist > 45 && speed > 2400) {
+                const curDirX = Math.sign(dx);
+                const curDirY = Math.sign(dy);
+
+                // 檢測方向反轉 (例如向左急轉向右，或向右急轉向左)
+                const isReversalX = (lastDirX !== 0 && curDirX !== 0 && curDirX !== lastDirX);
+                const isReversalY = (lastDirY !== 0 && curDirY !== 0 && curDirY !== lastDirY);
+
+                if (isReversalX || isReversalY) {
+                  // 如果距離上次反轉在 650ms 內，計為連續折返來回
+                  if (now - lastReversalTime < 650) {
+                    mouseReversals++;
+                  } else {
+                    mouseReversals = 1;
+                  }
+                  lastReversalTime = now;
+
+                  // 必須至少快速來回 2~3 次折返（mouseReversals >= 2），才累積爆炸能量
+                  if (mouseReversals >= 2) {
+                    shakeEnergy += 28;
+                  }
+                }
+
+                lastDirX = curDirX;
+                lastDirY = curDirY;
+              } else if (now - lastReversalTime > 800) {
+                // 超過 800ms 沒有快速折返，重置折返計數
+                mouseReversals = 0;
+              }
+
+              lastMouseVx = vx;
+              lastMouseVy = vy;
+            }
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            lastMouseTime = now;
           }
         }, { passive: true });
 
@@ -5354,7 +5789,9 @@
         const clock = new THREE.Clock();
         function animate3D() {
           requestAnimationFrame(animate3D);
-          const dt = clock.getDelta();
+          const rawDt = clock.getDelta();
+          // 防呆：初次載入或分頁切換時限制每幀最大步長，保證持續穩定自轉
+          const dt = (rawDt > 0 && rawDt < 0.1) ? rawDt : (1 / 60);
           const elapsed = clock.getElapsedTime();
 
           // 1. 彈簧阻尼運動學 (核心實體晃動跟隨與彈回)
@@ -5439,6 +5876,11 @@
               vibrate(30);
               if (window.pulse3DReactor) window.pulse3DReactor("至臻");
             }
+          }
+
+          // 脈衝超光速常規自然平滑衰減回常態 1
+          if (warpSpeed > 1) {
+            warpSpeed = Math.max(1, warpSpeed - dt * 3.5);
           }
 
           // 地平線網格推進
