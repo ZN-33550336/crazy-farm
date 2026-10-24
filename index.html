@@ -1964,6 +1964,7 @@
         .settings-memory-tip-card {
           margin: 6px 0 10px 0;
           padding: 8px 12px;
+          min-height: 40px;
           background: rgba(6, 18, 30, 0.7);
           border: 1px solid rgba(36, 208, 198, 0.28);
           border-left: 3px solid var(--neon-cyan);
@@ -1971,14 +1972,16 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 8px;
-          flex-wrap: wrap;
-          font-size: 12px;
+          gap: 10px;
+          font-size: 11px;
           color: var(--text-light);
-          line-height: 1.4;
+          line-height: 1.5;
         }
         .settings-memory-tip-text {
-          flex: 1 1 240px;
+          flex: 1 1 auto;
+          display: flex;
+          align-items: center;
+          gap: 4px;
         }
         .settings-memory-tip-btn {
           padding: 3px 10px;
@@ -3294,7 +3297,7 @@
           <!-- 標籤與作物之間的設定記憶提示卡片 -->
           <div id="settingsMemoryTipCard" class="settings-memory-tip-card">
             <span class="settings-memory-tip-text">
-              💡 本版開關細節較多，所有開關設定只需操作一次即會自動記憶，下次進入自動還原，無需重複設定。各項開關說明請見開關說明。
+              💡 本版開關細節較多，所有開關設定只需操作一次即會自動記憶，下次進入自動還原，無需重複設定。各項開關說明請見開關說明。(可於設定內隱藏此提示)
             </span>
             <button id="tipGuideBtn" class="settings-memory-tip-btn" type="button">開關說明</button>
           </div>
@@ -3586,9 +3589,9 @@
             </div>
             <ul class="changelog-ul">
               <li><strong>問題回報管道更新</strong>：頁尾「🐛 問題回報」連結已更換為我的 Discord 個人連結，方便大家有任何數值問題、BUG 或想法時直接向我回報。</li>
-              <li><strong>詞條分組歸類與排序調整</strong>：「幽魂」與「驚魂夜」詞條正式改歸類至「活動與下架詞條」分組，並依照「血月 → 幽魂 → 驚魂夜 → 金幣」精準排序。</li>
+              <li><strong>詞條歸類與排序調整</strong>：「幽魂」與「驚魂夜」詞條改歸類至「活動與下架詞條」。</li>
               <li><strong>首頁開關記憶與提示卡片</strong>：於標籤與作物網格間新增「💡 功能設定與操作提示卡片」，提示所有開關設定均具備自動記憶功能；附帶「開關說明」直達按鈕與設定內隱藏提示開關。</li>
-              <li><strong>全新開關說明視窗</strong>：新增「📖 各開關說明」專屬 3D 彈窗，條列說明各項非直觀開關功能，首位優先展示「輸入時暫清原值(2/6)」。</li>
+              <li><strong>全新開關說明視窗</strong>：新增「📖 各開關說明」彈窗，條列說明各項非直觀開關功能，首位優先展示「輸入時暫清原值(2/6)」。</li>
               <li><strong>快捷百分比觸控修復</strong>：修正行動裝置（手機／平板）在深色背景下因觸控螢幕偽懸浮（<code>:hover</code> 殘留機制）導致一鍵百分比按鈕再次點擊時無法熄滅之視覺問題。</li>
               <li><strong>免責條款強化</strong>：於「免責聲明與版權宣告」彈窗最頂部新增「🤝 使用視同同意聲明」，明定凡造訪或使用本站即代表同意全站條款與免責規範。</li>
               <li><strong>頁尾介面精簡與整合</strong>：將「問題回報 / 數據反饋」簡化為「問題回報」，並於中間新增「📋 更新日誌」全版本歷史回溯互動彈窗。</li>
