@@ -886,11 +886,17 @@
         transition: all 0.2s;
       }
 
-      .pct-cell:hover {
-        background: rgba(36, 208, 198, 0.22);
-        border-color: var(--neon-cyan);
-        color: #fff;
-        box-shadow: 0 0 8px rgba(36, 208, 198, 0.3);
+      .pct-cell:focus {
+        outline: none;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .pct-cell:hover {
+          background: rgba(36, 208, 198, 0.12);
+          border-color: rgba(36, 208, 198, 0.45);
+          color: #e2e8f0;
+          box-shadow: none;
+        }
       }
 
       .pct-cell:active {
@@ -898,11 +904,11 @@
       }
 
       .pct-cell.active {
-        background: linear-gradient(135deg, rgba(36, 208, 198, 0.35) 0%, rgba(36, 208, 198, 0.16) 100%);
-        border-color: var(--neon-cyan);
-        color: #fff;
-        box-shadow: 0 0 10px rgba(36, 208, 198, 0.45), inset 0 0 6px rgba(36, 208, 198, 0.25);
-        text-shadow: 0 0 8px rgba(36, 208, 198, 0.8);
+        background: linear-gradient(135deg, rgba(36, 208, 198, 0.35) 0%, rgba(36, 208, 198, 0.16) 100%) !important;
+        border-color: var(--neon-cyan) !important;
+        color: #fff !important;
+        box-shadow: 0 0 10px rgba(36, 208, 198, 0.45), inset 0 0 6px rgba(36, 208, 198, 0.25) !important;
+        text-shadow: 0 0 8px rgba(36, 208, 198, 0.8) !important;
       }
 
       /* 全作物對比基準拉條 (Astra Compare Slider Bar) */
@@ -1629,6 +1635,75 @@
         margin: 0;
       }
 
+      /* 更新日誌專用條列式樣式 */
+      .changelog-card {
+        margin-bottom: 12px;
+        padding: 12px 14px;
+      }
+      .changelog-version-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        border-bottom: 1px dashed rgba(36, 208, 198, 0.2);
+        padding-bottom: 4px;
+      }
+      .changelog-version-badge {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--neon-cyan);
+        letter-spacing: 1px;
+      }
+      .changelog-version-tag {
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 2px 8px;
+        background: rgba(36, 208, 198, 0.18);
+        border: 1px solid rgba(36, 208, 198, 0.45);
+        color: var(--neon-cyan);
+      }
+      .changelog-ul {
+        margin: 0;
+        padding-left: 18px;
+        color: #cadbee;
+        font-size: 12.5px;
+        line-height: 1.65;
+      }
+      .changelog-ul li {
+        margin-bottom: 5px;
+      }
+      .changelog-ul li strong {
+        color: #ffffff;
+      }
+      .changelog-ul li code {
+        font-family: "Share Tech Mono", monospace;
+        background: rgba(36, 208, 198, 0.15);
+        padding: 1px 4px;
+        color: var(--neon-cyan);
+      }
+      body.theme-light .changelog-version-header {
+        border-bottom-color: #cbd5e1;
+      }
+      body.theme-light .changelog-version-badge {
+        color: #0284c7;
+      }
+      body.theme-light .changelog-version-tag {
+        background: rgba(2, 132, 199, 0.1);
+        border-color: rgba(2, 132, 199, 0.3);
+        color: #0369a1;
+      }
+      body.theme-light .changelog-ul {
+        color: #334155;
+      }
+      body.theme-light .changelog-ul li strong {
+        color: #0f172a;
+      }
+      body.theme-light .changelog-ul li code {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+
       .modal-footer-3d {
         padding: 12px 18px;
         border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -2275,9 +2350,11 @@
         color: #1e293b;
         font-weight: 700;
       }
-      body.theme-light .pct-cell:hover {
-        background: #e2e8f0;
-        color: #0f172a;
+      @media (hover: hover) and (pointer: fine) {
+        body.theme-light .pct-cell:hover {
+          background: #e2e8f0;
+          color: #0f172a;
+        }
       }
       body.theme-light .pct-cell.active {
         background: #0284c7;
@@ -2826,12 +2903,17 @@
         color: #0284c7;
       }
 
-      /* 左下 Astra 標籤在淺色下清楚呈現 */
-      body.theme-light .stealth-astra-tag,
-      body.theme-light .footer-astra-tag {
+      /* 電腦端左下 Astra 標籤在淺色下維持清楚可見 */
+      body.theme-light .stealth-astra-tag {
         color: rgba(2, 132, 199, 0.65) !important;
         text-shadow: 0 0 10px rgba(2, 132, 199, 0.15) !important;
         font-weight: 700 !important;
+      }
+      /* 行動裝置端白色背景下左下 Astra 標籤改回黯淡微隱呈現 */
+      body.theme-light .footer-astra-tag {
+        color: rgba(100, 116, 139, 0.14) !important;
+        text-shadow: none !important;
+        font-weight: 600 !important;
       }
       /* 背景中央 Astra 巨大浮水印清楚顯色 */
       body.theme-light .stealth-astra-bg {
@@ -2840,7 +2922,7 @@
         font-weight: 900 !important;
       }
 
-      /* 賽博龐克頁尾 (Cyber Footer) */
+      /* 科技感頁尾 (Modern Footer) */
       .cyber-footer-3d {
         position: relative;
         margin-top: 26px;
@@ -2973,7 +3055,7 @@
         font-size: 10px;
       }
 
-      /* 背景隱密 ASTRA 水印彩蛋 */
+      /* 背景隱密浮水印 */
       .stealth-astra-bg {
         position: fixed;
         top: 45%;
@@ -3026,7 +3108,7 @@
     <main class="app-stage">
       <header class="cyber-header-3d">
         <div class="header-title-box">
-          <div id="headerLogoGem" class="header-logo-gem" title="點擊三次觸發超新星大爆炸彩蛋">
+          <div id="headerLogoGem" class="header-logo-gem" title="點擊三次觸發超新星過載大爆炸">
             <span>❖</span>
           </div>
           <h1 class="header-title">瘋狂農場•果實計算器</h1>
@@ -3264,11 +3346,11 @@
         </section>
       </section>
 
-      <!-- 賽博龐克頁尾資訊 -->
+      <!-- 科技感頁尾資訊 -->
       <footer class="cyber-footer-3d">
         <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">V3.4.3</span>
+          <span class="footer-badge">V3.5.0</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -3277,7 +3359,9 @@
         <div class="footer-links-row">
           <button id="footerDisclaimerBtn" class="footer-link-btn" type="button">📜 免責聲明</button>
           <span class="footer-sep">|</span>
-          <a class="footer-link" href="https://github.com/ZN-33550336/crazy-farm/issues" target="_blank" rel="noopener noreferrer">🐛 問題回報 / 數據反饋</a>
+          <button id="footerChangelogBtn" class="footer-link-btn" type="button">📋 更新日誌</button>
+          <span class="footer-sep">|</span>
+          <a class="footer-link" href="https://github.com/ZN-33550336/crazy-farm/issues" target="_blank" rel="noopener noreferrer">🐛 問題回報</a>
         </div>
       </footer>
     </main>
@@ -3319,6 +3403,197 @@
         </div>
         <div class="modal-footer-3d">
           <button id="disclaimerConfirmBtn" class="modal-confirm-btn" type="button">我已瞭解並同意</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 版本更新日誌彈窗 -->
+    <div id="changelogModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
+      <div class="modal-card-3d" style="max-width: 620px;">
+        <div class="modal-header-3d">
+          <div id="changelogTitle" class="modal-title-3d">
+            <span>📋</span> 版本更新日誌
+          </div>
+          <button id="changelogCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
+        </div>
+        <div class="modal-body-3d" style="max-height: 70vh; overflow-y: auto;">
+          <!-- 發布期程總體說明 -->
+          <div class="modal-section-card" style="background: rgba(36, 208, 198, 0.08); border-color: rgba(36, 208, 198, 0.35); margin-bottom: 12px; padding: 10px 14px;">
+            <p style="font-size: 12px; color: #b8d5ed; line-height: 1.65; margin: 0;">
+              📢 <strong>版本發布說明</strong>：本工具自 <strong>V3.4.0</strong> 起正式面向全體玩家全面公開發行；在此之前的歷史版本（<strong>V1.0.0 ～ V3.3.5</strong>）均為內部封閉測試與架構驗證階段，僅提供少數玩家做測試使用。
+            </p>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V3.5.0</span>
+              <span class="changelog-version-tag">最新版本</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>首頁開關記憶與提示卡片</strong>：於標籤與作物網格間新增「💡 功能設定與操作提示卡片」，提示所有開關設定均具備自動記憶功能；附帶「開關說明」直達按鈕與設定內隱藏提示開關。</li>
+              <li><strong>全新開關說明視窗</strong>：新增「📖 各開關說明」專屬 3D 彈窗，條列說明各項非直觀開關功能，首位優先展示「輸入時暫清原值(2/6)」。</li>
+              <li><strong>快捷百分比觸控修復</strong>：修正行動裝置（手機／平板）在深色背景下因觸控螢幕偽懸浮（<code>:hover</code> 殘留機制）導致一鍵百分比按鈕再次點擊時無法熄滅之視覺問題。</li>
+              <li><strong>免責條款強化</strong>：於「免責聲明與版權宣告」彈窗最頂部新增「🤝 使用視同同意聲明」，明定凡造訪或使用本站即代表同意全站條款與免責規範。</li>
+              <li><strong>頁尾介面精簡與整合</strong>：將「問題回報 / 數據反饋」簡化為「問題回報」，並於中間新增「📋 更新日誌」全版本歷史回溯互動彈窗。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V3.4.2</span>
+              <span class="changelog-version-tag">公開發布</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>跨平台多維裝置自動判別</strong>：重構裝置偵測演算法（<code>detectIsMobile</code>），優先排除 Windows 電腦、Mac 桌機、Linux PC 等環境，精準解決觸控筆電誤判為手機的現象，依環境動態切換滑鼠或陀螺儀文案。</li>
+              <li><strong>動態重量範圍與百分比標示</strong>：輸入欄頂部提示文字改進，依據小數第六位開關動態切換高精度（如 1.356kg～45.2kg）與標準精度（如 1.36kg～45.2kg），百分比統一規範為 <code>3~100%</code>。</li>
+              <li><strong>生長耗時讀數文字精簡</strong>：將「預估生長耗時讀數」精簡為「生長耗時:」，大幅釋放行動裝置螢幕排版空間。</li>
+              <li><strong>至臻彩色詞條邊框光效調優</strong>：深色模式詞條外框回歸均衡深邃質感；白色背景下使用雙層漸層技術，使「星空 / 流光 / 霓虹」呈現流暢通透之彩色霓虹漸變外框。</li>
+              <li><strong>電腦端滑鼠甩動超載爆發機制</strong>：3D 空間動力學引擎升級，支援電腦滑鼠快速來回甩動累積能量，引發超新星大爆炸。</li>
+              <li><strong>黑名單資料庫擴充與校驗</strong>：新增玩家「帥宸」（ID：<code>0342011115</code>，大王菊捅地）；更新玩家「#B天空”」遊戲 ID 為 <code>1139211491</code>；整併重複項。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge" style="color: #38e888;">V3.4.0</span>
+              <span class="changelog-version-tag" style="background: rgba(56, 232, 136, 0.18); border-color: #38e888; color: #38e888; font-weight: 800;">正式公開發布版</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>🌟 首次全網公開發行</strong>：本工具歷經多輪內部封測後，正式面向全體農場玩家公開上線之里程碑版本！</li>
+              <li><strong>農場黑名單系統首發實裝</strong>：正式新增右上角「🚨 農場黑名單」專屬 3D 警示視窗，內建表格記錄已知違規偷菜玩家名單與行徑說明，附帶客觀嚴謹社群免責聲明。</li>
+              <li><strong>3D 空間動力學超新星天體</strong>：搭載全新 3D 巨型超新星天體與星雲粒子，支援游標傾角追蹤、手機姿態陀螺儀即時擺動與超新星過載大爆炸。</li>
+              <li><strong>雙向高精度試算引擎</strong>：支援重量與百分比雙向即時精確推估、詞條加成矩陣與生長耗時即時推算。</li>
+              <li><strong>全作物即時比對系統</strong>：展開下方所有作物的價值對比表格，支援依品階或價值排序，附帶自訂全作物重量比率滑桿。</li>
+              <li><strong>雙模式自由設定</strong>：提供獨立「輸入時暫清原值(2/6)」、「可輸入到小數第六位」與總價值 2～6 位自訂精度切換。</li>
+              <li><strong>護眼雙主題無縫切換</strong>：支援曜石深空（深色）與護眼柔白（淺色）一鍵切換。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V3.3.5</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>柔和護眼淺色主題導入</strong>：採用低反光灰白紙質色階（<code>#edf1f6</code>～<code>#e2e8f0</code>），告別螢光死白；全站面板、卡片與輸入框重構高對比淺色適配。</li>
+              <li><strong>iOS 感測器授權機制優化</strong>：iOS 裝置支援點擊即刻彈出原生感測器授權請求，未授權或無痕環境提供友善防呆提示。</li>
+              <li><strong>背景互動與陀螺儀開關化</strong>：將背景天體陀螺儀互動整合為極簡切換開關「允許陀螺儀權限(背景互動)」，預設開啟並具備本機狀態記憶。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V3.3.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>全作物即時比對表格實裝</strong>：展開下方所有作物的價值對比表格，支援依品階或價值循環排序，附帶專屬小數 2～6 位精度切換。</li>
+              <li><strong>全作物即時比對滑桿</strong>：新增全作物重量比率滑桿，支援「拉到哪、亮到哪」動態光軌漸層填充，連動全作物即時比對。</li>
+              <li><strong>雙模輸入暫清開關實裝</strong>：首度實裝「輸入時暫清原值(2)」與「輸入時暫清原值(>2)」獨立開關，在兩位小數與多位小數模式下分別提供自訂輸入體驗。</li>
+              <li><strong>系統設定中樞實裝</strong>：右上角新增「⚙️ 系統設定」彈窗，整合「🔊 操作音效」開關與「深色 / 淺色」主題一鍵切換，具備記憶功能。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V3.2.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>總價值反應艙 2~6 位自訂精度</strong>：總價值艙右上方新增「小數: 2位」精確度切換下拉選單，支援自訂 2～6 位數即時切換與外點自動收合。</li>
+              <li><strong>音訊引擎與音效回饋升級</strong>：重構 Web Audio API 音訊合成器，按鍵點擊與切換具備俐落清脆之科技音效。</li>
+              <li><strong>天體 3D 滾動視差鎖定</strong>：鎖定 3D 天體空間位置，頁面上下滾動時背景天體不再位移，僅受游標與陀螺儀動態控制。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V3.1.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>滿重生長耗時即時逆推</strong>：依據作物生長速度公式逆向推算單顆成熟與滿重所需總耗時，精準格式化為日時分秒。</li>
+              <li><strong>至臻作物動態彩色光暈外框</strong>：至臻品階卡片採用多層動態漸變光環，提升視覺辨識度。</li>
+              <li><strong>數值精確度與移動端震動回饋</strong>：針對移動端細部間距、滾動平滑度及按鈕點擊觸覺震動回饋（Haptic Feedback）進行全面調優。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V3.0.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>3D 空間動力學引擎首次引入</strong>：導入 3D 空間天體動力學引擎，實裝核心恆星天體、渾天軌道環與星雲光點粒子。</li>
+              <li><strong>游標傾角追蹤與手機陀螺儀響應</strong>：支援滑鼠游標三維動態傾角追蹤，以及行動裝置陀螺儀重力感應即時擺動。</li>
+              <li><strong>科幻戰術 HUD 視覺語言奠定</strong>：全螢幕疊加戰術座標網格、掃描線微光與曜石深空底層（<code>#020712</code>）。</li>
+              <li><strong>超新星巨型深空背景浮水印</strong>：深空底部新增隱密文字浮水印，營造深邃空間沉浸感。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V2.6.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>作物切換選單網格化重構</strong>：下拉切換作物選單重構為一排 4 欄緊湊響應式卡片網格，大幅提升換菜效率。</li>
+              <li><strong>作物資訊橫向佈局黃金比例</strong>：品階標籤移至名稱右側，下排數據格式精簡收整，解決長名稱作物文字溢出換行問題。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V2.5.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>多詞條乘數複合加成矩陣</strong>：完善金色、彩色、紫色等多詞條加成矩陣疊加運算邏輯，精準符合遊戲真實結算。</li>
+              <li><strong>全作物資料庫數據表矩陣擴充</strong>：完整導入普通、稀有、至臻等全品階作物基礎售價、最大重量與生長係數。</li>
+              <li><strong>雙向即時精確推估引擎升級</strong>：重量推比率、比率推重量雙向即時精確連動，全面支援至小數第六位高精度推導。</li>
+              <li><strong>本機狀態持久化結構實裝</strong>：於 LocalStorage 引入結構化設定儲存框架，為後續各項開關自動記憶奠定基礎。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V2.1.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>初版詞條加成矩陣實裝</strong>：初步實裝多詞條加成矩陣運算法，支援多詞條複合疊加試算。</li>
+              <li><strong>雙向反推運算引擎初登場</strong>：突破單向試算限制，首次實現輸入重量推算比率、輸入比率推算重量之雙向推導引擎。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V2.0.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">內部封測</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>架構全面現代化重構</strong>：程式碼擴充至約 1500 行，全面翻新前端結構為響應式卡片網格佈局。</li>
+              <li><strong>全作物資料庫矩陣導入</strong>：建立包含普通、稀有、至臻等品階之完整作物數據表，並新增品階標籤篩選切換。</li>
+              <li><strong>響應式佈局體系建立</strong>：支援電腦寬螢幕與手機窄螢幕自動切換欄位佈局，大幅提升不同螢幕尺寸下的瀏覽舒適度。</li>
+              <li><strong>模組化程式碼結構分工</strong>：將數據、試算邏輯與 DOM 渲染抽離為獨立功能函式，奠定後續功能擴充基石。</li>
+            </ul>
+          </div>
+
+          <div class="modal-section-card changelog-card">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">V1.0.0</span>
+              <span class="changelog-version-tag" style="background: rgba(100, 116, 139, 0.2); border-color: #64748b; color: #94a3b8;">最初原型</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>初生原型誕生成型</strong>：誕生版本，最初僅約 500 行純 HTML/CSS/JS 代碼之極簡單頁試算原型。</li>
+              <li><strong>核心價值公式推算</strong>：實現蛋仔派對瘋狂農場基礎果實價值核心公式逆向推估與單一作物售價計算。</li>
+              <li><strong>基礎輸入與數值防呆校驗</strong>：具備簡易作物下拉選單與數值輸入框，內建基礎輸入上下限防呆校驗。</li>
+              <li><strong>封閉原型可行性驗證</strong>：於少數玩家間進行初版演算法可行性驗證與數值精確度盲測，奠定日後工具發展基石。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer-3d">
+          <button id="changelogConfirmBtn" class="modal-confirm-btn" type="button">我已瞭解</button>
         </div>
       </div>
     </div>
@@ -3476,8 +3751,8 @@
           <button id="switchGuideCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
         </div>
         <div class="modal-body-3d">
-          <p style="font-size: 12.5px; color: var(--text-dim); margin-bottom: 8px;">
-            本工具所有功能均具備自動記憶功能，設定一次即持久生效：
+          <p style="font-size: 12.5px; color: var(--text-dim); margin-bottom: 10px; line-height: 1.6;">
+            💡 本工具所有功能均具備自動記憶功能，設定一次即持久生效。若無特殊進階需求或不確定如何調整，直接維持「預設狀態」即可獲得最佳計算體驗，無需另行設定：
           </p>
           <div class="guide-table-wrap">
             <table class="guide-table-3d">
@@ -3672,7 +3947,11 @@
         blacklistBtn: document.getElementById("blacklistBtn"),
         blacklistModal: document.getElementById("blacklistModal"),
         blacklistCloseBtn: document.getElementById("blacklistCloseBtn"),
-        blacklistConfirmBtn: document.getElementById("blacklistConfirmBtn")
+        blacklistConfirmBtn: document.getElementById("blacklistConfirmBtn"),
+        changelogModal: document.getElementById("changelogModal"),
+        changelogCloseBtn: document.getElementById("changelogCloseBtn"),
+        changelogConfirmBtn: document.getElementById("changelogConfirmBtn"),
+        footerChangelogBtn: document.getElementById("footerChangelogBtn")
       };
 
       // 音效引擎
@@ -4709,6 +4988,34 @@
         });
       }
 
+      // 更新日誌彈窗交互
+      function openChangelogModal() {
+        if (els.changelogModal) {
+          els.changelogModal.classList.add("active");
+          CyberAudio.tap(800);
+          vibrate(10);
+        }
+      }
+
+      function closeChangelogModal() {
+        if (els.changelogModal) {
+          els.changelogModal.classList.remove("active");
+          CyberAudio.cancel();
+        }
+      }
+
+      if (els.footerChangelogBtn) els.footerChangelogBtn.addEventListener("click", openChangelogModal);
+      if (els.changelogCloseBtn) els.changelogCloseBtn.addEventListener("click", closeChangelogModal);
+      if (els.changelogConfirmBtn) els.changelogConfirmBtn.addEventListener("click", closeChangelogModal);
+
+      if (els.changelogModal) {
+        els.changelogModal.addEventListener("click", (e) => {
+          if (e.target === els.changelogModal) {
+            closeChangelogModal();
+          }
+        });
+      }
+
       // 農場黑名單彈窗交互
       function openBlacklistModal() {
         if (els.blacklistModal) {
@@ -4942,7 +5249,7 @@
         });
       }
 
-      // 彩蛋：三擊頂部 Logo Gem 觸發超新星大爆炸
+      // 三擊頂部 Logo Gem 觸發超新星大爆炸
       let logoClickCount = 0;
       let logoClickTimer = null;
       if (els.headerLogoGem) {
@@ -4973,6 +5280,9 @@
           if (els.disclaimerModal && els.disclaimerModal.classList.contains("active")) {
             closeDisclaimerModal();
           }
+          if (els.changelogModal && els.changelogModal.classList.contains("active")) {
+            closeChangelogModal();
+          }
           if (els.blacklistModal && els.blacklistModal.classList.contains("active")) {
             closeBlacklistModal();
           }
@@ -4999,9 +5309,10 @@
           const pct = Number(btn.dataset.pct);
 
           if (state.activeQuickPct === pct) {
-            // 再次點擊相同快捷按鈕：取消快捷狀態，回到上次輸入的值
+            // 再次點擊相同快捷按鈕：取消快捷狀態，熄滅按鈕，回到上次輸入的值
             state.activeQuickPct = null;
             updateQuickPctButtons();
+            btn.blur();
             CyberAudio.cancel();
             vibrate(10);
 
