@@ -1468,7 +1468,7 @@
         cursor: grab;
         user-select: none;
         -webkit-user-select: none;
-        touch-action: none;
+        touch-action: pan-y;
         position: relative;
       }
       .custom-sort-chip:active {
@@ -6136,7 +6136,7 @@
                 <div class="custom-cat-title-wrap">
                   <input class="custom-cat-title-input" 
                          type="text" 
-                         maxlength="15" 
+                         maxlength="20" 
                          value="${escapeHtml(cat.title)}" 
                          data-cat-idx="${catIdx}" 
                          placeholder="輸入分類名稱..." />
@@ -6239,6 +6239,8 @@
       function bindCustomSortEvents() {
         if (!els.customSortCategoriesContainer) return;
 
+        const modalBody = document.querySelector(".custom-sort-modal-body");
+
         // 分類標題即時更名
         els.customSortCategoriesContainer.querySelectorAll(".custom-cat-title-input").forEach((inp) => {
           inp.addEventListener("input", () => {
@@ -6289,7 +6291,9 @@
         }
 
         // ==========================================
-        // 詞條互動核心：按一下 (熄滅選取) / 按立刻滑掉 (防呆不觸發) / 按住 0.2 秒 (抖動並拖曳)
+        // 詞條互動核心：電腦端與手機端雙軌支援
+        // 按一下 (熄滅選取) / 按立刻滑掉 (畫面正常滾動) / 按住 0.2 秒 (抖動並跟隨移動)
+        // 支援雙指操作：一指按住移動，另一指自由上下滑動畫布！
         // ==========================================
         let touchGhost = null;
         let draggedName = null;
@@ -6297,118 +6301,297 @@
         let holdTimer = null;
         let isHoldReady = false;
         let isDragging = false;
-        let touchStartPos = null;
-        let activeTouchChip = null;
+        let dragTrackingTouchId = null;
+        let startPos = null;
+        let activeSourceChip = null;
+        let autoScrollInterval = null;
 
-        els.customSortCategoriesContainer.querySelectorAll(".custom-sort-chip").forEach((chip) => {
-          // 電腦滑鼠事件支援
-          chip.addEventListener("mouseenter", () => {
-            chip.setAttribute("draggable", "true");
-          });
+        function startAutoScroll(clientY) {
+          if (!modalBody) return;
+          const rect = modalBody.getBoundingClientRect();
+          const topThreshold = rect.top + 50;
+          const bottomThreshold = rect.bottom - 50;
 
-          chip.addEventListener("dragstart", (e) => {
-            draggedName = chip.dataset.mutation;
-            draggedCatIdx = Number(chip.dataset.catIdx);
-            chip.classList.add("dragging");
-            clearAllInsertMarkers();
-            if (e.dataTransfer) {
-              e.dataTransfer.setData("text/plain", draggedName);
-              e.dataTransfer.effectAllowed = "move";
+          if (clientY < topThreshold) {
+            const speed = Math.max(3, Math.min(18, (topThreshold - clientY) * 0.4));
+            if (!autoScrollInterval) {
+              autoScrollInterval = setInterval(() => {
+                modalBody.scrollTop -= speed;
+              }, 16);
             }
-          });
+          } else if (clientY > bottomThreshold) {
+            const speed = Math.max(3, Math.min(18, (clientY - bottomThreshold) * 0.4));
+            if (!autoScrollInterval) {
+              autoScrollInterval = setInterval(() => {
+                modalBody.scrollTop += speed;
+              }, 16);
+            }
+          } else {
+            stopAutoScroll();
+          }
+        }
 
-          chip.addEventListener("dragend", () => {
-            chip.classList.remove("dragging");
-            clearAllInsertMarkers();
-            document.querySelectorAll(".drag-hover").forEach(el => el.classList.remove("drag-hover"));
-            document.querySelectorAll(".drag-target").forEach(el => el.classList.remove("drag-target"));
-          });
+        function stopAutoScroll() {
+          if (autoScrollInterval) {
+            clearInterval(autoScrollInterval);
+            autoScrollInterval = null;
+          }
+        }
 
-          // 懸浮在詞條上方時，即時於兩詞條正中間動態顯現「|」插入指引線
-          chip.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
+        function updateInsertionMarkerAtPoint(clientX, clientY) {
+          const dropElem = document.elementFromPoint(clientX, clientY);
+          document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
 
-            const rect = chip.getBoundingClientRect();
-            const isBefore = (e.clientX < rect.left + rect.width / 2);
-            const zone = chip.closest(".custom-cat-chips-zone");
-
-            if (zone) {
-              zone.classList.add("drag-hover");
-              const card = zone.closest(".custom-cat-card");
-              if (card) card.classList.add("drag-target");
-
+          if (dropElem) {
+            const targetChip = dropElem.closest(".custom-sort-chip");
+            const zone = dropElem.closest(".custom-cat-chips-zone");
+            const card = dropElem.closest(".custom-cat-card");
+            if (zone) zone.classList.add("drag-hover");
+            if (card) card.classList.add("drag-target");
+            if (targetChip && zone) {
+              const rect = targetChip.getBoundingClientRect();
+              const isBefore = (clientX < rect.left + rect.width / 2);
               if (isBefore) {
-                if (markerBar.nextSibling !== chip) {
-                  zone.insertBefore(markerBar, chip);
-                }
+                if (markerBar.nextSibling !== targetChip) zone.insertBefore(markerBar, targetChip);
               } else {
-                if (markerBar.previousSibling !== chip) {
-                  zone.insertBefore(markerBar, chip.nextSibling);
-                }
+                if (markerBar.previousSibling !== targetChip) zone.insertBefore(markerBar, targetChip.nextSibling);
+              }
+            } else if (zone && !targetChip) {
+              const moveBtn = zone.querySelector(".btn-move-here");
+              if (moveBtn) {
+                if (markerBar.nextSibling !== moveBtn) zone.insertBefore(markerBar, moveBtn);
+              } else {
+                if (markerBar.parentNode !== zone) zone.appendChild(markerBar);
               }
             }
+          } else {
+            removeMarkerBar();
+          }
+        }
+
+        function endDragOperation(isDrop) {
+          stopAutoScroll();
+          if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+          if (activeSourceChip) activeSourceChip.classList.remove("chip-holding-jiggle");
+
+          if (isDragging && touchGhost) {
+            touchGhost.remove();
+            touchGhost = null;
+
+            if (isDrop && markerBar && markerBar.parentNode && markerBar.parentNode.classList.contains("custom-cat-chips-zone")) {
+              const targetZone = markerBar.parentNode;
+              const targetCatIdx = Number(targetZone.dataset.catIdx);
+              let targetChipIdx = null;
+
+              const nextEl = markerBar.nextElementSibling;
+              if (nextEl && nextEl.classList.contains("custom-sort-chip") && nextEl.dataset.chipIdx !== undefined) {
+                targetChipIdx = Number(nextEl.dataset.chipIdx);
+              } else {
+                targetChipIdx = (customSortDraft && customSortDraft[targetCatIdx]) ? customSortDraft[targetCatIdx].mutations.length : null;
+              }
+
+              clearAllInsertMarkers();
+              document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
+              if (draggedName) {
+                moveMutationInDraft(draggedName, targetCatIdx, targetChipIdx);
+              }
+            } else {
+              // 亂移到外面放開或未觸發顯示「|」：放開後回到原處
+              clearAllInsertMarkers();
+              document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
+              CyberAudio.cancel();
+            }
+          }
+
+          isHoldReady = false;
+          isDragging = false;
+          dragTrackingTouchId = null;
+          startPos = null;
+          activeSourceChip = null;
+          draggedName = null;
+          draggedCatIdx = null;
+        }
+
+        // 全域 Touch 與 Mouse 監聽以確保拖曳至視窗任意位置皆可精確跟隨
+        window.addEventListener("touchmove", (e) => {
+          if (!isDragging || dragTrackingTouchId === null) return;
+          // 找到負責拖曳詞條的那一隻手指
+          let activeTouch = null;
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === dragTrackingTouchId) {
+              activeTouch = e.touches[i];
+              break;
+            }
+          }
+          if (activeTouch && touchGhost) {
+            // 只針對拖曳的手指進行座標更新；如果使用者用另一隻手指滑動畫面，另一隻手指可自由滾動！
+            touchGhost.style.left = `${activeTouch.clientX - 35}px`;
+            touchGhost.style.top = `${activeTouch.clientY - 18}px`;
+            updateInsertionMarkerAtPoint(activeTouch.clientX, activeTouch.clientY);
+            startAutoScroll(activeTouch.clientY);
+          }
+        }, { passive: true });
+
+        window.addEventListener("touchend", (e) => {
+          if (dragTrackingTouchId !== null) {
+            // 檢查是否是拖曳詞條的那隻手指放開
+            let trackingStillActive = false;
+            for (let i = 0; i < e.touches.length; i++) {
+              if (e.touches[i].identifier === dragTrackingTouchId) {
+                trackingStillActive = true;
+                break;
+              }
+            }
+            if (!trackingStillActive) {
+              endDragOperation(true);
+            }
+          }
+        });
+
+        window.addEventListener("touchcancel", (e) => {
+          if (dragTrackingTouchId !== null) {
+            endDragOperation(false);
+          }
+        });
+
+        // 電腦端全域滑鼠移動與放開
+        window.addEventListener("mousemove", (e) => {
+          if (!activeSourceChip) return;
+          if (!isHoldReady) {
+            if (startPos) {
+              const dist = Math.hypot(e.clientX - startPos.x, e.clientY - startPos.y);
+              if (dist > 8) {
+                // 尚未按滿 0.2 秒就移動，取消長按
+                if (holdTimer) clearTimeout(holdTimer);
+                holdTimer = null;
+                activeSourceChip.classList.remove("chip-holding-jiggle");
+                activeSourceChip = null;
+                startPos = null;
+              }
+            }
+            return;
+          }
+
+          // 已按住滿 0.2 秒，滑鼠移動！
+          if (!isDragging) {
+            isDragging = true;
+            activeSourceChip.classList.remove("chip-holding-jiggle");
+            if (!touchGhost) {
+              touchGhost = activeSourceChip.cloneNode(true);
+              touchGhost.classList.remove("chip-holding-jiggle", "dragging", "selected-for-move");
+              touchGhost.style.position = "fixed";
+              touchGhost.style.pointerEvents = "none";
+              touchGhost.style.zIndex = "10060";
+              touchGhost.style.opacity = "0.95";
+              touchGhost.style.transform = "scale(1.08)";
+              touchGhost.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6), 0 0 14px var(--neon-cyan)";
+              document.body.appendChild(touchGhost);
+            }
+          }
+
+          if (touchGhost) {
+            touchGhost.style.left = `${e.clientX - 35}px`;
+            touchGhost.style.top = `${e.clientY - 18}px`;
+            updateInsertionMarkerAtPoint(e.clientX, e.clientY);
+            startAutoScroll(e.clientY);
+          }
+        });
+
+        window.addEventListener("mouseup", (e) => {
+          if (activeSourceChip && dragTrackingTouchId === null) {
+            endDragOperation(true);
+          }
+        });
+
+        // 綁定各詞條按鈕事件
+        els.customSortCategoriesContainer.querySelectorAll(".custom-sort-chip").forEach((chip) => {
+          chip.setAttribute("draggable", "false"); // 禁用預設原生拖曳以完全接管自訂絲滑手勢
+
+          // ------------------------------------------
+          // 1. 電腦端滑鼠長按 0.2 秒抖動與拖曳
+          // ------------------------------------------
+          chip.addEventListener("mousedown", (e) => {
+            if (e.button !== 0) return; // 僅支援滑鼠左鍵
+            activeSourceChip = chip;
+            draggedName = chip.dataset.mutation;
+            draggedCatIdx = Number(chip.dataset.catIdx);
+            startPos = { x: e.clientX, y: e.clientY };
+            isHoldReady = false;
+            isDragging = false;
+            dragTrackingTouchId = null;
+
+            if (holdTimer) clearTimeout(holdTimer);
+            holdTimer = setTimeout(() => {
+              isHoldReady = true;
+              chip.classList.add("chip-holding-jiggle"); // 電腦端按住 0.2 秒觸發抖動！
+              vibrate(18);
+            }, 200);
           });
 
           // 滑鼠點擊選取（供點擊搬移備用）
           chip.addEventListener("click", (e) => {
             e.stopPropagation();
-            if (e.detail === 0) return; // 避免觸控事件結尾重複觸發合成 click
+            if (isDragging) return;
             handleChipClickSelection(chip);
           });
 
           // ------------------------------------------
-          // 行動端 Touch 觸控精準狀態機
+          // 2. 手機端 Touch 觸控精準狀態機
+          // 支援：單純滑動畫面正常滾動、按住 0.2 秒抖動跟隨、雙指同時滾動畫布
           // ------------------------------------------
           chip.addEventListener("touchstart", (e) => {
-            // 暫時禁用原生 draggable 避免行動瀏覽器觸發原生拖曳中斷 touch 事件
-            chip.setAttribute("draggable", "false");
+            if (isDragging) return; // 如果已有手指在拖曳詞條，額外手指用於滾動畫面，不攔截！
 
             const touch = e.touches[0];
-            touchStartPos = { x: touch.clientX, y: touch.clientY };
+            activeSourceChip = chip;
             draggedName = chip.dataset.mutation;
             draggedCatIdx = Number(chip.dataset.catIdx);
+            dragTrackingTouchId = touch.identifier;
+            startPos = { x: touch.clientX, y: touch.clientY };
             isHoldReady = false;
             isDragging = false;
-            activeTouchChip = chip;
 
             if (holdTimer) clearTimeout(holdTimer);
-            // 按住至少 0.2 秒 (200ms) 後才能移動
             holdTimer = setTimeout(() => {
               isHoldReady = true;
-              // 此時詞條微微抖動表示可以移動
-              chip.classList.add("chip-holding-jiggle");
+              chip.classList.add("chip-holding-jiggle"); // 手機端按住 0.2 秒觸發抖動！
               vibrate(18);
             }, 200);
           }, { passive: true });
 
           chip.addEventListener("touchmove", (e) => {
-            if (!touchStartPos || activeTouchChip !== chip) return;
-            const touch = e.touches[0];
-            const dist = Math.hypot(touch.clientX - touchStartPos.x, touch.clientY - touchStartPos.y);
+            if (!activeSourceChip || activeSourceChip !== chip) return;
+
+            // 尋找拖曳手指
+            let trackedTouch = null;
+            for (let i = 0; i < e.touches.length; i++) {
+              if (e.touches[i].identifier === dragTrackingTouchId) {
+                trackedTouch = e.touches[i];
+                break;
+              }
+            }
+            if (!trackedTouch) return;
+
+            const dist = Math.hypot(trackedTouch.clientX - startPos.x, trackedTouch.clientY - startPos.y);
 
             if (!isHoldReady) {
-              // 尚未按住滿 0.2 秒就滑動 (按就立刻移動/滑動)
+              // 尚未按滿 0.2 秒就在詞條上滑動 (類似滑動螢幕翻頁)
               if (dist > 8) {
-                // 防呆：立即取消長按計時，不觸發拖曳與抖動，啥事沒有！
+                // 防呆：立即取消長按計時與抖動，啥事沒有，畫面正常滾動！
                 if (holdTimer) clearTimeout(holdTimer);
                 holdTimer = null;
-                isHoldReady = false;
                 chip.classList.remove("chip-holding-jiggle");
-                touchStartPos = null;
-                activeTouchChip = null;
+                activeSourceChip = null;
+                dragTrackingTouchId = null;
+                startPos = null;
                 draggedName = null;
-                return; // 允許正常滑動畫面
+                return; // 不阻止預設滾動，允許彈窗內畫面正常上下滑動
               }
             } else {
-              // 已按住滿 0.2 秒，開始移動！
-              if (e.cancelable) e.preventDefault();
-
+              // 已按住滿 0.2 秒，開始跟隨移動！
               if (!isDragging) {
                 isDragging = true;
-                // 開始移動才不抖動，不用熄滅
-                chip.classList.remove("chip-holding-jiggle");
+                chip.classList.remove("chip-holding-jiggle"); // 開始移動才不抖動
 
                 if (!touchGhost) {
                   touchGhost = chip.cloneNode(true);
@@ -6424,160 +6607,27 @@
               }
 
               if (touchGhost) {
-                // 詞條能夠跟隨手指移動到任何地方
-                touchGhost.style.left = `${touch.clientX - 35}px`;
-                touchGhost.style.top = `${touch.clientY - 18}px`;
-
-                // 即時依手指座標偵測插入指引線 (|)
-                const dropElem = document.elementFromPoint(touch.clientX, touch.clientY);
-                document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
-
-                if (dropElem) {
-                  const targetChip = dropElem.closest(".custom-sort-chip");
-                  const zone = dropElem.closest(".custom-cat-chips-zone");
-                  const card = dropElem.closest(".custom-cat-card");
-                  if (zone) zone.classList.add("drag-hover");
-                  if (card) card.classList.add("drag-target");
-                  if (targetChip && zone) {
-                    const rect = targetChip.getBoundingClientRect();
-                    const isBefore = (touch.clientX < rect.left + rect.width / 2);
-                    if (isBefore) {
-                      if (markerBar.nextSibling !== targetChip) zone.insertBefore(markerBar, targetChip);
-                    } else {
-                      if (markerBar.previousSibling !== targetChip) zone.insertBefore(markerBar, targetChip.nextSibling);
-                    }
-                  } else if (zone && !targetChip) {
-                    const moveBtn = zone.querySelector(".btn-move-here");
-                    if (moveBtn) {
-                      if (markerBar.nextSibling !== moveBtn) zone.insertBefore(markerBar, moveBtn);
-                    } else {
-                      if (markerBar.parentNode !== zone) zone.appendChild(markerBar);
-                    }
-                  }
-                } else {
-                  removeMarkerBar();
-                }
+                touchGhost.style.left = `${trackedTouch.clientX - 35}px`;
+                touchGhost.style.top = `${trackedTouch.clientY - 18}px`;
+                updateInsertionMarkerAtPoint(trackedTouch.clientX, trackedTouch.clientY);
+                startAutoScroll(trackedTouch.clientY);
               }
             }
-          }, { passive: false });
-
-          chip.addEventListener("touchend", (e) => {
-            if (activeTouchChip !== chip) return;
-
-            if (holdTimer) clearTimeout(holdTimer);
-            holdTimer = null;
-            chip.classList.remove("chip-holding-jiggle");
-
-            if (isDragging && touchGhost) {
-              touchGhost.remove();
-              touchGhost = null;
-
-              // 檢查是否有觸發顯示「|」插入指引線
-              if (markerBar && markerBar.parentNode && markerBar.parentNode.classList.contains("custom-cat-chips-zone")) {
-                const targetZone = markerBar.parentNode;
-                const targetCatIdx = Number(targetZone.dataset.catIdx);
-                let targetChipIdx = null;
-
-                const nextEl = markerBar.nextElementSibling;
-                if (nextEl && nextEl.classList.contains("custom-sort-chip") && nextEl.dataset.chipIdx !== undefined) {
-                  targetChipIdx = Number(nextEl.dataset.chipIdx);
-                } else {
-                  targetChipIdx = (customSortDraft && customSortDraft[targetCatIdx]) ? customSortDraft[targetCatIdx].mutations.length : null;
-                }
-
-                clearAllInsertMarkers();
-                document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
-                if (draggedName) {
-                  moveMutationInDraft(draggedName, targetCatIdx, targetChipIdx);
-                }
-              } else {
-                // 亂移到外面就放開，加上沒有觸發顯示「|」：放開後回到原處！
-                clearAllInsertMarkers();
-                document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
-                CyberAudio.cancel();
-              }
-            } else if (!isDragging && !isHoldReady && touchStartPos) {
-              // 僅輕觸未長按未拖動：判定為「按一下」！
-              // 該詞條熄滅 (selected-for-move)，並跑出各分類「移至此分類」按鈕
-              handleChipClickSelection(chip);
-            }
-
-            isHoldReady = false;
-            isDragging = false;
-            touchStartPos = null;
-            activeTouchChip = null;
-            draggedName = null;
           }, { passive: true });
 
-          chip.addEventListener("touchcancel", () => {
-            if (holdTimer) clearTimeout(holdTimer);
-            holdTimer = null;
+          chip.addEventListener("touchend", (e) => {
+            if (activeSourceChip !== chip) return;
+
+            if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
             chip.classList.remove("chip-holding-jiggle");
-            if (touchGhost) { touchGhost.remove(); touchGhost = null; }
-            clearAllInsertMarkers();
-            document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
-            isHoldReady = false;
-            isDragging = false;
-            touchStartPos = null;
-            activeTouchChip = null;
-            draggedName = null;
-          });
-        });
 
-        // 拖曳懸浮與放下區域 (各分類的 chips-zone)
-        els.customSortCategoriesContainer.querySelectorAll(".custom-cat-chips-zone").forEach((zone) => {
-          zone.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
-            zone.classList.add("drag-hover");
-            const card = zone.closest(".custom-cat-card");
-            if (card) card.classList.add("drag-target");
-
-            // 若懸浮在 zone 空白處而非具體 chip，依游標位置將 markerBar 置於末尾或合適處
-            if (e.target === zone) {
-              const moveBtn = zone.querySelector(".btn-move-here");
-              if (moveBtn) {
-                if (markerBar.nextSibling !== moveBtn) zone.insertBefore(markerBar, moveBtn);
-              } else {
-                if (markerBar.parentNode !== zone) zone.appendChild(markerBar);
-              }
+            if (!isDragging && !isHoldReady && startPos) {
+              // 輕觸按一下：執行熄滅選取
+              handleChipClickSelection(chip);
+              activeSourceChip = null;
+              dragTrackingTouchId = null;
+              startPos = null;
             }
-          });
-
-          zone.addEventListener("dragleave", (e) => {
-            if (!zone.contains(e.relatedTarget)) {
-              zone.classList.remove("drag-hover");
-              const card = zone.closest(".custom-cat-card");
-              if (card) card.classList.remove("drag-target");
-              clearAllInsertMarkers();
-            }
-          });
-
-          zone.addEventListener("drop", (e) => {
-            e.preventDefault();
-            const mutName = (e.dataTransfer ? e.dataTransfer.getData("text/plain") : draggedName) || draggedName;
-            const targetCatIdx = Number(zone.dataset.catIdx);
-
-            let targetChipIdx = null;
-            if (markerBar.parentNode === zone) {
-              const nextEl = markerBar.nextElementSibling;
-              if (nextEl && nextEl.classList.contains("custom-sort-chip") && nextEl.dataset.chipIdx !== undefined) {
-                targetChipIdx = Number(nextEl.dataset.chipIdx);
-              } else {
-                targetChipIdx = (customSortDraft && customSortDraft[targetCatIdx]) ? customSortDraft[targetCatIdx].mutations.length : null;
-              }
-            } else {
-              const targetChip = e.target.closest(".custom-sort-chip");
-              if (targetChip && targetChip.dataset.chipIdx !== undefined) {
-                targetChipIdx = Number(targetChip.dataset.chipIdx);
-              }
-            }
-
-            clearAllInsertMarkers();
-            document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
-
-            if (!mutName) return;
-            moveMutationInDraft(mutName, targetCatIdx, targetChipIdx);
           });
         });
       }
