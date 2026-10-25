@@ -15,7 +15,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://zn-33550336.github.io/crazy-farm/" />
     <meta property="og:title" content="瘋狂農場 • 果實計算器" />
-    <meta property="og:description" content="精準計算果實售價、全47種詞條加成、全作物同屏對比、生長耗時分析，專為農場島主打造的智能果實試算工具！" />
+    <meta property="og:description" content="全服細節最多最複雜的計算器" />
     <meta property="og:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
     <meta property="og:locale" content="zh_TW" />
 
@@ -4057,7 +4057,7 @@
             <ul class="changelog-ul">
               <li><strong>問題回報管道更新</strong>：頁尾「🐛 問題回報」連結已更換為我的 Discord 個人連結，方便大家有任何數值問題、BUG 或想法時直接向我回報。</li>
               <li><strong>自訂詞條排列與分類管理（核心實裝）</strong>：設定中全新推出「自行排列詞條」功能，支援自由拖曳、兩詞條間動態顯現「|」插入指引線、跨分類搬移與自訂類別名稱（上限 10 類，所有命名均自動記憶保存）；無變動直接退出免彈窗，排列為預設則自動隱藏恢復預設選項，並具備防誤觸二次確認機制。</li>
-              <li><strong>詞條排列操作手感與雙指滾動升級</strong>：實裝長按 0.2 秒觸發微微抖動提示（防誤觸手滑，快速滑動則正常滾動畫布）；拖曳期間詞條不熄滅並精準跟隨手指/游標移動至螢幕任意角落，遇可插入處動態於正中間顯示「|」光標；若無「|」直接放開自動原位復原；支援「雙指操作」（一指拖曳詞條，另一指可同時上下滾動彈窗）與邊緣自動平滑滾動；各分類名稱命名上限擴展至 20 個中文字。</li>
+              <li><strong>詞條排列操作手感與雙指滾動升級</strong>：實裝長按 0.2 秒觸發微微抖動提示（防誤觸手滑，快速滑動則正常滾動畫布）；開始移動後原位置暫時呈現熄滅狀態（變動結束後立即恢復）；拖曳期間詞條精準跟隨手指/游標移動至螢幕任意角落，遇可插入處動態於正中間顯示「|」光標；若無「|」直接放開自動原位復原；支援「雙指操作」（一指拖曳詞條，另一指可同時上下滾動彈窗）與邊緣自動平滑滾動；單純點選詞條進入熄滅狀態後，再次點擊該詞條即可取消選取；各分類名稱命名上限為 20 個中文字。</li>
               <li><strong>天氣詞條雙模式全選</strong>：詞條區新增「全選(流)」與「全選(瓷)」快捷鍵，極速切換至流火版或瓷化版全套 16 個最高倍率天氣組合（含潮濕）；再次點擊自動還原先前手動選擇之天氣狀態（僅限天氣詞條，即使自訂排列也能精準點亮）。</li>
               <li><strong>活動詞條與綠色詞條排序微調</strong>：活動與下架詞條中「金幣」與「彩塵」位置對調；綠色天氣詞條順序精確調整為「陶化、冰凍、落雷、隕石」；清除按鈕精簡為「清除全部」。</li>
               <li><strong>設定介面極致精簡與功能說明常駐</strong>：設定中「操作音效」與「背景互動」（去除「允許」）合併至同列，「隱藏首頁提示」與「隱藏計算提示」（去除「開關」）合併至同列；「各項功能說明」改為一律常駐顯示，首頁提示卡片加入「一般情況使用」；「自行排列詞條」置於設定最底部；全作物比較「排序方式」更名為「顯示方式」。</li>
@@ -4414,7 +4414,7 @@
         </div>
         <div class="modal-body-3d custom-sort-modal-body">
           <div class="custom-sort-guide-tip">
-            💡 <strong>排列指引</strong>：長按詞條即可自由拖曳，此時使用另一隻手指可進行滑動，亦可點擊詞條後選取「移至此分類」快速搬移；點擊分類名稱可隨意自訂，最多可自訂 10 個分類。
+            💡 <strong>排列指引</strong>：長按詞條即可自由拖曳，此時使用另一隻手指可進行滑動，亦可點擊詞條後選取「移至此分類」快速搬移（再次點擊該詞條可取消選取）；點擊分類名稱可隨意自訂，最多可新增至 10 個分類，各分類名稱上限為 20 個中文字。
           </div>
           <div id="customSortCategoriesContainer" class="custom-sort-categories-wrap"></div>
         </div>
@@ -6550,7 +6550,7 @@
         // 確保全域監聽器只註冊一次
         initCustomSortGlobalListenersOnce();
 
-        // 分類標題即時更名
+        // 分類標題即時更名 (原生 maxlength="20" 限制最多 20 字)
         els.customSortCategoriesContainer.querySelectorAll(".custom-cat-title-input").forEach((inp) => {
           inp.addEventListener("input", () => {
             const idx = Number(inp.dataset.catIdx);
