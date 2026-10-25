@@ -99,6 +99,7 @@
         color: var(--text-light);
         overflow-x: hidden;
         position: relative;
+        transition: background-color 0.25s ease, color 0.25s ease;
       }
 
       #quantumCanvas3D {
@@ -640,25 +641,14 @@
         transition: transform 0.2s ease;
       }
 
-      /* 下拉作物清單選單 */
-      .dropdown-filter-pills {
-        position: sticky;
-        top: -6px;
-        margin: -6px -6px 8px -6px;
-        padding: 8px 6px;
-        background: rgba(4, 10, 26, 0.98);
-        border-bottom: 1px solid rgba(0, 246, 255, 0.25);
-        z-index: 10;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-      }
-
+      /* 下拉作物清單選單 (比照主頁：頂部品階標籤不隨滾動滑動，下方作物矩陣獨立滾動並於頂部標籤下方隱藏) */
       .dropdown-menu-3d {
         position: absolute;
         top: calc(100% + 6px);
         left: 0;
         right: 0;
-        max-height: clamp(300px, 62vh, 460px);
-        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
         background: rgba(4, 10, 26, 0.98);
         border: 1px solid var(--border-cyan);
         clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
@@ -667,12 +657,28 @@
         box-shadow: 0 16px 48px rgba(0, 0, 0, 0.98), 0 0 30px rgba(36, 208, 198, 0.35);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        overflow: hidden;
+      }
+
+      .dropdown-filter-pills {
+        position: relative;
+        top: 0;
+        margin: 0 0 8px 0;
+        padding: 0;
+        background: transparent;
+        border-bottom: none;
+        z-index: 10;
+        box-shadow: none;
+        flex-shrink: 0;
       }
 
       #dropdownCropsContainer {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
         gap: 6px;
+        max-height: clamp(240px, 52vh, 390px);
+        overflow-y: auto;
+        padding-right: 2px;
       }
 
       .dropdown-item-btn {
@@ -1903,16 +1909,20 @@
         height: 100vh;
         height: 100dvh;
         z-index: 999999 !important;
-        background: rgba(3, 6, 18, 0.82);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        background: rgba(3, 6, 18, 0.88);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 16px;
         opacity: 0;
+        visibility: hidden;
         pointer-events: none;
-        transition: opacity 0.22s ease;
+        will-change: opacity;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        transition: opacity 0.22s ease, visibility 0.22s ease;
       }
 
       .modal-backdrop-3d.active {
@@ -3030,8 +3040,8 @@
         box-shadow: 0 16px 48px rgba(15, 23, 42, 0.15) !important;
       }
       body.theme-light .dropdown-filter-pills {
-        background: #ffffff !important;
-        border-bottom: 1px solid #e2e8f0 !important;
+        background: transparent !important;
+        border-bottom: none !important;
       }
       body.theme-light .chip-3d {
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
@@ -3132,8 +3142,9 @@
 
       /* 彈窗樣式 (設定與黑名單) */
       body.theme-light .modal-backdrop-3d {
-        background: rgba(15, 23, 42, 0.45);
+        background: rgba(15, 23, 42, 0.52);
         backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
       }
       body.theme-light .modal-card-3d {
         background: #ffffff;
@@ -3814,7 +3825,7 @@
             </div>
             <div class="chamber-box">
               <label><span id="percentRangeLabel">3~100%</span> <span class="unit-tag">[ % ]</span></label>
-              <input id="percentInput" class="chamber-input" type="number" min="3" max="100" step="any" inputmode="decimal" placeholder="100" />
+              <input id="percentInput" class="chamber-input" type="number" min="3" max="100" step="any" inputmode="decimal" placeholder="0" />
             </div>
           </div>
 
@@ -4058,6 +4069,7 @@
               <li><strong>問題回報管道更新</strong>：頁尾「🐛 問題回報」連結已更換為我的 Discord 個人連結，方便大家有任何數值問題、BUG 或想法時直接向我回報。</li>
               <li><strong>自訂詞條排列與分類管理（核心實裝）</strong>：設定中全新推出「自行排列詞條」功能，支援自由拖曳、兩詞條間動態顯現「|」插入指引線、跨分類搬移與自訂類別名稱（上限 10 類，所有命名均自動記憶保存）；無變動直接退出免彈窗，排列為預設則自動隱藏恢復預設選項，並具備防誤觸二次確認機制。</li>
               <li><strong>詞條排列操作手感與雙指滾動升級</strong>：實裝長按 0.2 秒觸發微微抖動提示（防誤觸手滑，快速滑動則正常滾動畫布）；開始移動後原位置暫時呈現熄滅狀態（變動結束後立即恢復）；拖曳期間詞條精準跟隨手指/游標移動至螢幕任意角落，遇可插入處動態於正中間顯示「|」光標；若無「|」直接放開自動原位復原；支援「雙指操作」（一指拖曳詞條，另一指可同時上下滾動彈窗）與邊緣自動平滑滾動；單純點選詞條進入熄滅狀態後，再次點擊該詞條即可取消選取；各分類名稱命名上限為 20 個字。</li>
+              <li><strong>介面彈窗閃爍消除與雙色主題平滑切換調優</strong>：徹底修復點擊任何彈窗類按鈕時螢幕瞬間白閃/重繪跳動之視覺不適問題；重構彈窗背景圖層渲染管道（加入 <code>visibility: hidden</code> 嚴格休眠、GPU 硬體加速獨立合成圖層 <code>transform: translateZ(0)</code> 與平滑透明度過渡）；同時消除深色與淺色主題切換時瀏覽器背景與頂部狀態列的閃爍突波，帶來極致流暢絲滑的沉浸操作手感。</li>
               <li><strong>天氣詞條雙模式全選</strong>：詞條區新增「全選(流)」與「全選(瓷)」快捷鍵，極速切換至流火版或瓷化版全套 16 個最高倍率天氣組合（含潮濕）；再次點擊自動還原先前手動選擇之天氣狀態（僅限天氣詞條，即使自訂排列也能精準點亮）。</li>
               <li><strong>活動詞條與綠色詞條排序微調</strong>：活動與下架詞條中「金幣」與「彩塵」位置對調；綠色天氣詞條順序精確調整為「陶化、冰凍、落雷、隕石」；清除按鈕精簡為「清除全部」。</li>
               <li><strong>設定介面極致精簡與功能說明常駐</strong>：設定中「操作音效」與「背景互動」（去除「允許」）合併至同列，「隱藏首頁提示」與「隱藏計算提示」（去除「開關」）合併至同列；「各項功能說明」改為一律常駐顯示，首頁提示卡片加入「一般情況使用」；「自行排列詞條」置於設定最底部；全作物比較「排序方式」更名為「顯示方式」。</li>
@@ -5168,7 +5180,7 @@
         }
       }
 
-      // 6. 點入作物：數值預設皆為空白 (相當於 0，不顯示 0)
+      // 6. 點入作物：數值預設皆為空白 (相當於 0，不顯示 0)；切換作物自動清除全部詞條
       function chooseCrop(cropName) {
         els.dropdownMenuList.hidden = true;
         const arrow = document.getElementById("repickArrow");
@@ -5177,7 +5189,12 @@
         document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
         state.selectedCropName = cropName;
         const crop = getSelectedCrop();
-        pruneUnavailableMutations(crop);
+
+        // 切換作物時自動清除全部詞條與天氣全選快捷狀態
+        state.selectedMutations.clear();
+        state.weatherBatchMode = null;
+        state.lastManualWeatherMutations = null;
+        updateWeatherBatchButtons();
         
         els.percentInput.value = "";
         els.weightInput.value = "";
@@ -5786,11 +5803,21 @@
         });
       }
 
-      // 2. 退回作物清單
+      // 2. 退回作物清單 (回主頁自動清除全部詞條與數值)
       els.backToPickerBtn.addEventListener("click", () => {
+        state.selectedMutations.clear();
+        state.weatherBatchMode = null;
+        state.lastManualWeatherMutations = null;
+        updateWeatherBatchButtons();
+        els.percentInput.value = "";
+        els.weightInput.value = "";
+        state.activeQuickPct = null;
+        state.lastManualInput = null;
+        updateQuickPctButtons();
         CyberAudio.tap(680);
         vibrate(10);
         setView("picker");
+        renderAll();
       });
 
       els.pickerSearch.addEventListener("input", () => renderPicker(false));
@@ -5823,6 +5850,12 @@
         }
         if (els.themeDarkBtn) els.themeDarkBtn.classList.toggle("active", state.theme === "dark");
         if (els.themeLightBtn) els.themeLightBtn.classList.toggle("active", state.theme === "light");
+
+        // 動態同步瀏覽器頂部網址列色彩，杜絕系統狀態列對比閃白
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) {
+          metaTheme.setAttribute("content", state.theme === "light" ? "#f8fafc" : "#030612");
+        }
 
         // 通知 3D 群星天體背景切換高對比材質
         if (window.updateThreeTheme) {
