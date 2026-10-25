@@ -15,7 +15,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://zn-33550336.github.io/crazy-farm/" />
     <meta property="og:title" content="瘋狂農場 • 果實計算器" />
-    <meta property="og:description" content="全服細節最多且最複雜的計算器" />
+    <meta property="og:description" content="精準計算果實售價、全47種詞條加成、全作物同屏對比、生長耗時分析，專為農場島主打造的智能果實試算工具！" />
     <meta property="og:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
     <meta property="og:locale" content="zh_TW" />
 
@@ -6083,6 +6083,7 @@
       }
 
       function openCustomSortModal() {
+        window.isCustomSortActive = true;
         if (state.customMutationLayout && Array.isArray(state.customMutationLayout)) {
           customSortDraft = JSON.parse(JSON.stringify(state.customMutationLayout));
         } else {
@@ -6098,6 +6099,8 @@
       }
 
       function closeCustomSortModal() {
+        window.isCustomSortActive = false;
+        window.isCustomSortDragging = false;
         if (els.customSortModal) {
           els.customSortModal.classList.remove("active");
           customSortDraft = null;
@@ -6322,6 +6325,8 @@
         let startPos = null;
         let activeSourceChip = null;
         let autoScrollInterval = null;
+        let secondaryScrollTouchId = null;
+        let secondaryLastY = 0;
 
         function startAutoScroll(clientY) {
           if (!modalBody) return;
@@ -6388,6 +6393,9 @@
 
         function endDragOperation(isDrop) {
           stopAutoScroll();
+          window.isCustomSortDragging = false;
+          secondaryScrollTouchId = null;
+          secondaryLastY = 0;
           if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
           if (activeSourceChip) {
             activeSourceChip.classList.remove("chip-holding-jiggle", "chip-dragging-dimmed");
@@ -6431,47 +6439,78 @@
           draggedCatIdx = null;
         }
 
-        // 全域 Touch 與 Mouse 監聽以確保拖曳至視窗任意位置皆可精確跟隨
-        // 關鍵機制：按住拖曳的該手指只負責移動詞條（若拖曳中單指滑動則防止其引發容器滾動），
-        // 唯有使用者使用另一隻手指或觸控點滑動時，方可自然上下滾動畫面！
+        // 全域 Touch 監聽：精確分離「詞條拖曳手指」與「第二指滾動畫布」
+        window.addEventListener("touchstart", (e) => {
+          if (!isDragging || dragTrackingTouchId === null) return;
+          // 當詞條拖曳中，捕獲任何新加入的第二個手指作為滾動控制指
+          for (let i = 0; i < e.touches.length; i++) {
+            const t = e.touches[i];
+            if (t.identifier !== dragTrackingTouchId && secondaryScrollTouchId === null) {
+              secondaryScrollTouchId = t.identifier;
+              secondaryLastY = t.clientY;
+              break;
+            }
+          }
+        }, { passive: true });
+
         window.addEventListener("touchmove", (e) => {
           if (!isDragging || dragTrackingTouchId === null) return;
-          
-          let activeTouch = null;
-          let otherTouchesExist = false;
+
+          let dragTouch = null;
+          let scrollTouch = null;
+
           for (let i = 0; i < e.touches.length; i++) {
-            if (e.touches[i].identifier === dragTrackingTouchId) {
-              activeTouch = e.touches[i];
+            const t = e.touches[i];
+            if (t.identifier === dragTrackingTouchId) {
+              dragTouch = t;
             } else {
-              otherTouchesExist = true;
+              // 記錄非拖曳詞條的觸控手指
+              if (secondaryScrollTouchId === null) {
+                secondaryScrollTouchId = t.identifier;
+                secondaryLastY = t.clientY;
+              }
+              if (t.identifier === secondaryScrollTouchId) {
+                scrollTouch = t;
+              }
             }
           }
 
-          if (activeTouch && touchGhost) {
-            touchGhost.style.left = `${activeTouch.clientX - 35}px`;
-            touchGhost.style.top = `${activeTouch.clientY - 18}px`;
-            updateInsertionMarkerAtPoint(activeTouch.clientX, activeTouch.clientY);
-            startAutoScroll(activeTouch.clientY);
+          // 1. 拖曳手指專注移動詞條，絕不滾動頁面
+          if (dragTouch && touchGhost) {
+            touchGhost.style.left = `${dragTouch.clientX - 35}px`;
+            touchGhost.style.top = `${dragTouch.clientY - 18}px`;
+            updateInsertionMarkerAtPoint(dragTouch.clientX, dragTouch.clientY);
+            startAutoScroll(dragTouch.clientY);
+          }
 
-            // 當只有單指正在拖曳詞條時，阻止該手指引發原生視窗/容器滾動，確保該手指專注移動詞條；
-            // 當有另一隻手指觸碰滑動時，不攔截預設事件，讓另一隻手指自然滑動容器！
-            if (!otherTouchesExist && e.cancelable) {
-              e.preventDefault();
-            }
+          // 2. 第二隻手指百分之百精確驅動彈窗容器流暢滾動（不論滑到哪裡皆生效，絕不誤觸背景3D）
+          if (scrollTouch && modalBody) {
+            const deltaY = scrollTouch.clientY - secondaryLastY;
+            secondaryLastY = scrollTouch.clientY;
+            // 直接平滑滾動彈窗內容
+            modalBody.scrollTop -= deltaY;
+          }
+
+          // 拖曳進行中攔截全域原生可能傳遞給背景的 touchmove，防止背景超新星爆炸
+          if (e.cancelable) {
+            e.preventDefault();
           }
         }, { passive: false });
 
         window.addEventListener("touchend", (e) => {
           if (dragTrackingTouchId !== null) {
-            // 檢查是否是拖曳詞條的那隻手指放開
-            let trackingStillActive = false;
+            // 檢查拖曳手指是否放開
+            let dragStillActive = false;
+            let scrollStillActive = false;
             for (let i = 0; i < e.touches.length; i++) {
-              if (e.touches[i].identifier === dragTrackingTouchId) {
-                trackingStillActive = true;
-                break;
-              }
+              if (e.touches[i].identifier === dragTrackingTouchId) dragStillActive = true;
+              if (e.touches[i].identifier === secondaryScrollTouchId) scrollStillActive = true;
             }
-            if (!trackingStillActive) {
+            if (!scrollStillActive) {
+              secondaryScrollTouchId = null;
+              secondaryLastY = 0;
+            }
+            if (!dragStillActive) {
               endDragOperation(true);
             }
           }
@@ -6504,6 +6543,7 @@
           // 已按住滿 0.2 秒，滑鼠移動！
           if (!isDragging) {
             isDragging = true;
+            window.isCustomSortDragging = true;
             activeSourceChip.classList.remove("chip-holding-jiggle");
             activeSourceChip.classList.add("chip-dragging-dimmed"); // 原位置暫時為熄滅狀態
             if (!touchGhost) {
@@ -7774,8 +7814,14 @@
 
 
         // 解決手機無空白處解法 2：全螢幕雙指任意滑動 (在卡片/表格/按鈕上均可直接轉動3D空間)
+        // 防呆：若「自行排列詞條」彈窗正在開啟或正在拖曳詞條，完全阻斷背景 3D 雙指旋轉與爆炸能量累積！
         let lastTouchMidX = 0, lastTouchMidY = 0;
         window.addEventListener("touchmove", (e) => {
+          if (window.isCustomSortActive || window.isCustomSortDragging) {
+            lastTouchMidX = 0;
+            lastTouchMidY = 0;
+            return;
+          }
           if (e.touches && e.touches.length === 2) {
             const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
             const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
