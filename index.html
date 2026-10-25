@@ -1954,13 +1954,16 @@
           0 14px
         );
         box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 0 0 32px rgba(36, 208, 198, 0.25);
-        transform: scale(0.92) translateY(12px);
+        transform: scale(0.92) translateY(12px) translateZ(0);
+        -webkit-transform: scale(0.92) translateY(12px) translateZ(0);
+        will-change: transform;
         transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         overflow: hidden;
       }
 
       .modal-backdrop-3d.active .modal-card-3d {
-        transform: scale(1) translateY(0);
+        transform: scale(1) translateY(0) translateZ(0);
+        -webkit-transform: scale(1) translateY(0) translateZ(0);
       }
 
       .modal-header-3d {
@@ -4462,7 +4465,7 @@
     </div>
 
     <!-- 開關功能說明彈窗 -->
-    <div id="switchGuideModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="switchGuideTitle">
+    <div id="switchGuideModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="switchGuideTitle" style="z-index: 10040;">
       <div class="modal-card-3d" style="max-width: 600px;">
         <div class="modal-header-3d">
           <div id="switchGuideTitle" class="modal-title-3d">
@@ -6875,10 +6878,17 @@
       if (els.settingsCloseBtn) els.settingsCloseBtn.addEventListener("click", closeSettingsModal);
       if (els.settingsConfirmBtn) els.settingsConfirmBtn.addEventListener("click", closeSettingsModal);
 
-      // 開關功能說明彈窗交互
+      // 開關功能說明彈窗交互 (支援首頁直達與設定內無縫層疊切換，杜絕閃屏)
+      let openedFromSettings = false;
       function openSwitchGuideModal() {
         if (els.switchGuideModal) {
           updateDeviceSpecificUI();
+          if (els.settingsModal && els.settingsModal.classList.contains("active")) {
+            openedFromSettings = true;
+            els.settingsModal.classList.remove("active");
+          } else {
+            openedFromSettings = false;
+          }
           els.switchGuideModal.classList.add("active");
           CyberAudio.tap(800);
           vibrate(10);
@@ -6888,6 +6898,10 @@
       function closeSwitchGuideModal() {
         if (els.switchGuideModal) {
           els.switchGuideModal.classList.remove("active");
+          if (openedFromSettings && els.settingsModal) {
+            openedFromSettings = false;
+            els.settingsModal.classList.add("active");
+          }
           CyberAudio.cancel();
         }
       }
@@ -7998,24 +8012,13 @@
         resize();
         window.addEventListener("resize", resize);
 
-        window.addEventListener("pointerdown", (e) => {
-          const colors = ["#00f6ff", "#ff007f", "#00ff88", "#ffd000"];
-          for (let i = 0; i < 14; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 4 + 1.6;
-            particles.push({
-              x: e.clientX,
-              y: e.clientY,
-              vx: Math.cos(angle) * speed,
-              vy: Math.sin(angle) * speed,
-              alpha: 1,
-              size: Math.random() * 3 + 2,
-              color: colors[Math.floor(Math.random() * colors.length)]
-            });
-          }
-        }, { passive: true });
-
+        let isBurstLoopRunning = false;
         function loop() {
+          if (particles.length === 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            isBurstLoopRunning = false;
+            return;
+          }
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
@@ -8038,7 +8041,27 @@
           }
           requestAnimationFrame(loop);
         }
-        loop();
+
+        window.addEventListener("pointerdown", (e) => {
+          const colors = ["#00f6ff", "#ff007f", "#00ff88", "#ffd000"];
+          for (let i = 0; i < 14; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 4 + 1.6;
+            particles.push({
+              x: e.clientX,
+              y: e.clientY,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              alpha: 1,
+              size: Math.random() * 3 + 2,
+              color: colors[Math.floor(Math.random() * colors.length)]
+            });
+          }
+          if (!isBurstLoopRunning) {
+            isBurstLoopRunning = true;
+            requestAnimationFrame(loop);
+          }
+        }, { passive: true });
       })();
     </script>
   </body>
