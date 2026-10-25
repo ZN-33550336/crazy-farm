@@ -1493,6 +1493,22 @@
         box-shadow: none !important;
         transform: scale(0.94);
       }
+      /* 拖曳開始後，詞條所在原先位置暫時為熄滅狀態，變動結束後恢復 */
+      .custom-sort-chip.chip-dragging-dimmed {
+        opacity: 0.22 !important;
+        filter: grayscale(85%) brightness(0.55) !important;
+        outline: 1.5px dashed rgba(0, 246, 255, 0.45) !important;
+        box-shadow: none !important;
+        transform: scale(0.95);
+      }
+      body.theme-light .custom-sort-chip.chip-dragging-dimmed {
+        opacity: 0.30 !important;
+        filter: grayscale(85%) brightness(0.65) !important;
+        outline: 1.5px dashed rgba(0, 0, 0, 0.35) !important;
+        box-shadow: none !important;
+        transform: scale(0.95);
+      }
+
       /* 按住 0.2 秒準備移動時的微微抖動效果 */
       @keyframes chipJiggle {
         0% { transform: rotate(0deg) scale(1.05); }
@@ -4041,6 +4057,7 @@
             <ul class="changelog-ul">
               <li><strong>問題回報管道更新</strong>：頁尾「🐛 問題回報」連結已更換為我的 Discord 個人連結，方便大家有任何數值問題、BUG 或想法時直接向我回報。</li>
               <li><strong>自訂詞條排列與分類管理（核心實裝）</strong>：設定中全新推出「自行排列詞條」功能，支援自由拖曳、兩詞條間動態顯現「|」插入指引線、跨分類搬移與自訂類別名稱（上限 10 類，所有命名均自動記憶保存）；無變動直接退出免彈窗，排列為預設則自動隱藏恢復預設選項，並具備防誤觸二次確認機制。</li>
+              <li><strong>詞條排列操作手感與雙指滾動升級</strong>：實裝長按 0.2 秒觸發微微抖動提示（防誤觸手滑，快速滑動則正常滾動畫布）；拖曳期間詞條不熄滅並精準跟隨手指/游標移動至螢幕任意角落，遇可插入處動態於正中間顯示「|」光標；若無「|」直接放開自動原位復原；支援「雙指操作」（一指拖曳詞條，另一指可同時上下滾動彈窗）與邊緣自動平滑滾動；各分類名稱命名上限擴展至 20 個中文字。</li>
               <li><strong>天氣詞條雙模式全選</strong>：詞條區新增「全選(流)」與「全選(瓷)」快捷鍵，極速切換至流火版或瓷化版全套 16 個最高倍率天氣組合（含潮濕）；再次點擊自動還原先前手動選擇之天氣狀態（僅限天氣詞條，即使自訂排列也能精準點亮）。</li>
               <li><strong>活動詞條與綠色詞條排序微調</strong>：活動與下架詞條中「金幣」與「彩塵」位置對調；綠色天氣詞條順序精確調整為「陶化、冰凍、落雷、隕石」；清除按鈕精簡為「清除全部」。</li>
               <li><strong>設定介面極致精簡與功能說明常駐</strong>：設定中「操作音效」與「背景互動」（去除「允許」）合併至同列，「隱藏首頁提示」與「隱藏計算提示」（去除「開關」）合併至同列；「各項功能說明」改為一律常駐顯示，首頁提示卡片加入「一般情況使用」；「自行排列詞條」置於設定最底部；全作物比較「排序方式」更名為「顯示方式」。</li>
@@ -4397,7 +4414,7 @@
         </div>
         <div class="modal-body-3d custom-sort-modal-body">
           <div class="custom-sort-guide-tip">
-            💡 <strong>排列指引</strong>：長按詞條即可自由拖曳，亦可點擊詞條後選取「移至此分類」快速搬移；點擊分類名稱可隨意自訂，最多可自訂 10 個分類。
+            💡 <strong>排列指引</strong>：長按詞條即可自由拖曳，此時使用另一隻手指可進行滑動，亦可點擊詞條後選取「移至此分類」快速搬移；點擊分類名稱可隨意自訂，最多可自訂 10 個分類。
           </div>
           <div id="customSortCategoriesContainer" class="custom-sort-categories-wrap"></div>
         </div>
@@ -6372,7 +6389,9 @@
         function endDragOperation(isDrop) {
           stopAutoScroll();
           if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
-          if (activeSourceChip) activeSourceChip.classList.remove("chip-holding-jiggle");
+          if (activeSourceChip) {
+            activeSourceChip.classList.remove("chip-holding-jiggle", "chip-dragging-dimmed");
+          }
 
           if (isDragging && touchGhost) {
             touchGhost.remove();
@@ -6413,24 +6432,34 @@
         }
 
         // 全域 Touch 與 Mouse 監聽以確保拖曳至視窗任意位置皆可精確跟隨
+        // 關鍵機制：按住拖曳的該手指只負責移動詞條（若拖曳中單指滑動則防止其引發容器滾動），
+        // 唯有使用者使用另一隻手指或觸控點滑動時，方可自然上下滾動畫面！
         window.addEventListener("touchmove", (e) => {
           if (!isDragging || dragTrackingTouchId === null) return;
-          // 找到負責拖曳詞條的那一隻手指
+          
           let activeTouch = null;
+          let otherTouchesExist = false;
           for (let i = 0; i < e.touches.length; i++) {
             if (e.touches[i].identifier === dragTrackingTouchId) {
               activeTouch = e.touches[i];
-              break;
+            } else {
+              otherTouchesExist = true;
             }
           }
+
           if (activeTouch && touchGhost) {
-            // 只針對拖曳的手指進行座標更新；如果使用者用另一隻手指滑動畫面，另一隻手指可自由滾動！
             touchGhost.style.left = `${activeTouch.clientX - 35}px`;
             touchGhost.style.top = `${activeTouch.clientY - 18}px`;
             updateInsertionMarkerAtPoint(activeTouch.clientX, activeTouch.clientY);
             startAutoScroll(activeTouch.clientY);
+
+            // 當只有單指正在拖曳詞條時，阻止該手指引發原生視窗/容器滾動，確保該手指專注移動詞條；
+            // 當有另一隻手指觸碰滑動時，不攔截預設事件，讓另一隻手指自然滑動容器！
+            if (!otherTouchesExist && e.cancelable) {
+              e.preventDefault();
+            }
           }
-        }, { passive: true });
+        }, { passive: false });
 
         window.addEventListener("touchend", (e) => {
           if (dragTrackingTouchId !== null) {
@@ -6476,6 +6505,7 @@
           if (!isDragging) {
             isDragging = true;
             activeSourceChip.classList.remove("chip-holding-jiggle");
+            activeSourceChip.classList.add("chip-dragging-dimmed"); // 原位置暫時為熄滅狀態
             if (!touchGhost) {
               touchGhost = activeSourceChip.cloneNode(true);
               touchGhost.classList.remove("chip-holding-jiggle", "dragging", "selected-for-move");
@@ -6564,10 +6594,12 @@
 
             // 尋找拖曳手指
             let trackedTouch = null;
+            let otherTouchesExist = false;
             for (let i = 0; i < e.touches.length; i++) {
               if (e.touches[i].identifier === dragTrackingTouchId) {
                 trackedTouch = e.touches[i];
-                break;
+              } else {
+                otherTouchesExist = true;
               }
             }
             if (!trackedTouch) return;
@@ -6592,6 +6624,7 @@
               if (!isDragging) {
                 isDragging = true;
                 chip.classList.remove("chip-holding-jiggle"); // 開始移動才不抖動
+                chip.classList.add("chip-dragging-dimmed"); // 詞條所在原先位置暫時熄滅
 
                 if (!touchGhost) {
                   touchGhost = chip.cloneNode(true);
@@ -6606,6 +6639,11 @@
                 }
               }
 
+              // 按住該詞條的手指只負責移動詞條本身，單指移動時阻止畫面上下滾動；若有另一指觸碰則自然滾動
+              if (!otherTouchesExist && e.cancelable) {
+                e.preventDefault();
+              }
+
               if (touchGhost) {
                 touchGhost.style.left = `${trackedTouch.clientX - 35}px`;
                 touchGhost.style.top = `${trackedTouch.clientY - 18}px`;
@@ -6613,7 +6651,7 @@
                 startAutoScroll(trackedTouch.clientY);
               }
             }
-          }, { passive: true });
+          }, { passive: false });
 
           chip.addEventListener("touchend", (e) => {
             if (activeSourceChip !== chip) return;
