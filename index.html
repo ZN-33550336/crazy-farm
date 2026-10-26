@@ -126,12 +126,11 @@
         pointer-events: none;
         z-index: 1;
         background: 
-          radial-gradient(circle at 50% 20%, rgba(14, 38, 68, 0.5) 0%, rgba(4, 12, 22, 0.85) 65%, #02060c 100%),
-          linear-gradient(rgba(36, 208, 198, 0.035) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(36, 208, 198, 0.035) 1px, transparent 1px),
-          linear-gradient(rgba(14, 20, 36, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
-        background-size: 100% 100%, 60px 60px, 60px 60px, 100% 4px;
-        box-shadow: inset 0 0 120px rgba(1, 4, 10, 0.95);
+          radial-gradient(circle at 50% 30%, rgba(14, 38, 68, 0.22) 0%, rgba(4, 12, 22, 0.48) 65%, rgba(2, 6, 12, 0.72) 100%),
+          linear-gradient(rgba(36, 208, 198, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(36, 208, 198, 0.02) 1px, transparent 1px);
+        background-size: 100% 100%, 60px 60px, 60px 60px;
+        box-shadow: inset 0 0 70px rgba(1, 4, 10, 0.55);
       }
 
       .app-stage {
@@ -4069,6 +4068,7 @@
               <span class="changelog-version-tag">最新版本</span>
             </div>
             <ul class="changelog-ul">
+              <li><strong>背景 3D 視覺極致重構</strong>：全面移除原先生硬的空間上下平面網格，全新換裝「超大型深空螺旋星系（Spiral Galaxy）」！3,200 顆三維星塵依對數螺旋向外延展覆蓋全螢幕，中心智慧挖空完全不干擾天體與標籤字樣；隨核心優雅自轉並具備多維度姿態側傾，更針對深色與淺色模式量身定制專屬光學渲染（深色璀璨深空、淺色冰晶微星塵）。</li>
               <li><strong>作物數值校準</strong>：修復火龍狗生長耗時異常（校準為與鈴蘭幽幽相同之總耗時，滿重均為約 10 小時 14 分）。</li>
               <li><strong>問題回報管道更新</strong>：頁尾「🐛 問題回報」連結已更換為我的 Discord 個人連結，方便大家有任何數值問題、BUG 或想法時直接向我回報。</li>
               <li><strong>自訂詞條排列與分類管理（核心實裝）</strong>：設定中全新推出「自行排列詞條」功能，支援自由拖曳、兩詞條間動態顯現「|」插入指引線、跨分類搬移與自訂類別名稱（上限 10 類，所有命名均自動記憶保存）；無變動直接退出免彈窗，排列為預設則自動隱藏恢復預設選項，並具備防誤觸二次確認機制。</li>
@@ -7433,28 +7433,97 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // 底部與頂部立體透視網格 (高對比清楚顯色)
-        const floorGrid = new THREE.GridHelper(1800, 44, 0x00f6ff, 0x1d7a9e);
-        floorGrid.position.y = -195;
-        floorGrid.material.transparent = true;
-        floorGrid.material.opacity = 0.8;
-        floorGrid.material.color.setHex(0xffffff);
-        scene.add(floorGrid);
+        // ==========================================
+        // 全新背景 3D：超密集璀璨深空螺旋星系 (Super Spiral Galaxy Particle System)
+        // 7,600 顆超高密度粒子、圈數多 (7.8圈對數螺線)、高亮度且穩定獨立自轉（不隨滑鼠或陀螺儀晃動）
+        // ==========================================
+        const galaxyGroup = new THREE.Group();
+        // 置於天體後方固定景深，保持天體宏觀仰角透視，不再受陀螺儀或滑鼠偏移干擾
+        galaxyGroup.position.set(0, 15, -150);
+        galaxyGroup.rotation.x = 0.38;
+        galaxyGroup.rotation.y = -0.10;
+        scene.add(galaxyGroup);
 
-        const ceilingGrid = new THREE.GridHelper(1800, 44, 0x00f6ff, 0x18688a);
-        ceilingGrid.position.y = 235;
-        ceilingGrid.material.transparent = true;
-        ceilingGrid.material.opacity = 0.75;
-        ceilingGrid.material.color.setHex(0xffffff);
-        scene.add(ceilingGrid);
+        const galaxyCount = 7600;
+        const galaxyGeo = new THREE.BufferGeometry();
+        const galaxyPositions = new Float32Array(galaxyCount * 3);
+        const galaxyColorsDark = new Float32Array(galaxyCount * 3);
+        const galaxyColorsLight = new Float32Array(galaxyCount * 3);
 
+        // 深色模式超高亮深空色系（高亮純白核心、霓虹天青、極光紫、晨曦粉、耀金）
+        const darkPal = [
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0x00f6ff),
+          new THREE.Color(0x38bdf8),
+          new THREE.Color(0xc084fc),
+          new THREE.Color(0xf472b6),
+          new THREE.Color(0xfde047)
+        ];
+        // 淺色模式高辨識度柔和科技色系
+        const lightPal = [
+          new THREE.Color(0x0284c7),
+          new THREE.Color(0x0369a1),
+          new THREE.Color(0x7c3aed),
+          new THREE.Color(0x0f766e),
+          new THREE.Color(0x475569)
+        ];
+
+        const arms = 2; // 2 條如同仙女座星系的主旋臂，螺旋結構最清晰分明
+        const minR = 60;  // 稍微向內靠攏，讓手機端窄螢幕也能清楚看到旋臂向內匯聚
+        const maxR = 980; // 外圍延展至全螢幕四角
+
+        for (let i = 0; i < galaxyCount; i++) {
+          const armIdx = i % arms;
+          const armAngle = (armIdx / arms) * Math.PI * 2;
+          const p = Math.pow(Math.random(), 0.88); // 內圈至外圈均勻分佈
+          const r = minR + p * (maxR - minR);
+          // 圈數倍增：旋轉 7.8 弧度（超過 1.25 整圈連續盤旋），層次極度豐富清晰
+          const spiralAngle = armAngle + p * 7.8;
+          const spread = 16 + p * 75; // 緊湊旋臂核心厚度，呈現如相片般的清晰星流
+          const angleSpread = (Math.random() - 0.5) * (spread / r);
+          const totalAngle = spiralAngle + angleSpread;
+          const z = (Math.random() - 0.5) * (spread * 0.9);
+
+          galaxyPositions[i * 3] = Math.cos(totalAngle) * r;
+          galaxyPositions[i * 3 + 1] = Math.sin(totalAngle) * r * 0.82;
+          galaxyPositions[i * 3 + 2] = z;
+
+          // 核心與主旋臂高機率呈現亮白與耀目光芒
+          const cd = (p < 0.25 && Math.random() < 0.6) ? new THREE.Color(0xffffff) : darkPal[Math.floor(Math.random() * darkPal.length)];
+          galaxyColorsDark[i * 3] = cd.r * 1.25; 
+          galaxyColorsDark[i * 3 + 1] = cd.g * 1.25; 
+          galaxyColorsDark[i * 3 + 2] = cd.b * 1.25;
+
+          const cl = lightPal[Math.floor(Math.random() * lightPal.length)];
+          galaxyColorsLight[i * 3] = cl.r; 
+          galaxyColorsLight[i * 3 + 1] = cl.g; 
+          galaxyColorsLight[i * 3 + 2] = cl.b;
+        }
+
+        galaxyGeo.setAttribute("position", new THREE.BufferAttribute(galaxyPositions, 3));
+        const galaxyColorAttr = new THREE.BufferAttribute(new Float32Array(galaxyColorsDark), 3);
+        galaxyGeo.setAttribute("color", galaxyColorAttr);
+
+        // 提升粒子大小 (6.5px) 與不透明度 (0.95)，深色疊加發光更明顯更閃耀
+        const galaxyMat = new THREE.PointsMaterial({
+          size: 6.5,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.95,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        const galaxyPoints = new THREE.Points(galaxyGeo, galaxyMat);
+        galaxyGroup.add(galaxyPoints);
+
+        // ==========================================
+        // 全新 3D 建模：超大超酷炫群星天體 (Astra Mega Celestial Star & Armillary Dyson Sphere)
         // 核心本體懸浮群組 (直接受手機晃動彈簧物理力驅動)
         const reactorGroup = new THREE.Group();
         reactorGroup.position.set(0, 20, -120);
         scene.add(reactorGroup);
 
-        // ==========================================
-        // 全新 3D 建模：超大超酷炫群星天體 (Astra Mega Celestial Star & Armillary Dyson Sphere)
         // ==========================================
         const celestialGroup = new THREE.Group();
         reactorGroup.add(celestialGroup);
@@ -7751,21 +7820,15 @@
 
         window.updateThreeTheme = function(isLight) {
           if (isLight) {
-            // 淺色柔和主題：保留上下透視網格，調為更淺淡柔和的輕盈科技青藍
-            floorGrid.visible = true;
-            ceilingGrid.visible = true;
-            if (floorGrid.material) {
-              floorGrid.material.vertexColors = false;
-              floorGrid.material.color.setHex(0x0ea5e9);
-              floorGrid.material.opacity = 0.13;
-              floorGrid.material.needsUpdate = true;
+            // 淺色柔和主題：切換為冰晶微星塵（柔和天青與板岩紫），輕透不刺眼、不顯髒、不遮擋文字
+            if (galaxyPoints && galaxyColorAttr) {
+              galaxyColorAttr.array.set(galaxyColorsLight);
+              galaxyColorAttr.needsUpdate = true;
             }
-            if (ceilingGrid.material) {
-              ceilingGrid.material.vertexColors = false;
-              ceilingGrid.material.color.setHex(0x0ea5e9);
-              ceilingGrid.material.opacity = 0.09;
-              ceilingGrid.material.needsUpdate = true;
-            }
+            galaxyMat.blending = THREE.NormalBlending;
+            galaxyMat.opacity = 0.42;
+            galaxyMat.size = 5.2;
+            galaxyMat.needsUpdate = true;
 
             starCoreMat.color.setHex(0x38bdf8);
             starCoreMat.opacity = 0.35;
@@ -7788,20 +7851,15 @@
             debrisMat.color.setHex(0x94a3b8);
             debrisMat.opacity = 0.25;
           } else {
-            floorGrid.visible = true;
-            ceilingGrid.visible = true;
-            if (floorGrid.material) {
-              floorGrid.material.vertexColors = true;
-              floorGrid.material.color.setHex(0xffffff);
-              floorGrid.material.opacity = 0.8;
-              floorGrid.material.needsUpdate = true;
+            // 深色主題：超密集高亮璀璨深空螺旋星系，疊加發光
+            if (galaxyPoints && galaxyColorAttr) {
+              galaxyColorAttr.array.set(galaxyColorsDark);
+              galaxyColorAttr.needsUpdate = true;
             }
-            if (ceilingGrid.material) {
-              ceilingGrid.material.vertexColors = true;
-              ceilingGrid.material.color.setHex(0xffffff);
-              ceilingGrid.material.opacity = 0.75;
-              ceilingGrid.material.needsUpdate = true;
-            }
+            galaxyMat.blending = THREE.AdditiveBlending;
+            galaxyMat.opacity = 0.95;
+            galaxyMat.size = 6.5;
+            galaxyMat.needsUpdate = true;
 
             starCoreMat.color.setHex(0xf5c443);
             starCoreMat.opacity = 0.45;
@@ -7964,9 +8022,8 @@
             warpSpeed = Math.max(1, warpSpeed - dt * 3.5);
           }
 
-          // 地平線網格推進
-          floorGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
-          ceilingGrid.position.z = (elapsed * 48 * warpSpeed) % 40;
+          // 螺旋星系獨立優雅自轉（不隨滑鼠、陀螺儀或彈簧晃動傾斜，維持純粹宇宙宏偉感）
+          galaxyGroup.rotation.z -= (0.08 + (warpSpeed - 1) * 0.12) * dt;
 
           // 超大超酷炫群星天體常規旋轉
           starCoreMesh.rotation.x += 0.35 * dt * warpSpeed;
@@ -7996,6 +8053,7 @@
           camera.aspect = window.innerWidth / window.innerHeight;
           camera.updateProjectionMatrix();
           renderer.setSize(window.innerWidth, window.innerHeight);
+          adjustDeviceResponsiveScale();
         });
       })();
 
