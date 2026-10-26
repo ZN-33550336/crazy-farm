@@ -15,7 +15,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://zn-33550336.github.io/crazy-farm/" />
     <meta property="og:title" content="瘋狂農場 • 果實計算器" />
-    <meta property="og:description" content="全服細節最多最複雜的計算器" />
+    <meta property="og:description" content="全服細節最多最華麗的計算器" />
     <meta property="og:image" content="https://zn-33550336.github.io/crazy-farm/favicon.svg" />
     <meta property="og:locale" content="zh_TW" />
 
@@ -6333,6 +6333,9 @@
       const markerBar = document.createElement("div");
       markerBar.className = "drag-insert-marker-bar";
 
+      let sortCurHoverZone = null;
+      let sortCurTargetCard = null;
+
       function removeMarkerBar() {
         if (markerBar && markerBar.parentNode) {
           markerBar.parentNode.removeChild(markerBar);
@@ -6341,13 +6344,12 @@
 
       function clearAllInsertMarkers() {
         removeMarkerBar();
-        document.querySelectorAll(".insert-before, .insert-after").forEach((el) => {
-          el.classList.remove("insert-before", "insert-after");
-        });
+        if (sortCurHoverZone) { sortCurHoverZone.classList.remove("drag-hover"); sortCurHoverZone = null; }
+        if (sortCurTargetCard) { sortCurTargetCard.classList.remove("drag-target"); sortCurTargetCard = null; }
       }
 
       // ==========================================
-      // 自訂排序互動狀態與全域事件（一次性初始化，絕不重複疊加）
+      // 自訂排序互動狀態與全域事件（高效事件委派，硬體加速順滑拖曳）
       // ==========================================
       let sortDragGhost = null;
       let sortDraggedName = null;
@@ -6358,11 +6360,26 @@
       let sortDragTrackingTouchId = null;
       let sortStartPos = null;
       let sortActiveSourceChip = null;
-      let sortAutoScrollInterval = null;
       let sortSecondaryScrollTouchId = null;
       let sortSecondaryLastY = 0;
       let sortPreventClick = false;
       let sortGlobalListenersInitialized = false;
+
+      // 平滑邊緣自動滾動 (rAF 驅動，無計時器堆疊與延遲)
+      let sortAutoScrollSpeed = 0;
+      let sortAutoScrollRaf = null;
+
+      function sortAutoScrollLoop() {
+        if (!sortAutoScrollSpeed) {
+          sortAutoScrollRaf = null;
+          return;
+        }
+        const modalBody = document.querySelector(".custom-sort-modal-body");
+        if (modalBody) {
+          modalBody.scrollTop += sortAutoScrollSpeed;
+        }
+        sortAutoScrollRaf = requestAnimationFrame(sortAutoScrollLoop);
+      }
 
       function sortStartAutoScroll(clientY) {
         const modalBody = document.querySelector(".custom-sort-modal-body");
@@ -6372,18 +6389,14 @@
         const bottomThreshold = rect.bottom - 50;
 
         if (clientY < topThreshold) {
-          const speed = Math.max(3, Math.min(18, (topThreshold - clientY) * 0.4));
-          if (!sortAutoScrollInterval) {
-            sortAutoScrollInterval = setInterval(() => {
-              modalBody.scrollTop -= speed;
-            }, 16);
+          sortAutoScrollSpeed = -Math.max(2, Math.min(16, (topThreshold - clientY) * 0.35));
+          if (!sortAutoScrollRaf) {
+            sortAutoScrollRaf = requestAnimationFrame(sortAutoScrollLoop);
           }
         } else if (clientY > bottomThreshold) {
-          const speed = Math.max(3, Math.min(18, (clientY - bottomThreshold) * 0.4));
-          if (!sortAutoScrollInterval) {
-            sortAutoScrollInterval = setInterval(() => {
-              modalBody.scrollTop += speed;
-            }, 16);
+          sortAutoScrollSpeed = Math.max(2, Math.min(16, (clientY - bottomThreshold) * 0.35));
+          if (!sortAutoScrollRaf) {
+            sortAutoScrollRaf = requestAnimationFrame(sortAutoScrollLoop);
           }
         } else {
           sortStopAutoScroll();
@@ -6391,37 +6404,52 @@
       }
 
       function sortStopAutoScroll() {
-        if (sortAutoScrollInterval) {
-          clearInterval(sortAutoScrollInterval);
-          sortAutoScrollInterval = null;
+        sortAutoScrollSpeed = 0;
+        if (sortAutoScrollRaf) {
+          cancelAnimationFrame(sortAutoScrollRaf);
+          sortAutoScrollRaf = null;
         }
       }
 
+      // 高效即時標線計算（局部快取卡片與區域，杜絕每次全 DOM 掃描造成的重繪卡頓）
       function updateInsertionMarkerAtPoint(clientX, clientY) {
         const dropElem = document.elementFromPoint(clientX, clientY);
-        document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
+        if (!dropElem) {
+          removeMarkerBar();
+          if (sortCurHoverZone) { sortCurHoverZone.classList.remove("drag-hover"); sortCurHoverZone = null; }
+          if (sortCurTargetCard) { sortCurTargetCard.classList.remove("drag-target"); sortCurTargetCard = null; }
+          return;
+        }
 
-        if (dropElem) {
-          const targetChip = dropElem.closest(".custom-sort-chip");
-          const zone = dropElem.closest(".custom-cat-chips-zone");
-          const card = dropElem.closest(".custom-cat-card");
+        const targetChip = dropElem.closest(".custom-sort-chip");
+        const zone = dropElem.closest(".custom-cat-chips-zone");
+        const card = dropElem.closest(".custom-cat-card");
+
+        if (sortCurHoverZone !== zone) {
+          if (sortCurHoverZone) sortCurHoverZone.classList.remove("drag-hover");
           if (zone) zone.classList.add("drag-hover");
+          sortCurHoverZone = zone;
+        }
+        if (sortCurTargetCard !== card) {
+          if (sortCurTargetCard) sortCurTargetCard.classList.remove("drag-target");
           if (card) card.classList.add("drag-target");
-          if (targetChip && zone) {
-            const rect = targetChip.getBoundingClientRect();
-            const isBefore = (clientX < rect.left + rect.width / 2);
-            if (isBefore) {
-              if (markerBar.nextSibling !== targetChip) zone.insertBefore(markerBar, targetChip);
-            } else {
-              if (markerBar.previousSibling !== targetChip) zone.insertBefore(markerBar, targetChip.nextSibling);
-            }
-          } else if (zone && !targetChip) {
-            const moveBtn = zone.querySelector(".btn-move-here");
-            if (moveBtn) {
-              if (markerBar.nextSibling !== moveBtn) zone.insertBefore(markerBar, moveBtn);
-            } else {
-              if (markerBar.parentNode !== zone) zone.appendChild(markerBar);
-            }
+          sortCurTargetCard = card;
+        }
+
+        if (targetChip && zone) {
+          const rect = targetChip.getBoundingClientRect();
+          const isBefore = (clientX < rect.left + rect.width / 2);
+          if (isBefore) {
+            if (markerBar.nextSibling !== targetChip) zone.insertBefore(markerBar, targetChip);
+          } else {
+            if (markerBar.previousSibling !== targetChip) zone.insertBefore(markerBar, targetChip.nextSibling);
+          }
+        } else if (zone && !targetChip) {
+          const moveBtn = zone.querySelector(".btn-move-here");
+          if (moveBtn) {
+            if (markerBar.nextSibling !== moveBtn) zone.insertBefore(markerBar, moveBtn);
+          } else {
+            if (markerBar.parentNode !== zone) zone.appendChild(markerBar);
           }
         } else {
           removeMarkerBar();
@@ -6455,14 +6483,12 @@
             }
 
             clearAllInsertMarkers();
-            document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
             if (sortDraggedName) {
               moveMutationInDraft(sortDraggedName, targetCatIdx, targetChipIdx);
             }
           } else {
             // 亂移至外面或未觸發顯示「|」：原位復原
             clearAllInsertMarkers();
-            document.querySelectorAll(".drag-hover, .drag-target").forEach(el => el.classList.remove("drag-hover", "drag-target"));
             CyberAudio.cancel();
           }
         }
@@ -6515,10 +6541,9 @@
             }
           }
 
-          // 1. 拖曳手指跟隨移動與插入線指引
+          // 1. 拖曳手指跟隨移動與插入線指引 (GPU 硬體加速 translate3d)
           if (dragTouch && sortDragGhost) {
-            sortDragGhost.style.left = `${dragTouch.clientX - 35}px`;
-            sortDragGhost.style.top = `${dragTouch.clientY - 18}px`;
+            sortDragGhost.style.transform = `translate3d(${dragTouch.clientX - 35}px, ${dragTouch.clientY - 18}px, 0) scale(1.08)`;
             updateInsertionMarkerAtPoint(dragTouch.clientX, dragTouch.clientY);
             sortStartAutoScroll(dragTouch.clientY);
           }
@@ -6589,18 +6614,19 @@
               sortDragGhost = sortActiveSourceChip.cloneNode(true);
               sortDragGhost.classList.remove("chip-holding-jiggle", "dragging", "selected-for-move");
               sortDragGhost.style.position = "fixed";
+              sortDragGhost.style.top = "0";
+              sortDragGhost.style.left = "0";
+              sortDragGhost.style.willChange = "transform";
               sortDragGhost.style.pointerEvents = "none";
               sortDragGhost.style.zIndex = "10060";
               sortDragGhost.style.opacity = "0.95";
-              sortDragGhost.style.transform = "scale(1.08)";
               sortDragGhost.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6), 0 0 14px var(--neon-cyan)";
               document.body.appendChild(sortDragGhost);
             }
           }
 
           if (sortDragGhost) {
-            sortDragGhost.style.left = `${e.clientX - 35}px`;
-            sortDragGhost.style.top = `${e.clientY - 18}px`;
+            sortDragGhost.style.transform = `translate3d(${e.clientX - 35}px, ${e.clientY - 18}px, 0) scale(1.08)`;
             updateInsertionMarkerAtPoint(e.clientX, e.clientY);
             sortStartAutoScroll(e.clientY);
           }
@@ -6725,7 +6751,7 @@
             }, 200);
           }, { passive: true });
 
-          // 4. 手機端 touchmove
+          // 4. 手機端 touchmove：未滿 0.2 秒滑動時釋放為正常捲動；滿 0.2 秒啟動拖曳（位置與插入線由全域 touchmove 統一處理，杜絕重複運算）
           chip.addEventListener("touchmove", (e) => {
             if (!sortActiveSourceChip || sortActiveSourceChip !== chip) return;
 
@@ -6741,7 +6767,6 @@
             const dist = Math.hypot(trackedTouch.clientX - sortStartPos.x, trackedTouch.clientY - sortStartPos.y);
 
             if (!sortIsHoldReady) {
-              // 未按滿 0.2 秒就在詞條上滑動：正常滾動彈窗
               if (dist > 8) {
                 if (sortHoldTimer) clearTimeout(sortHoldTimer);
                 sortHoldTimer = null;
@@ -6750,10 +6775,8 @@
                 sortDragTrackingTouchId = null;
                 sortStartPos = null;
                 sortDraggedName = null;
-                return;
               }
             } else {
-              // 按住滿 0.2 秒，開始跟隨移動！
               if (!sortIsDragging) {
                 sortIsDragging = true;
                 sortPreventClick = true;
@@ -6765,10 +6788,13 @@
                   sortDragGhost = chip.cloneNode(true);
                   sortDragGhost.classList.remove("chip-holding-jiggle", "dragging", "selected-for-move");
                   sortDragGhost.style.position = "fixed";
+                  sortDragGhost.style.top = "0";
+                  sortDragGhost.style.left = "0";
+                  sortDragGhost.style.willChange = "transform";
                   sortDragGhost.style.pointerEvents = "none";
                   sortDragGhost.style.zIndex = "10060";
                   sortDragGhost.style.opacity = "0.95";
-                  sortDragGhost.style.transform = "scale(1.08)";
+                  sortDragGhost.style.transform = `translate3d(${trackedTouch.clientX - 35}px, ${trackedTouch.clientY - 18}px, 0) scale(1.08)`;
                   sortDragGhost.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6), 0 0 14px var(--neon-cyan)";
                   document.body.appendChild(sortDragGhost);
                 }
@@ -6776,13 +6802,6 @@
 
               if (e.cancelable) {
                 e.preventDefault();
-              }
-
-              if (sortDragGhost) {
-                sortDragGhost.style.left = `${trackedTouch.clientX - 35}px`;
-                sortDragGhost.style.top = `${trackedTouch.clientY - 18}px`;
-                updateInsertionMarkerAtPoint(trackedTouch.clientX, trackedTouch.clientY);
-                sortStartAutoScroll(trackedTouch.clientY);
               }
             }
           }, { passive: false });
@@ -7658,6 +7677,13 @@
         const celestialGroup = new THREE.Group();
         reactorGroup.add(celestialGroup);
 
+        // 電腦端專屬比例分層：中心球體放大 2.0x，外圍星環僅微幅放大 1.26x 雅緻環繞，不接觸球體且不遮蔽視線！
+        const sphereCoreGroup = new THREE.Group();
+        celestialGroup.add(sphereCoreGroup);
+
+        const ringsGroup = new THREE.Group();
+        celestialGroup.add(ringsGroup);
+
         // A. 實心主體內核 (深空微晶遮蔽體，阻擋後方星系中心)
         const solidCoreGeo = new THREE.SphereGeometry(68, 36, 32);
         const solidCoreMat = new THREE.MeshBasicMaterial({
@@ -7667,7 +7693,7 @@
           depthWrite: true
         });
         const solidCoreMesh = new THREE.Mesh(solidCoreGeo, solidCoreMat);
-        celestialGroup.add(solidCoreMesh);
+        sphereCoreGroup.add(solidCoreMesh);
 
         // B. 內部脈衝彩晶微核
         const innerGlowGeo = new THREE.SphereGeometry(44, 24, 20);
@@ -7677,7 +7703,7 @@
           opacity: 0.68
         });
         const innerGlowMesh = new THREE.Mesh(innerGlowGeo, innerGlowMat);
-        celestialGroup.add(innerGlowMesh);
+        sphereCoreGroup.add(innerGlowMesh);
 
         // C. 外層立體科技晶格護甲 (經典正二十面體晶格)
         const starCoreGeo = new THREE.IcosahedronGeometry(74, 2);
@@ -7688,7 +7714,7 @@
           opacity: 0.88
         });
         const starCoreMesh = new THREE.Mesh(starCoreGeo, starCoreMat);
-        celestialGroup.add(starCoreMesh);
+        sphereCoreGroup.add(starCoreMesh);
 
         // D. 經典四道立體星環 (原版四環：赤道金、天球青、翡翠綠、日冕紫)
         // 環 1：主赤道外環 (金耀環)
@@ -7696,7 +7722,7 @@
         const bRing1Mat = new THREE.MeshBasicMaterial({ color: 0xf5c443, wireframe: false, transparent: true, opacity: 0.75 });
         const bRing1 = new THREE.Mesh(bRing1Geo, bRing1Mat);
         bRing1.rotation.x = Math.PI / 2;
-        celestialGroup.add(bRing1);
+        ringsGroup.add(bRing1);
 
         // 環 2：傾斜天球環 (霓虹天青晶體環)
         const bRing2Geo = new THREE.TorusGeometry(164, 2.2, 16, 96);
@@ -7704,7 +7730,7 @@
         const bRing2 = new THREE.Mesh(bRing2Geo, bRing2Mat);
         bRing2.rotation.x = Math.PI / 3.2;
         bRing2.rotation.y = Math.PI / 4;
-        celestialGroup.add(bRing2);
+        ringsGroup.add(bRing2);
 
         // 環 3：逆向翡翠軌道環 (螢光翡翠綠)
         const bRing3Geo = new THREE.TorusGeometry(198, 1.8, 14, 96);
@@ -7712,7 +7738,7 @@
         const bRing3 = new THREE.Mesh(bRing3Geo, bRing3Mat);
         bRing3.rotation.x = -Math.PI / 3.5;
         bRing3.rotation.z = Math.PI / 5;
-        celestialGroup.add(bRing3);
+        ringsGroup.add(bRing3);
 
         // 環 4：外圍紫晶日冕環 (幻星紫，帶有明顯三維傾角)
         const bRing4Geo = new THREE.TorusGeometry(234, 1.5, 12, 100);
@@ -7720,7 +7746,7 @@
         const bRing4 = new THREE.Mesh(bRing4Geo, bRing4Mat);
         bRing4.rotation.x = Math.PI / 4.5;
         bRing4.rotation.y = Math.PI / 2.4;
-        celestialGroup.add(bRing4);
+        ringsGroup.add(bRing4);
 
         // 軌道哨站微光衛星節點
         const satelliteGroup = new THREE.Group();
@@ -7732,18 +7758,29 @@
           satelliteGroup.add(sat);
           satellites.push({ mesh: sat, orbitR: 125 + i * 32, speed: 0.6 + i * 0.3, phase: (i * Math.PI) / 2 });
         }
-        celestialGroup.add(satelliteGroup);
+        ringsGroup.add(satelliteGroup);
 
         // ==========================================
-        // 4. 裝置相應大氣尺寸 (手機固定 1.0，電腦上球體兩倍大 2.0，星系維持 1.0)
+        // 4. 裝置相應大氣尺寸 (手機固定 1.0；電腦上中心球體 2.0x，外環微幅 1.26x 雅緻環繞不遮蔽視線，星系維持 1.0)
         // ==========================================
         function getSphereBaseScale() {
           return (typeof window !== "undefined" && window.innerWidth > 768) ? 2.0 : 1.0;
         }
 
-        let baseRScale = getSphereBaseScale();
+        function getRingsBaseScale() {
+          return (typeof window !== "undefined" && window.innerWidth > 768) ? 1.26 : 1.0;
+        }
+
+        function applySphereRingsScaling() {
+          const sScale = getSphereBaseScale();
+          const rScale = getRingsBaseScale();
+          sphereCoreGroup.scale.set(sScale, sScale, sScale);
+          ringsGroup.scale.set(rScale, rScale, rScale);
+        }
+
+        applySphereRingsScaling();
         const baseGScale = 1.0;
-        reactorGroup.scale.set(baseRScale, baseRScale, baseRScale);
+        reactorGroup.scale.set(1.0, 1.0, 1.0);
         galaxyGroup.scale.set(baseGScale, baseGScale, baseGScale);
 
         // 超新星能量碎片系統 (600顆三維立體粒子)
@@ -7823,10 +7860,9 @@
           if (innerGlowMat && innerGlowMat.color) innerGlowMat.color.setHex(hex);
           if (starCoreMat && starCoreMat.color) starCoreMat.color.setHex(hex);
           if (window.gsap && reactorGroup) {
-            const currentScale = getSphereBaseScale();
             gsap.fromTo(reactorGroup.scale,
-              { x: currentScale * 1.25, y: currentScale * 1.25, z: currentScale * 1.25 },
-              { x: currentScale, y: currentScale, z: currentScale, duration: 0.65, ease: "elastic.out(1.1, 0.4)" }
+              { x: 1.22, y: 1.22, z: 1.22 },
+              { x: 1.0, y: 1.0, z: 1.0, duration: 0.65, ease: "elastic.out(1.1, 0.4)" }
             );
           }
         };
@@ -7849,6 +7885,7 @@
         window.addEventListener("pointermove", (e) => {
           if (e.pointerType === "mouse") {
             if (typeof state !== "undefined" && !state.gyroEnabled) return;
+            if (window.isCustomSortActive) return;
             const mx = (e.clientX - window.innerWidth / 2);
             const my = (e.clientY - window.innerHeight / 2);
             velX += mx * 0.008;
@@ -8093,6 +8130,8 @@
         const clock = new THREE.Clock();
         function animate3D() {
           requestAnimationFrame(animate3D);
+          // 拖曳詞條時暫停 3D 重繪，將全部 GPU/CPU 算力保留給拖曳手感，徹底告別卡頓
+          if (window.isCustomSortDragging) return;
           const rawDt = clock.getDelta();
           const dt = (rawDt > 0 && rawDt < 0.1) ? rawDt : (1 / 60);
           const elapsed = clock.getElapsedTime();
@@ -8254,9 +8293,9 @@
           camera.aspect = window.innerWidth / window.innerHeight;
           camera.updateProjectionMatrix();
           renderer.setSize(window.innerWidth, window.innerHeight);
-          baseRScale = getSphereBaseScale();
+          applySphereRingsScaling();
           if (!window.gsap || !gsap.isTweening(reactorGroup.scale)) {
-            reactorGroup.scale.set(baseRScale, baseRScale, baseRScale);
+            reactorGroup.scale.set(1.0, 1.0, 1.0);
           }
         });
       })();
