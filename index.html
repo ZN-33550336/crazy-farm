@@ -2661,7 +2661,7 @@
       /* 淺色柔和主題 (Comfortable Soft Light Theme) */
       body.theme-light {
         --bg-deep: #f5f7fa;
-        --glass-base: rgba(255, 255, 255, 0.96);
+        --glass-base: rgba(255, 255, 255, 0.78);
         --border-cyan: rgba(2, 132, 199, 0.25);
         --border-gold: rgba(217, 119, 6, 0.28);
         --border-pink: rgba(225, 29, 72, 0.28);
@@ -2669,21 +2669,24 @@
         --text-light: #1e293b;
         --text-muted: #475569;
         --text-dim: #64748b;
-        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 40%, #eef2f6 100%) !important;
-        background-attachment: fixed !important;
+        background: #f8fafc !important;
         color: #1e293b;
       }
       body.theme-light .holo-overlay {
-        background: radial-gradient(circle at 50% 25%, rgba(2, 132, 199, 0.03) 0%, transparent 75%);
+        background: radial-gradient(circle at 50% 25%, rgba(2, 132, 199, 0.05) 0%, rgba(248, 250, 252, 0.25) 100%);
       }
       body.theme-light .panel-3d {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(226, 232, 240, 0.85);
         box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
       }
       body.theme-light .cyber-header-3d {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(226, 232, 240, 0.85);
         box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
       }
       body.theme-light .header-title {
@@ -3499,8 +3502,10 @@
 
       /* 頁尾在淺色下的樣式 */
       body.theme-light .cyber-footer-3d {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        background: rgba(255, 255, 255, 0.80) !important;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(203, 213, 225, 0.8) !important;
         box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05) !important;
       }
       body.theme-light .footer-copyright {
@@ -7434,83 +7439,145 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         // ==========================================
-        // 全新背景 3D：超密集璀璨深空螺旋星系 (Super Spiral Galaxy Particle System)
-        // 7,600 顆超高密度粒子、圈數多 (7.8圈對數螺線)、高亮度且穩定獨立自轉（不隨滑鼠或陀螺儀晃動）
+        // 1. 圓形柔光星塵貼圖 (消除鋸齒方塊感，重現天體照片真實光暈)
+        // ==========================================
+        function createGalaxyStarTexture() {
+          const c = document.createElement("canvas");
+          c.width = 64;
+          c.height = 64;
+          const ctx = c.getContext("2d");
+          if (!ctx) return null;
+          const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+          g.addColorStop(0, "rgba(255, 255, 255, 1.0)");
+          g.addColorStop(0.2, "rgba(255, 255, 255, 0.95)");
+          g.addColorStop(0.5, "rgba(235, 245, 255, 0.65)");
+          g.addColorStop(0.8, "rgba(180, 210, 255, 0.2)");
+          g.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, 64, 64);
+          const tex = new THREE.CanvasTexture(c);
+          tex.needsUpdate = true;
+          return tex;
+        }
+        const starTex = createGalaxyStarTexture();
+
+        // ==========================================
+        // 2. 背景 3D：自然緊湊「六圈」華麗深空螺旋星系 (Natural 6-Coil Grand Celestial Galaxy)
+        // 圈距擴大一倍 (相鄰圈距約 133 單位)、圈數增加兩圈為「六整圈」(12π 弧度)
+        // 32,000 顆星塵、色彩璀璨豐富 (白金核 -> 霓虹玫紅 -> 幻星紫 -> 電光青藍)
+        // 中心微光不堆疊、外圈飽滿不稀疏！空間置於球體後方 (Z: -250，球體 Z: -120)
         // ==========================================
         const galaxyGroup = new THREE.Group();
-        // 置於天體後方固定景深，保持天體宏觀仰角透視，不再受陀螺儀或滑鼠偏移干擾
-        galaxyGroup.position.set(0, 15, -150);
-        galaxyGroup.rotation.x = 0.38;
+        galaxyGroup.position.set(0, 20, -250);
+        galaxyGroup.rotation.x = 0.40;
         galaxyGroup.rotation.y = -0.10;
         scene.add(galaxyGroup);
 
-        const galaxyCount = 7600;
+        const galaxyCount = 32000;
+        const coreCount = 1800;
+        const arms = 2;
+        const minR = 20;
+        const maxR = 820; // 圈距擴大一倍後的 6 圈總半徑
+
         const galaxyGeo = new THREE.BufferGeometry();
         const galaxyPositions = new Float32Array(galaxyCount * 3);
         const galaxyColorsDark = new Float32Array(galaxyCount * 3);
         const galaxyColorsLight = new Float32Array(galaxyCount * 3);
 
-        // 深色模式超高亮深空色系（高亮純白核心、霓虹天青、極光紫、晨曦粉、耀金）
-        const darkPal = [
-          new THREE.Color(0xffffff),
-          new THREE.Color(0xffffff),
-          new THREE.Color(0x00f6ff),
-          new THREE.Color(0x38bdf8),
-          new THREE.Color(0xc084fc),
-          new THREE.Color(0xf472b6),
-          new THREE.Color(0xfde047)
-        ];
-        // 淺色模式高辨識度柔和科技色系
-        const lightPal = [
-          new THREE.Color(0x0284c7),
-          new THREE.Color(0x0369a1),
-          new THREE.Color(0x7c3aed),
-          new THREE.Color(0x0f766e),
-          new THREE.Color(0x475569)
-        ];
-
-        const arms = 2; // 2 條如同仙女座星系的主旋臂，螺旋結構最清晰分明
-        const minR = 60;  // 稍微向內靠攏，讓手機端窄螢幕也能清楚看到旋臂向內匯聚
-        const maxR = 980; // 外圍延展至全螢幕四角
+        function hexToRgb(hex) {
+          return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
+        }
 
         for (let i = 0; i < galaxyCount; i++) {
-          const armIdx = i % arms;
-          const armAngle = (armIdx / arms) * Math.PI * 2;
-          const p = Math.pow(Math.random(), 0.88); // 內圈至外圈均勻分佈
-          const r = minR + p * (maxR - minR);
-          // 圈數倍增：旋轉 7.8 弧度（超過 1.25 整圈連續盤旋），層次極度豐富清晰
-          const spiralAngle = armAngle + p * 7.8;
-          const spread = 16 + p * 75; // 緊湊旋臂核心厚度，呈現如相片般的清晰星流
-          const angleSpread = (Math.random() - 0.5) * (spread / r);
-          const totalAngle = spiralAngle + angleSpread;
-          const z = (Math.random() - 0.5) * (spread * 0.9);
+          let r, totalAngle, z, rgbDark, rgbLight;
+
+          if (i < coreCount) {
+            // A. 中心天然微光發光核團 (中心點自然微光，不過密)
+            const pCore = Math.random();
+            r = Math.sqrt(pCore) * 28;
+            totalAngle = Math.random() * Math.PI * 2;
+            z = (Math.random() - 0.5) * 14 * (1 - r / 32);
+
+            const coreColors = [0xffffff, 0xfff7ed, 0xfef08a, 0xfde047, 0xfce7f3];
+            rgbDark = hexToRgb(coreColors[Math.floor(Math.random() * coreColors.length)]);
+            const b = 0.95 + Math.random() * 0.05;
+            rgbDark[0] *= b; rgbDark[1] *= b; rgbDark[2] *= b;
+            rgbLight = [0.01, 0.52, 0.78];
+          } else {
+            // B. 雙主旋臂 (圈距擴大一倍、連續盤旋整整六圈 12π 弧度，外圈飽滿充實)
+            const armIdx = i % arms;
+            const armAngle = (armIdx / arms) * Math.PI * 2;
+            const p = Math.pow((i - coreCount) / (galaxyCount - coreCount), 0.68);
+            r = minR + p * (maxR - minR);
+            // 精準連續盤旋六圈 (12π 弧度)
+            const spiralAngle = armAngle + p * (Math.PI * 12);
+            // 保持緊實精準的旋臂線條，圈距擴大一倍後，圈與圈之間留出深邃優雅的宇宙暗帶！
+            const spread = 4.0 + p * 18.0;
+            const angleSpread = (Math.random() - 0.5) * (spread / Math.max(20, r));
+            totalAngle = spiralAngle + angleSpread;
+            z = (Math.random() - 0.5) * (4.5 + p * 12.0);
+
+            // 色彩隨 6 圈漸進展開 (白金 -> 霓虹玫紅 -> 幻星紫 -> 電光青 -> 寶藍深空)
+            let cDarkHex, cLightHex;
+            if (p < 0.10) {
+              // 第一圈內核過渡：白金暖光
+              const pal = [0xffffff, 0xfef08a, 0xfbcfe8, 0xf472b6];
+              cDarkHex = pal[Math.floor(Math.random() * pal.length)];
+              cLightHex = 0x0284c7;
+            } else if (p < 0.30) {
+              // 第一、二圈：熾烈霓虹玫紅、星雲熱粉
+              const pal = [0xff2d95, 0xf43f5e, 0xec4899, 0xfb7185, 0xe11d48, 0xff66b2];
+              cDarkHex = pal[Math.floor(Math.random() * pal.length)];
+              cLightHex = 0xbe185d;
+            } else if (p < 0.55) {
+              // 第二、三圈：幻星紫晶、極光紫羅蘭、薰衣草紫
+              const pal = [0xc084fc, 0xa855f7, 0x9333ea, 0x818cf8, 0x8b5cf6, 0x7c3aed];
+              cDarkHex = pal[Math.floor(Math.random() * pal.length)];
+              cLightHex = 0x7e22ce;
+            } else if (p < 0.80) {
+              // 第四、五圈：電光天青、碧璽綠青
+              const pal = [0x00f6ff, 0x38bdf8, 0x06b6d4, 0x2dd4bf, 0x38e888];
+              cDarkHex = pal[Math.floor(Math.random() * pal.length)];
+              cLightHex = 0x0f766e;
+            } else {
+              // 第五、六圈外圍：深空寶藍、星雲湖青
+              const pal = [0x0284c7, 0x3b82f6, 0x2563eb, 0x1d4ed8, 0x60a5fa];
+              cDarkHex = pal[Math.floor(Math.random() * pal.length)];
+              cLightHex = 0x1e40af;
+            }
+
+            rgbDark = hexToRgb(cDarkHex);
+            const isDiamond = Math.random() < 0.08;
+            const b = isDiamond ? 1.25 : (0.75 + Math.random() * 0.35);
+            rgbDark[0] = Math.min(1.0, rgbDark[0] * b);
+            rgbDark[1] = Math.min(1.0, rgbDark[1] * b);
+            rgbDark[2] = Math.min(1.0, rgbDark[2] * b);
+            rgbLight = hexToRgb(cLightHex);
+          }
 
           galaxyPositions[i * 3] = Math.cos(totalAngle) * r;
-          galaxyPositions[i * 3 + 1] = Math.sin(totalAngle) * r * 0.82;
+          galaxyPositions[i * 3 + 1] = Math.sin(totalAngle) * r * 0.86;
           galaxyPositions[i * 3 + 2] = z;
 
-          // 核心與主旋臂高機率呈現亮白與耀目光芒
-          const cd = (p < 0.25 && Math.random() < 0.6) ? new THREE.Color(0xffffff) : darkPal[Math.floor(Math.random() * darkPal.length)];
-          galaxyColorsDark[i * 3] = cd.r * 1.25; 
-          galaxyColorsDark[i * 3 + 1] = cd.g * 1.25; 
-          galaxyColorsDark[i * 3 + 2] = cd.b * 1.25;
+          galaxyColorsDark[i * 3] = rgbDark[0];
+          galaxyColorsDark[i * 3 + 1] = rgbDark[1];
+          galaxyColorsDark[i * 3 + 2] = rgbDark[2];
 
-          const cl = lightPal[Math.floor(Math.random() * lightPal.length)];
-          galaxyColorsLight[i * 3] = cl.r; 
-          galaxyColorsLight[i * 3 + 1] = cl.g; 
-          galaxyColorsLight[i * 3 + 2] = cl.b;
+          galaxyColorsLight[i * 3] = rgbLight[0] * 0.85;
+          galaxyColorsLight[i * 3 + 1] = rgbLight[1] * 0.85;
+          galaxyColorsLight[i * 3 + 2] = rgbLight[2] * 0.85;
         }
 
         galaxyGeo.setAttribute("position", new THREE.BufferAttribute(galaxyPositions, 3));
         const galaxyColorAttr = new THREE.BufferAttribute(new Float32Array(galaxyColorsDark), 3);
         galaxyGeo.setAttribute("color", galaxyColorAttr);
 
-        // 提升粒子大小 (6.5px) 與不透明度 (0.95)，深色疊加發光更明顯更閃耀
         const galaxyMat = new THREE.PointsMaterial({
-          size: 6.5,
+          size: 5.5,
+          map: starTex,
           vertexColors: true,
           transparent: true,
-          opacity: 0.95,
+          opacity: 0.90,
           blending: THREE.AdditiveBlending,
           depthWrite: false
         });
@@ -7518,69 +7585,79 @@
         galaxyGroup.add(galaxyPoints);
 
         // ==========================================
-        // 全新 3D 建模：超大超酷炫群星天體 (Astra Mega Celestial Star & Armillary Dyson Sphere)
-        // 核心本體懸浮群組 (直接受手機晃動彈簧物理力驅動)
+        // 3. 恢復原版經典 3D 幾何量子球體 ＆ 四軌優雅星環
+        // 圖層與空間完全在星系前方 (Z: -120，星系 Z: -250)！
+        // ==========================================
         const reactorGroup = new THREE.Group();
         reactorGroup.position.set(0, 20, -120);
         scene.add(reactorGroup);
 
-        // ==========================================
         const celestialGroup = new THREE.Group();
         reactorGroup.add(celestialGroup);
 
-        // B-1. 恆星晶耀內核
-        const starCoreGeo = new THREE.IcosahedronGeometry(72, 2);
-        const starCoreMat = new THREE.MeshBasicMaterial({ color: 0xf5c443, wireframe: true, transparent: true, opacity: 0.45 });
+        // A. 實心主體內核 (深空微晶遮蔽體，阻擋後方星系中心)
+        const solidCoreGeo = new THREE.SphereGeometry(68, 36, 32);
+        const solidCoreMat = new THREE.MeshBasicMaterial({
+          color: 0x051426,
+          transparent: true,
+          opacity: 0.94,
+          depthWrite: true
+        });
+        const solidCoreMesh = new THREE.Mesh(solidCoreGeo, solidCoreMat);
+        celestialGroup.add(solidCoreMesh);
+
+        // B. 內部脈衝彩晶微核
+        const innerGlowGeo = new THREE.SphereGeometry(44, 24, 20);
+        const innerGlowMat = new THREE.MeshBasicMaterial({
+          color: 0xf5c443,
+          transparent: true,
+          opacity: 0.68
+        });
+        const innerGlowMesh = new THREE.Mesh(innerGlowGeo, innerGlowMat);
+        celestialGroup.add(innerGlowMesh);
+
+        // C. 外層立體科技晶格護甲 (經典正二十面體晶格)
+        const starCoreGeo = new THREE.IcosahedronGeometry(74, 2);
+        const starCoreMat = new THREE.MeshBasicMaterial({
+          color: 0x00f6ff,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.88
+        });
         const starCoreMesh = new THREE.Mesh(starCoreGeo, starCoreMat);
         celestialGroup.add(starCoreMesh);
 
-        // 恆星等離子日冕冠
-        const coronaGeo = new THREE.DodecahedronGeometry(88, 1);
-        const coronaMat = new THREE.MeshBasicMaterial({ color: 0x24d0c6, wireframe: true, transparent: true, opacity: 0.28 });
-        const coronaMesh = new THREE.Mesh(coronaGeo, coronaMat);
-        celestialGroup.add(coronaMesh);
 
-        // 恆星日冕耀斑輻射芒刺
-        const spikesGroup = new THREE.Group();
-        const spikeMat = new THREE.LineBasicMaterial({ color: 0xff3377, transparent: true, opacity: 0.4 });
-        for (let i = 0; i < 16; i++) {
-          const sGeo = new THREE.BufferGeometry();
-          const theta = (i / 16) * Math.PI * 2;
-          const r1 = 65, r2 = 108 + (i % 2 === 0 ? 32 : 0);
-          const pts = new Float32Array([
-            Math.cos(theta) * r1, Math.sin(theta) * r1, (i % 3 - 1) * 20,
-            Math.cos(theta) * r2, Math.sin(theta) * r2, (i % 3 - 1) * 40
-          ]);
-          sGeo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
-          const line = new THREE.Line(sGeo, spikeMat);
-          spikesGroup.add(line);
-        }
-        celestialGroup.add(spikesGroup);
 
-        // 多軸天體渾天儀星環 (Armillary Dyson Rings)
-        const bRing1Geo = new THREE.TorusGeometry(125, 1.8, 12, 80);
-        const bRing1Mat = new THREE.MeshBasicMaterial({ color: 0xf5c443, wireframe: true, transparent: true, opacity: 0.5 });
+        // E. 經典四道立體星環 (原版四環：赤道金、天球青、翡翠綠、日冕紫)
+        // 環 1：主赤道外環 (金耀環)
+        const bRing1Geo = new THREE.TorusGeometry(132, 2.8, 16, 96);
+        const bRing1Mat = new THREE.MeshBasicMaterial({ color: 0xf5c443, wireframe: false, transparent: true, opacity: 0.75 });
         const bRing1 = new THREE.Mesh(bRing1Geo, bRing1Mat);
         bRing1.rotation.x = Math.PI / 2;
         celestialGroup.add(bRing1);
 
-        const bRing2Geo = new THREE.TorusGeometry(158, 1.6, 12, 80);
-        const bRing2Mat = new THREE.MeshBasicMaterial({ color: 0x24d0c6, wireframe: true, transparent: true, opacity: 0.42 });
+        // 環 2：傾斜天球環 (霓虹天青晶體環)
+        const bRing2Geo = new THREE.TorusGeometry(164, 2.2, 16, 96);
+        const bRing2Mat = new THREE.MeshBasicMaterial({ color: 0x00f6ff, wireframe: false, transparent: true, opacity: 0.68 });
         const bRing2 = new THREE.Mesh(bRing2Geo, bRing2Mat);
         bRing2.rotation.x = Math.PI / 3.2;
         bRing2.rotation.y = Math.PI / 4;
         celestialGroup.add(bRing2);
 
-        const bRing3Geo = new THREE.TorusGeometry(192, 1.4, 12, 80);
-        const bRing3Mat = new THREE.MeshBasicMaterial({ color: 0x38e888, wireframe: true, transparent: true, opacity: 0.35 });
+        // 環 3：逆向翡翠軌道環 (螢光翡翠綠)
+        const bRing3Geo = new THREE.TorusGeometry(198, 1.8, 14, 96);
+        const bRing3Mat = new THREE.MeshBasicMaterial({ color: 0x38e888, wireframe: false, transparent: true, opacity: 0.62 });
         const bRing3 = new THREE.Mesh(bRing3Geo, bRing3Mat);
         bRing3.rotation.x = -Math.PI / 3.5;
         bRing3.rotation.z = Math.PI / 5;
         celestialGroup.add(bRing3);
 
-        const bRing4Geo = new THREE.TorusGeometry(228, 1.0, 8, 96);
-        const bRing4Mat = new THREE.MeshBasicMaterial({ color: 0xb76cff, wireframe: true, transparent: true, opacity: 0.28 });
+        // 環 4：外圍紫晶日冕環 (幻星紫，帶有明顯三維傾角)
+        const bRing4Geo = new THREE.TorusGeometry(234, 1.5, 12, 100);
+        const bRing4Mat = new THREE.MeshBasicMaterial({ color: 0xc084fc, wireframe: false, transparent: true, opacity: 0.55 });
         const bRing4 = new THREE.Mesh(bRing4Geo, bRing4Mat);
+        bRing4.rotation.x = Math.PI / 4.5;
         bRing4.rotation.y = Math.PI / 2.4;
         celestialGroup.add(bRing4);
 
@@ -7595,6 +7672,39 @@
           satellites.push({ mesh: sat, orbitR: 125 + i * 32, speed: 0.6 + i * 0.3, phase: (i * Math.PI) / 2 });
         }
         celestialGroup.add(satelliteGroup);
+
+        // ==========================================
+        // 4. 智慧裝置偵測自動縮放 (電腦大氣磅礡、手機端完美展現六圈)
+        // ==========================================
+        let curBaseRScale = 1.0;
+        let curBaseGScale = 1.0;
+
+        function adjustDeviceResponsiveScale() {
+          const w = window.innerWidth;
+
+          if (w < 768) {
+            // 手機端：球體原版舒適大小 (0.72x)，星系 6 圈 (0.23x) 完整收入手機直屏寬度內！
+            const mRatio = Math.min(1.0, Math.max(0.75, (w - 20) / 360));
+            curBaseRScale = 0.72 * mRatio;
+            curBaseGScale = 0.23 * mRatio;
+          } else if (w < 1024) {
+            // 平板端
+            curBaseRScale = 1.0;
+            curBaseGScale = 0.45;
+          } else if (w < 1440) {
+            // 一般電腦螢幕
+            curBaseRScale = 1.35;
+            curBaseGScale = 0.62;
+          } else {
+            // 2K / 4K 大螢幕電腦
+            curBaseRScale = 1.45;
+            curBaseGScale = 0.72;
+          }
+
+          reactorGroup.scale.set(curBaseRScale, curBaseRScale, curBaseRScale);
+          galaxyGroup.scale.set(curBaseGScale, curBaseGScale, curBaseGScale);
+        }
+        adjustDeviceResponsiveScale();
 
         // 超新星能量碎片系統 (600顆三維立體粒子)
         const debrisCount = 600;
@@ -7623,39 +7733,54 @@
         const debrisMesh = new THREE.Points(debrisGeo, debrisMat);
         scene.add(debrisMesh);
 
-        // 背景星空微塵
-        const starCount = 420;
+        // 背景星空微塵 (2,800 顆，全深空散佈、明亮清晰且持續飄移旋轉)
+        const starCount = 2800;
         const starGeo = new THREE.BufferGeometry();
         const positions = new Float32Array(starCount * 3);
         const colors = new Float32Array(starCount * 3);
-        const palette = [new THREE.Color(0x24d0c6), new THREE.Color(0xf5c443), new THREE.Color(0xb76cff), new THREE.Color(0x38e888)];
+        const palette = [
+          new THREE.Color(0x00f6ff),
+          new THREE.Color(0xf5c443),
+          new THREE.Color(0xc084fc),
+          new THREE.Color(0x38e888),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xf472b6)
+        ];
 
         for (let i = 0; i < starCount; i++) {
-          positions[i * 3] = (Math.random() - 0.5) * 1400;
-          positions[i * 3 + 1] = (Math.random() - 0.5) * 900;
-          positions[i * 3 + 2] = (Math.random() - 0.5) * 1000;
+          positions[i * 3] = (Math.random() - 0.5) * 1600;
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 1100;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 1200;
           const c = palette[Math.floor(Math.random() * palette.length)];
           colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
         }
         starGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
         starGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-        const starMat = new THREE.PointsMaterial({ size: 3.8, vertexColors: true, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
+        const starMat = new THREE.PointsMaterial({
+          size: 4.8,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.92,
+          blending: THREE.AdditiveBlending
+        });
         const stars = new THREE.Points(starGeo, starMat);
         scene.add(stars);
 
         let warpSpeed = 1;
+        let supernovaBurst = 0; // 大爆炸衝擊波激勵值
         const qualityColorHex = { 彩色: 0xff3377, 至臻: 0xff3377, 金色: 0xf5c443, 紫色: 0xb76cff, 藍色: 0x24d0c6, 綠色: 0x38e888, 灰色: 0x8ea4ad };
 
         window.pulse3DReactor = function(qualityName) {
-          warpSpeed = 4;
-          const hex = qualityColorHex[qualityName] || 0x24d0c6;
+          warpSpeed = 4.5;
+          supernovaBurst = 0.6;
+          const hex = qualityColorHex[qualityName] || 0x00f6ff;
+          innerGlowMat.color.setHex(hex);
           starCoreMat.color.setHex(hex);
-          coronaMat.color.setHex(hex);
-          spikeMat.color.setHex(hex);
           if (window.gsap) {
+            const currentScale = reactorGroup.scale.x;
             gsap.fromTo(reactorGroup.scale,
-              { x: 1.3, y: 1.3, z: 1.3 },
-              { x: 1, y: 1, z: 1, duration: 0.6, ease: "elastic.out(1.1, 0.4)" }
+              { x: currentScale * 1.25, y: currentScale * 1.25, z: currentScale * 1.25 },
+              { x: currentScale, y: currentScale, z: currentScale, duration: 0.65, ease: "elastic.out(1.1, 0.4)" }
             );
           }
         };
@@ -7664,10 +7789,10 @@
         let springX = 0, springY = 0;
         let velX = 0, velY = 0;
         let shakeEnergy = 0;
-        let explosionState = "IDLE"; // IDLE, EXPLODING, COLLAPSING
+        let explosionState = "IDLE";
         let explosionTimer = 0;
 
-        // 電腦滑鼠移動互動與劇烈來回快速晃動蓄能爆炸
+        // 電腦滑鼠移動互動與晃動蓄能爆炸
         let lastMouseX = null, lastMouseY = null;
         let lastMouseTime = performance.now();
         let lastMouseVx = 0, lastMouseVy = 0;
@@ -7684,26 +7809,23 @@
             velY -= my * 0.008;
 
             const now = performance.now();
-            const dtMouse = Math.max(10, now - lastMouseTime); // 避免極短時間除以 0
+            const dtMouse = Math.max(10, now - lastMouseTime);
             if (lastMouseX !== null) {
               const dx = e.clientX - lastMouseX;
               const dy = e.clientY - lastMouseY;
               const dist = Math.hypot(dx, dy);
-              const vx = (dx / dtMouse) * 1000; // px / 秒
+              const vx = (dx / dtMouse) * 1000;
               const vy = (dy / dtMouse) * 1000;
               const speed = Math.hypot(vx, vy);
 
-              // 只有大幅度、快速移動（移動距離 > 45px 且 速度 > 2400px/s）才計算方向
               if (dist > 45 && speed > 2400) {
                 const curDirX = Math.sign(dx);
                 const curDirY = Math.sign(dy);
 
-                // 檢測方向反轉 (例如向左急轉向右，或向右急轉向左)
                 const isReversalX = (lastDirX !== 0 && curDirX !== 0 && curDirX !== lastDirX);
                 const isReversalY = (lastDirY !== 0 && curDirY !== 0 && curDirY !== lastDirY);
 
                 if (isReversalX || isReversalY) {
-                  // 如果距離上次反轉在 650ms 內，計為連續折返來回
                   if (now - lastReversalTime < 650) {
                     mouseReversals++;
                   } else {
@@ -7711,7 +7833,6 @@
                   }
                   lastReversalTime = now;
 
-                  // 必須至少快速來回 2~3 次折返（mouseReversals >= 2），才累積爆炸能量
                   if (mouseReversals >= 2) {
                     shakeEnergy += 28;
                   }
@@ -7720,7 +7841,6 @@
                 lastDirX = curDirX;
                 lastDirY = curDirY;
               } else if (now - lastReversalTime > 800) {
-                // 超過 800ms 沒有快速折返，重置折返計數
                 mouseReversals = 0;
               }
 
@@ -7738,6 +7858,8 @@
           if (explosionState !== "IDLE") return;
           explosionState = "EXPLODING";
           explosionTimer = 0;
+          warpSpeed = 7.5;
+          supernovaBurst = 1.0;
           CyberAudio.explode();
           vibrate(70);
 
@@ -7767,7 +7889,7 @@
           debrisGeo.attributes.position.needsUpdate = true;
         }
 
-        // 手機加速度與劇烈晃動感應 (DeviceMotion)
+        // 手機加速度與晃動感應 (DeviceMotion)
         let lastAx = 0, lastAy = 0, lastAz = 0;
         function handleMotion(e) {
           const acc = e.acceleration || e.accelerationIncludingGravity;
@@ -7776,11 +7898,9 @@
           const ay = acc.y || 0;
           const az = acc.z || 0;
 
-          // 手機上下/左右晃動直接推動核心
           velX -= ax * 2.2;
           velY += ay * 2.2;
 
-          // 計算晃動強烈度 (Jerk)
           const jerk = Math.abs(ax - lastAx) + Math.abs(ay - lastAy) + Math.abs(az - lastAz);
           if (jerk > 6.5) {
             shakeEnergy += jerk * 0.55;
@@ -7820,64 +7940,68 @@
 
         window.updateThreeTheme = function(isLight) {
           if (isLight) {
-            // 淺色柔和主題：切換為冰晶微星塵（柔和天青與板岩紫），輕透不刺眼、不顯髒、不遮擋文字
+            // 淺色柔和主題 (讓半透明白底面板下方清晰透光顯現)
             if (galaxyPoints && galaxyColorAttr) {
               galaxyColorAttr.array.set(galaxyColorsLight);
               galaxyColorAttr.needsUpdate = true;
             }
             galaxyMat.blending = THREE.NormalBlending;
-            galaxyMat.opacity = 0.42;
+            galaxyMat.opacity = 0.55;
             galaxyMat.size = 5.2;
             galaxyMat.needsUpdate = true;
 
-            starCoreMat.color.setHex(0x38bdf8);
-            starCoreMat.opacity = 0.35;
-            coronaMat.color.setHex(0x818cf8);
-            coronaMat.opacity = 0.22;
-            spikeMat.color.setHex(0xf472b6);
-            spikeMat.opacity = 0.25;
-            bRing1Mat.color.setHex(0x38bdf8);
-            bRing1Mat.opacity = 0.3;
-            bRing2Mat.color.setHex(0xa78bfa);
-            bRing2Mat.opacity = 0.25;
-            bRing3Mat.color.setHex(0x34d399);
-            bRing3Mat.opacity = 0.22;
-            bRing4Mat.color.setHex(0xf472b6);
-            bRing4Mat.opacity = 0.2;
+            solidCoreMat.color.setHex(0xe2e8f0);
+            solidCoreMat.opacity = 0.88;
+            innerGlowMat.color.setHex(0x38bdf8);
+            innerGlowMat.opacity = 0.50;
+            starCoreMat.color.setHex(0x0284c7);
+            starCoreMat.opacity = 0.45;
+
+            bRing1Mat.color.setHex(0xd97706);
+            bRing1Mat.opacity = 0.55;
+            bRing2Mat.color.setHex(0x0284c7);
+            bRing2Mat.opacity = 0.50;
+            bRing3Mat.color.setHex(0x059669);
+            bRing3Mat.opacity = 0.45;
+            bRing4Mat.color.setHex(0x7c3aed);
+            bRing4Mat.opacity = 0.40;
+
             starMat.blending = THREE.NormalBlending;
             starMat.color.setHex(0x64748b);
-            starMat.opacity = 0.25;
+            starMat.opacity = 0.35;
             debrisMat.blending = THREE.NormalBlending;
             debrisMat.color.setHex(0x94a3b8);
-            debrisMat.opacity = 0.25;
+            debrisMat.opacity = 0.22;
           } else {
-            // 深色主題：超密集高亮璀璨深空螺旋星系，疊加發光
+            // 深色璀璨宇宙主題
             if (galaxyPoints && galaxyColorAttr) {
               galaxyColorAttr.array.set(galaxyColorsDark);
               galaxyColorAttr.needsUpdate = true;
             }
             galaxyMat.blending = THREE.AdditiveBlending;
-            galaxyMat.opacity = 0.95;
-            galaxyMat.size = 6.5;
+            galaxyMat.opacity = 0.90;
+            galaxyMat.size = 5.5;
             galaxyMat.needsUpdate = true;
 
-            starCoreMat.color.setHex(0xf5c443);
-            starCoreMat.opacity = 0.45;
-            coronaMat.color.setHex(0x24d0c6);
-            coronaMat.opacity = 0.28;
-            spikeMat.color.setHex(0xff3377);
-            spikeMat.opacity = 0.4;
+            solidCoreMat.color.setHex(0x051426);
+            solidCoreMat.opacity = 0.94;
+            innerGlowMat.color.setHex(0xf5c443);
+            innerGlowMat.opacity = 0.68;
+            starCoreMat.color.setHex(0x00f6ff);
+            starCoreMat.opacity = 0.88;
+
             bRing1Mat.color.setHex(0xf5c443);
-            bRing1Mat.opacity = 0.5;
-            bRing2Mat.color.setHex(0x24d0c6);
-            bRing2Mat.opacity = 0.42;
+            bRing1Mat.opacity = 0.75;
+            bRing2Mat.color.setHex(0x00f6ff);
+            bRing2Mat.opacity = 0.68;
             bRing3Mat.color.setHex(0x38e888);
-            bRing3Mat.opacity = 0.35;
-            bRing4Mat.color.setHex(0xb76cff);
-            bRing4Mat.opacity = 0.28;
+            bRing3Mat.opacity = 0.62;
+            bRing4Mat.color.setHex(0xc084fc);
+            bRing4Mat.opacity = 0.55;
+
             starMat.blending = THREE.AdditiveBlending;
             starMat.color.setHex(0xffffff);
-            starMat.opacity = 0.85;
+            starMat.opacity = 0.92;
             debrisMat.blending = THREE.AdditiveBlending;
             debrisMat.color.setHex(0xffffff);
           }
@@ -7891,15 +8015,13 @@
           window.updateThreeTheme(true);
         }
 
-        // 自動嘗試掛載運動感測（預設開啟，之後照記憶）
+        // 自動嘗試掛載運動感測
         let savedGyroPref = "true";
         try { savedGyroPref = localStorage.getItem("farm_gyro_pref") || "true"; } catch (e) {}
         if (savedGyroPref !== "false") {
           if (typeof DeviceOrientationEvent === "undefined" || typeof DeviceOrientationEvent.requestPermission !== "function") {
-            // Android 與標準瀏覽器：直接啟動感測
             startMotionListeners();
           } else {
-            // iOS 13+：遵循 Apple 安全規範，於使用者首次觸碰/點擊畫面時發起授權請求
             const requestIosGyroOnGesture = () => {
               window.removeEventListener("click", requestIosGyroOnGesture);
               window.removeEventListener("touchend", requestIosGyroOnGesture);
@@ -7922,14 +8044,10 @@
           }
         }
 
-
-        // 手機端依據設定僅透過陀螺儀姿態感應進行背景 3D 互動，無手指觸控互動
-
         const clock = new THREE.Clock();
         function animate3D() {
           requestAnimationFrame(animate3D);
           const rawDt = clock.getDelta();
-          // 防呆：初次載入或分頁切換時限制每幀最大步長，保證持續穩定自轉
           const dt = (rawDt > 0 && rawDt < 0.1) ? rawDt : (1 / 60);
           const elapsed = clock.getElapsedTime();
 
@@ -7941,30 +8059,25 @@
           springX += velX;
           springY += velY;
 
-          // 限制最大擺動位移
           springX = Math.max(-140, Math.min(140, springX));
           springY = Math.max(-120, Math.min(120, springY));
 
-          // 核心本體隨晃動直接向上下/左右偏移，並附帶彈性側傾角
           reactorGroup.position.x = springX;
           reactorGroup.position.y = 20 + springY;
           reactorGroup.rotation.z = -springX * 0.015;
 
           // 2. 超載蓄能與超新星大爆炸
-          shakeEnergy *= 0.965; // 自然阻尼衰減
+          shakeEnergy *= 0.965;
 
           if (explosionState === "IDLE") {
-            // 晃動劇烈時產生能量超載抖動與超光速狂轉
             if (shakeEnergy > 20) {
               reactorGroup.position.x += (Math.random() - 0.5) * (shakeEnergy * 0.22);
               reactorGroup.position.y += (Math.random() - 0.5) * (shakeEnergy * 0.22);
               bRing1.rotation.z -= 0.09 * shakeEnergy;
               bRing2.rotation.y += 0.09 * shakeEnergy;
               bRing3.rotation.x += 0.09 * shakeEnergy;
-              bRing4.rotation.z += 0.09 * shakeEnergy;
-              spikesGroup.rotation.z += 0.12 * shakeEnergy;
+              bRing4.rotation.x += 0.09 * shakeEnergy;
             }
-            // 搖太大力或晃太久觸發大爆炸！
             if (shakeEnergy > 70) {
               triggerSupernova();
             }
@@ -7975,14 +8088,12 @@
               pArr[i * 3] += debrisVel[i * 3] * dt * 32;
               pArr[i * 3 + 1] += debrisVel[i * 3 + 1] * dt * 32;
               pArr[i * 3 + 2] += debrisVel[i * 3 + 2] * dt * 32;
-              // 阻尼減速
               debrisVel[i * 3] *= 0.95;
               debrisVel[i * 3 + 1] *= 0.95;
               debrisVel[i * 3 + 2] *= 0.95;
             }
             debrisGeo.attributes.position.needsUpdate = true;
 
-            // 炸開後短暫停頓，隨後啟動黑洞引力坍縮重組
             if (explosionTimer > 0.85) {
               explosionState = "COLLAPSING";
               CyberAudio.reconverge();
@@ -7998,7 +8109,6 @@
 
               if (dist > 8) {
                 allReturned = false;
-                // 向心引力加速度 + 旋轉漩渦倒流
                 pArr[i * 3] += (dx * 6.8 - dy * 3.2) * dt;
                 pArr[i * 3 + 1] += (dy * 6.8 + dx * 3.2) * dt;
                 pArr[i * 3 + 2] += dz * 6.8 * dt;
@@ -8006,7 +8116,6 @@
             }
             debrisGeo.attributes.position.needsUpdate = true;
 
-            // 全部粒子匯聚回中心，重生群星天體！
             if (allReturned) {
               explosionState = "IDLE";
               debrisMat.opacity = 0;
@@ -8017,24 +8126,62 @@
             }
           }
 
-          // 脈衝超光速常規自然平滑衰減回常態 1
+          // 脈衝與爆炸衝擊波自然衰減
           if (warpSpeed > 1) {
-            warpSpeed = Math.max(1, warpSpeed - dt * 3.5);
+            warpSpeed = Math.max(1, warpSpeed - dt * 2.8);
+          }
+          if (supernovaBurst > 0) {
+            supernovaBurst = Math.max(0, supernovaBurst - dt * 0.75);
           }
 
-          // 螺旋星系獨立優雅自轉（不隨滑鼠、陀螺儀或彈簧晃動傾斜，維持純粹宇宙宏偉感）
-          galaxyGroup.rotation.z -= (0.08 + (warpSpeed - 1) * 0.12) * dt;
+          // 3. 螺旋星系運動 (平時移動幅度加大至 0.075；大爆炸時快速旋轉並伴隨星系衝擊波脈衝擴散！)
+          const galaxySpeed = (0.075 + (warpSpeed - 1) * 0.12 + supernovaBurst * 0.65);
+          galaxyGroup.rotation.z -= galaxySpeed * dt;
 
-          // 超大超酷炫群星天體常規旋轉
+          if (supernovaBurst > 0.01) {
+            const pulseWave = 1.0 + Math.sin(Math.min(Math.PI, explosionTimer * 3.2)) * 0.22 * supernovaBurst;
+            galaxyGroup.scale.set(curBaseGScale * pulseWave, curBaseGScale * pulseWave, curBaseGScale * pulseWave);
+          } else {
+            galaxyGroup.scale.set(curBaseGScale, curBaseGScale, curBaseGScale);
+          }
+
+          // 4. 背景星空微塵 (平時移動幅度加大至 0.045 / 0.025；大爆炸時如星系般快速移動與前向衝擊波！)
+          const starsSpeedY = (0.045 + (warpSpeed - 1) * 0.10 + supernovaBurst * 0.55);
+          const starsSpeedX = (0.025 + (warpSpeed - 1) * 0.06 + supernovaBurst * 0.32);
+          stars.rotation.y += starsSpeedY * dt;
+          stars.rotation.x += starsSpeedX * dt;
+          stars.rotation.z += (supernovaBurst * 0.35) * dt;
+
+          if (supernovaBurst > 0.01) {
+            stars.position.z = Math.sin(Math.min(Math.PI, explosionTimer * 3.0)) * 110 * supernovaBurst;
+          } else {
+            stars.position.z = 0;
+          }
+
+          // 5. 3D 幾何量子球體本體與四道星環多維立體旋轉 (徹底解決外層紫色環不轉的問題！)
+          solidCoreMesh.rotation.y += 0.15 * dt * warpSpeed;
+          innerGlowMesh.rotation.y -= 0.35 * dt * warpSpeed;
+          innerGlowMesh.rotation.x += 0.25 * dt * warpSpeed;
+
           starCoreMesh.rotation.x += 0.35 * dt * warpSpeed;
           starCoreMesh.rotation.y += 0.55 * dt * warpSpeed;
-          coronaMesh.rotation.x -= 0.25 * dt * warpSpeed;
-          coronaMesh.rotation.z += 0.4 * dt * warpSpeed;
-          spikesGroup.rotation.z += 0.3 * dt * warpSpeed;
+
+          // 環 1 (金環)：繞 Z 軸自轉並帶有傾角動態進動
           bRing1.rotation.z -= 0.45 * dt * warpSpeed;
-          bRing2.rotation.y += 0.4 * dt * warpSpeed;
+          bRing1.rotation.y += 0.12 * dt * warpSpeed;
+
+          // 環 2 (青環)：雙軸傾斜滾動
+          bRing2.rotation.y += 0.40 * dt * warpSpeed;
+          bRing2.rotation.x += 0.20 * dt * warpSpeed;
+
+          // 環 3 (綠環)：反向傾斜自轉
           bRing3.rotation.x += 0.35 * dt * warpSpeed;
-          bRing4.rotation.z += 0.25 * dt * warpSpeed;
+          bRing3.rotation.z -= 0.25 * dt * warpSpeed;
+
+          // 環 4 (最外層紫晶環)：多軸動態翻滾傾轉 (X、Y、Z 多維同步旋轉，清晰呈現立體旋轉！)
+          bRing4.rotation.x += 0.38 * dt * warpSpeed;
+          bRing4.rotation.y -= 0.28 * dt * warpSpeed;
+          bRing4.rotation.z += 0.22 * dt * warpSpeed;
 
           satellites.forEach(s => {
             const ang = elapsed * s.speed * warpSpeed + s.phase;
