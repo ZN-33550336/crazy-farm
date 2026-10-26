@@ -7462,22 +7462,25 @@
         const starTex = createGalaxyStarTexture();
 
         // ==========================================
-        // 2. 背景 3D：自然緊湊「六圈」華麗深空螺旋星系 (Natural 6-Coil Grand Celestial Galaxy)
-        // 圈距擴大一倍 (相鄰圈距約 133 單位)、圈數增加兩圈為「六整圈」(12π 弧度)
-        // 32,000 顆星塵、色彩璀璨豐富 (白金核 -> 霓虹玫紅 -> 幻星紫 -> 電光青藍)
-        // 中心微光不堆疊、外圈飽滿不稀疏！空間置於球體後方 (Z: -250，球體 Z: -120)
+        // 2. 背景 3D：經典棒旋星系結構 (Grand Barred Spiral Galaxy - 完全依據最新參考圖)
+        // 結構：中心發光棒狀核心 (Bar Nucleus) + 棒兩端優雅延伸出雙主對稱旋臂
+        // 32,000 顆星塵，色彩保持華麗璀璨 (白金棒核 -> 霓虹玫紅 -> 幻星紫 -> 電光青藍)
+        // 大小顯示方式回歸原始大氣比例 (固定 1.0x，不依裝置縮小)，空間置於球體後方 (Z: -240)
         // ==========================================
         const galaxyGroup = new THREE.Group();
-        galaxyGroup.position.set(0, 20, -250);
+        galaxyGroup.position.set(0, 15, -240);
         galaxyGroup.rotation.x = 0.40;
         galaxyGroup.rotation.y = -0.10;
         scene.add(galaxyGroup);
 
         const galaxyCount = 32000;
-        const coreCount = 1800;
+        const barCount = 4500;
+        const armCount = galaxyCount - barCount;
         const arms = 2;
-        const minR = 20;
-        const maxR = 820; // 圈距擴大一倍後的 6 圈總半徑
+
+        const barLength = 95;  // 棒狀核心半長度
+        const barWidth = 32;   // 棒狀核心厚度
+        const barAngle = Math.PI / 4.2; // 棒狀核心空間傾斜角 (~43 度)
 
         const galaxyGeo = new THREE.BufferGeometry();
         const galaxyPositions = new Float32Array(galaxyCount * 3);
@@ -7489,74 +7492,87 @@
         }
 
         for (let i = 0; i < galaxyCount; i++) {
-          let r, totalAngle, z, rgbDark, rgbLight;
+          let x, y, z, rgbDark, rgbLight;
 
-          if (i < coreCount) {
-            // A. 中心天然微光發光核團 (中心點自然微光，不過密)
-            const pCore = Math.random();
-            r = Math.sqrt(pCore) * 28;
-            totalAngle = Math.random() * Math.PI * 2;
-            z = (Math.random() - 0.5) * 14 * (1 - r / 32);
+          if (i < barCount) {
+            // A. 中心棒狀核心 (Barred Core)：恆星沿棒主軸密集匯聚，中心白金、兩端微圓
+            const u = (Math.random() + Math.random() - 1); // 三角分佈，向核心強烈匯聚
+            const major = u * barLength;
+            const taper = Math.sqrt(Math.max(0.04, 1.0 - (major / (barLength * 1.05)) ** 2));
+            const minor = (Math.random() - 0.5) * barWidth * taper;
 
-            const coreColors = [0xffffff, 0xfff7ed, 0xfef08a, 0xfde047, 0xfce7f3];
-            rgbDark = hexToRgb(coreColors[Math.floor(Math.random() * coreColors.length)]);
-            const b = 0.95 + Math.random() * 0.05;
-            rgbDark[0] *= b; rgbDark[1] *= b; rgbDark[2] *= b;
+            const cosB = Math.cos(barAngle);
+            const sinB = Math.sin(barAngle);
+            x = major * cosB - minor * sinB;
+            y = major * sinB + minor * cosB;
+            z = (Math.random() - 0.5) * 16 * taper;
+
+            const distFromCenter = Math.hypot(x, y);
+            if (distFromCenter < 26) {
+              const corePal = [0xffffff, 0xfff7ed, 0xfef08a, 0xfef9c3];
+              rgbDark = hexToRgb(corePal[Math.floor(Math.random() * corePal.length)]);
+              const b = 1.05 + Math.random() * 0.15;
+              rgbDark[0] *= b; rgbDark[1] *= b; rgbDark[2] *= b;
+            } else {
+              const barPal = [0xfef08a, 0xfde047, 0xfbcfe8, 0xfef3c7, 0xfde68a];
+              rgbDark = hexToRgb(barPal[Math.floor(Math.random() * barPal.length)]);
+            }
             rgbLight = [0.01, 0.52, 0.78];
           } else {
-            // B. 雙主旋臂 (圈距擴大一倍、連續盤旋整整六圈 12π 弧度，外圈飽滿充實)
-            const armIdx = i % arms;
-            const armAngle = (armIdx / arms) * Math.PI * 2;
-            const p = Math.pow((i - coreCount) / (galaxyCount - coreCount), 0.68);
-            r = minR + p * (maxR - minR);
-            // 精準連續盤旋六圈 (12π 弧度)
-            const spiralAngle = armAngle + p * (Math.PI * 12);
-            // 保持緊實精準的旋臂線條，圈距擴大一倍後，圈與圈之間留出深邃優雅的宇宙暗帶！
-            const spread = 4.0 + p * 18.0;
-            const angleSpread = (Math.random() - 0.5) * (spread / Math.max(20, r));
-            totalAngle = spiralAngle + angleSpread;
-            z = (Math.random() - 0.5) * (4.5 + p * 12.0);
+            // B. 雙主旋臂 (由棒核心兩端平滑旋出，呈對數螺旋向外壯麗延展)
+            const armIdx = (i - barCount) % arms;
+            const tipAngle = armIdx === 0 ? barAngle : (barAngle + Math.PI);
 
-            // 色彩隨 6 圈漸進展開 (白金 -> 霓虹玫紅 -> 幻星紫 -> 電光青 -> 寶藍深空)
+            // 指數分佈，外圈飽滿不稀疏
+            const p = Math.pow((i - barCount) / armCount, 0.72);
+            // 旋轉圈數：連續盤旋 3.2 圈，外圍大氣舒展
+            const theta = p * (Math.PI * 6.5);
+            // 半徑由棒端平滑遞增至大深空
+            const r = barLength + Math.pow(p, 1.15) * 620;
+            const armAngle = tipAngle + theta;
+
+            const spread = 4.5 + p * 22.0;
+            const spreadR = (Math.random() - 0.5) * spread;
+            const spreadTheta = (Math.random() - 0.5) * (spread / Math.max(30, r));
+
+            const finalR = r + spreadR;
+            const finalAngle = armAngle + spreadTheta;
+
+            x = Math.cos(finalAngle) * finalR;
+            y = Math.sin(finalAngle) * finalR * 0.88;
+            z = (Math.random() - 0.5) * (6.0 + p * 16.0);
+
+            // 色彩依半徑漸進 (白金核 -> 霓虹玫紅 -> 幻星紫 -> 電光青藍)
             let cDarkHex, cLightHex;
-            if (p < 0.10) {
-              // 第一圈內核過渡：白金暖光
-              const pal = [0xffffff, 0xfef08a, 0xfbcfe8, 0xf472b6];
+            if (p < 0.12) {
+              const pal = [0xfef08a, 0xfbcfe8, 0xf472b6, 0xffaacc];
               cDarkHex = pal[Math.floor(Math.random() * pal.length)];
               cLightHex = 0x0284c7;
-            } else if (p < 0.30) {
-              // 第一、二圈：熾烈霓虹玫紅、星雲熱粉
+            } else if (p < 0.38) {
               const pal = [0xff2d95, 0xf43f5e, 0xec4899, 0xfb7185, 0xe11d48, 0xff66b2];
               cDarkHex = pal[Math.floor(Math.random() * pal.length)];
               cLightHex = 0xbe185d;
-            } else if (p < 0.55) {
-              // 第二、三圈：幻星紫晶、極光紫羅蘭、薰衣草紫
+            } else if (p < 0.68) {
               const pal = [0xc084fc, 0xa855f7, 0x9333ea, 0x818cf8, 0x8b5cf6, 0x7c3aed];
               cDarkHex = pal[Math.floor(Math.random() * pal.length)];
               cLightHex = 0x7e22ce;
-            } else if (p < 0.80) {
-              // 第四、五圈：電光天青、碧璽綠青
-              const pal = [0x00f6ff, 0x38bdf8, 0x06b6d4, 0x2dd4bf, 0x38e888];
-              cDarkHex = pal[Math.floor(Math.random() * pal.length)];
-              cLightHex = 0x0f766e;
             } else {
-              // 第五、六圈外圍：深空寶藍、星雲湖青
-              const pal = [0x0284c7, 0x3b82f6, 0x2563eb, 0x1d4ed8, 0x60a5fa];
+              const pal = [0x00f6ff, 0x38bdf8, 0x0284c7, 0x3b82f6, 0x2563eb, 0x06b6d4, 0x60a5fa];
               cDarkHex = pal[Math.floor(Math.random() * pal.length)];
               cLightHex = 0x1e40af;
             }
 
             rgbDark = hexToRgb(cDarkHex);
             const isDiamond = Math.random() < 0.08;
-            const b = isDiamond ? 1.25 : (0.75 + Math.random() * 0.35);
+            const b = isDiamond ? 1.30 : (0.75 + Math.random() * 0.35);
             rgbDark[0] = Math.min(1.0, rgbDark[0] * b);
             rgbDark[1] = Math.min(1.0, rgbDark[1] * b);
             rgbDark[2] = Math.min(1.0, rgbDark[2] * b);
             rgbLight = hexToRgb(cLightHex);
           }
 
-          galaxyPositions[i * 3] = Math.cos(totalAngle) * r;
-          galaxyPositions[i * 3 + 1] = Math.sin(totalAngle) * r * 0.86;
+          galaxyPositions[i * 3] = x;
+          galaxyPositions[i * 3 + 1] = y;
           galaxyPositions[i * 3 + 2] = z;
 
           galaxyColorsDark[i * 3] = rgbDark[0];
@@ -7585,8 +7601,8 @@
         galaxyGroup.add(galaxyPoints);
 
         // ==========================================
-        // 3. 恢復原版經典 3D 幾何量子球體 ＆ 四軌優雅星環
-        // 圖層與空間完全在星系前方 (Z: -120，星系 Z: -250)！
+        // 3. 經典 3D 幾何量子球體 ＆ 四軌優雅星環 (無刺針、外環立體翻轉)
+        // 圖層與空間完全在星系前方 (Z: -120，星系 Z: -240)！
         // ==========================================
         const reactorGroup = new THREE.Group();
         reactorGroup.position.set(0, 20, -120);
@@ -7627,9 +7643,7 @@
         const starCoreMesh = new THREE.Mesh(starCoreGeo, starCoreMat);
         celestialGroup.add(starCoreMesh);
 
-
-
-        // E. 經典四道立體星環 (原版四環：赤道金、天球青、翡翠綠、日冕紫)
+        // D. 經典四道立體星環 (原版四環：赤道金、天球青、翡翠綠、日冕紫)
         // 環 1：主赤道外環 (金耀環)
         const bRing1Geo = new THREE.TorusGeometry(132, 2.8, 16, 96);
         const bRing1Mat = new THREE.MeshBasicMaterial({ color: 0xf5c443, wireframe: false, transparent: true, opacity: 0.75 });
@@ -7674,37 +7688,12 @@
         celestialGroup.add(satelliteGroup);
 
         // ==========================================
-        // 4. 智慧裝置偵測自動縮放 (電腦大氣磅礡、手機端完美展現六圈)
+        // 4. 固定原始大氣尺寸 (改回原本大小剛好，不根據裝置縮小)
         // ==========================================
-        let curBaseRScale = 1.0;
-        let curBaseGScale = 1.0;
-
-        function adjustDeviceResponsiveScale() {
-          const w = window.innerWidth;
-
-          if (w < 768) {
-            // 手機端：球體原版舒適大小 (0.72x)，星系 6 圈 (0.23x) 完整收入手機直屏寬度內！
-            const mRatio = Math.min(1.0, Math.max(0.75, (w - 20) / 360));
-            curBaseRScale = 0.72 * mRatio;
-            curBaseGScale = 0.23 * mRatio;
-          } else if (w < 1024) {
-            // 平板端
-            curBaseRScale = 1.0;
-            curBaseGScale = 0.45;
-          } else if (w < 1440) {
-            // 一般電腦螢幕
-            curBaseRScale = 1.35;
-            curBaseGScale = 0.62;
-          } else {
-            // 2K / 4K 大螢幕電腦
-            curBaseRScale = 1.45;
-            curBaseGScale = 0.72;
-          }
-
-          reactorGroup.scale.set(curBaseRScale, curBaseRScale, curBaseRScale);
-          galaxyGroup.scale.set(curBaseGScale, curBaseGScale, curBaseGScale);
-        }
-        adjustDeviceResponsiveScale();
+        const baseRScale = 1.0;
+        const baseGScale = 1.0;
+        reactorGroup.scale.set(baseRScale, baseRScale, baseRScale);
+        galaxyGroup.scale.set(baseGScale, baseGScale, baseGScale);
 
         // 超新星能量碎片系統 (600顆三維立體粒子)
         const debrisCount = 600;
@@ -7767,7 +7756,7 @@
         scene.add(stars);
 
         let warpSpeed = 1;
-        let supernovaBurst = 0; // 大爆炸衝擊波激勵值
+        let supernovaBurst = 0;
         const qualityColorHex = { 彩色: 0xff3377, 至臻: 0xff3377, 金色: 0xf5c443, 紫色: 0xb76cff, 藍色: 0x24d0c6, 綠色: 0x38e888, 灰色: 0x8ea4ad };
 
         window.pulse3DReactor = function(qualityName) {
@@ -8134,18 +8123,18 @@
             supernovaBurst = Math.max(0, supernovaBurst - dt * 0.75);
           }
 
-          // 3. 螺旋星系運動 (平時移動幅度加大至 0.075；大爆炸時快速旋轉並伴隨星系衝擊波脈衝擴散！)
+          // 3. 棒旋星系自轉 (平時速度 0.075；大爆炸時快速旋轉並伴隨星雲衝擊擴散！)
           const galaxySpeed = (0.075 + (warpSpeed - 1) * 0.12 + supernovaBurst * 0.65);
           galaxyGroup.rotation.z -= galaxySpeed * dt;
 
           if (supernovaBurst > 0.01) {
             const pulseWave = 1.0 + Math.sin(Math.min(Math.PI, explosionTimer * 3.2)) * 0.22 * supernovaBurst;
-            galaxyGroup.scale.set(curBaseGScale * pulseWave, curBaseGScale * pulseWave, curBaseGScale * pulseWave);
+            galaxyGroup.scale.set(baseGScale * pulseWave, baseGScale * pulseWave, baseGScale * pulseWave);
           } else {
-            galaxyGroup.scale.set(curBaseGScale, curBaseGScale, curBaseGScale);
+            galaxyGroup.scale.set(baseGScale, baseGScale, baseGScale);
           }
 
-          // 4. 背景星空微塵 (平時移動幅度加大至 0.045 / 0.025；大爆炸時如星系般快速移動與前向衝擊波！)
+          // 4. 背景星空微塵 (平時持續飄移；大爆炸時高速前進衝刺！)
           const starsSpeedY = (0.045 + (warpSpeed - 1) * 0.10 + supernovaBurst * 0.55);
           const starsSpeedX = (0.025 + (warpSpeed - 1) * 0.06 + supernovaBurst * 0.32);
           stars.rotation.y += starsSpeedY * dt;
@@ -8158,7 +8147,7 @@
             stars.position.z = 0;
           }
 
-          // 5. 3D 幾何量子球體本體與四道星環多維立體旋轉 (徹底解決外層紫色環不轉的問題！)
+          // 5. 3D 幾何量子球體本體與四道星環多維立體旋轉 (最外層紫晶環多維立體翻滾！)
           solidCoreMesh.rotation.y += 0.15 * dt * warpSpeed;
           innerGlowMesh.rotation.y -= 0.35 * dt * warpSpeed;
           innerGlowMesh.rotation.x += 0.25 * dt * warpSpeed;
@@ -8166,19 +8155,19 @@
           starCoreMesh.rotation.x += 0.35 * dt * warpSpeed;
           starCoreMesh.rotation.y += 0.55 * dt * warpSpeed;
 
-          // 環 1 (金環)：繞 Z 軸自轉並帶有傾角動態進動
+          // 環 1 (金環)
           bRing1.rotation.z -= 0.45 * dt * warpSpeed;
           bRing1.rotation.y += 0.12 * dt * warpSpeed;
 
-          // 環 2 (青環)：雙軸傾斜滾動
+          // 環 2 (青環)
           bRing2.rotation.y += 0.40 * dt * warpSpeed;
           bRing2.rotation.x += 0.20 * dt * warpSpeed;
 
-          // 環 3 (綠環)：反向傾斜自轉
+          // 環 3 (綠環)
           bRing3.rotation.x += 0.35 * dt * warpSpeed;
           bRing3.rotation.z -= 0.25 * dt * warpSpeed;
 
-          // 環 4 (最外層紫晶環)：多軸動態翻滾傾轉 (X、Y、Z 多維同步旋轉，清晰呈現立體旋轉！)
+          // 環 4 (最外層紫晶環)：多維動態翻滾傾轉
           bRing4.rotation.x += 0.38 * dt * warpSpeed;
           bRing4.rotation.y -= 0.28 * dt * warpSpeed;
           bRing4.rotation.z += 0.22 * dt * warpSpeed;
@@ -8200,7 +8189,6 @@
           camera.aspect = window.innerWidth / window.innerHeight;
           camera.updateProjectionMatrix();
           renderer.setSize(window.innerWidth, window.innerHeight);
-          adjustDeviceResponsiveScale();
         });
       })();
 
