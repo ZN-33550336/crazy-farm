@@ -1364,8 +1364,10 @@
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
       body.theme-light .custom-cat-card {
-        background: #ffffff;
-        border-color: #cbd5e1;
+        background: rgba(255, 255, 255, 0.80);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-color: rgba(203, 213, 225, 0.85);
         box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
       }
       .custom-cat-card.drag-target {
@@ -2414,8 +2416,10 @@
           color: #fff;
         }
         body.theme-light .settings-memory-tip-card {
-          background: #f0fdf4;
-          border-color: #bbf7d0;
+          background: rgba(240, 253, 244, 0.78);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-color: rgba(187, 247, 208, 0.8);
           border-left-color: #10b981;
           color: #166534;
         }
@@ -2456,8 +2460,10 @@
           }
         }
         body.theme-light .calc-memory-tip-card {
-          background: #fffbeb;
-          border-color: #fde68a;
+          background: rgba(255, 251, 235, 0.78);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-color: rgba(253, 230, 138, 0.8);
           border-left-color: #f59e0b;
           color: #92400e;
         }
@@ -2506,17 +2512,19 @@
           white-space: nowrap;
         }
         body.theme-light .guide-table-wrap {
-          background: #ffffff !important;
-          border: 1px solid #cbd5e1 !important;
+          background: rgba(255, 255, 255, 0.80) !important;
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border: 1px solid rgba(203, 213, 225, 0.85) !important;
           box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
         }
         body.theme-light .guide-table-3d th {
-          background: #f1f5f9 !important;
+          background: rgba(241, 245, 249, 0.85) !important;
           color: #0284c7 !important;
           border-bottom: 1px solid #cbd5e1 !important;
         }
         body.theme-light .guide-table-3d td {
-          background: #ffffff !important;
+          background: rgba(255, 255, 255, 0.65) !important;
           border-bottom: 1px solid #e2e8f0 !important;
           color: #0f172a !important;
         }
@@ -2709,9 +2717,11 @@
         fill: #64748b;
       }
       body.theme-light .input-3d {
-        background: #f8fafc;
+        background: rgba(248, 250, 252, 0.80);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         color: #0f172a;
-        border: 1px solid #cbd5e1;
+        border: 1px solid rgba(203, 213, 225, 0.85);
         box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
       }
       body.theme-light .input-3d::placeholder {
@@ -2722,13 +2732,15 @@
         box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
       }
       body.theme-light .filter-tab-pill {
-        background: #f1f5f9;
+        background: rgba(241, 245, 249, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         color: #334155;
-        border: 1px solid #cbd5e1;
+        border: 1px solid rgba(203, 213, 225, 0.85);
         font-weight: 700;
       }
       body.theme-light .filter-tab-pill:hover {
-        background: #e2e8f0;
+        background: rgba(226, 232, 240, 0.85);
         color: #0f172a;
       }
       body.theme-light .filter-tab-pill.active {
@@ -2880,13 +2892,15 @@
 
       /* 計算機頁面 */
       body.theme-light .btn-3d-action {
-        background: #f1f5f9;
-        border: 1px solid #cbd5e1;
+        background: rgba(241, 245, 249, 0.80);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(203, 213, 225, 0.85);
         color: #1e293b;
         font-weight: 700;
       }
       body.theme-light .btn-3d-action:hover {
-        background: #e2e8f0;
+        background: rgba(226, 232, 240, 0.90);
         color: #0f172a;
       }
       body.theme-light .active-crop-banner {
@@ -2902,13 +2916,17 @@
         color: #475569 !important;
       }
       body.theme-light .btn-repick-crop {
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(203, 213, 225, 0.85);
         color: #0369a1;
       }
       body.theme-light .chamber-box {
-        background: #f8fafc;
-        border: 1px solid #cbd5e1;
+        background: rgba(248, 250, 252, 0.75);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(203, 213, 225, 0.85);
       }
       body.theme-light .chamber-box label {
         color: #475569;
@@ -2923,8 +2941,10 @@
         color: #0284c7;
       }
       body.theme-light .time-hud-box {
-        background: #f1f5f9;
-        border: 1px dashed #cbd5e1;
+        background: rgba(241, 245, 249, 0.72);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px dashed rgba(203, 213, 225, 0.85);
       }
       body.theme-light .time-hud-box .time-label {
         color: #475569;
@@ -2933,10 +2953,12 @@
         color: #0369a1;
         text-shadow: none;
       }
-      /* 控制艙開關列 (白色外框底色) */
+      /* 控制艙開關列 (半透明磨砂玻璃) */
       body.theme-light .console-switch-bar {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        background: rgba(255, 255, 255, 0.78) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(203, 213, 225, 0.85) !important;
         box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
       }
       body.theme-light .console-switch-bar .switch-label-text {
@@ -2946,14 +2968,16 @@
         color: #1e293b;
       }
       body.theme-light .pct-cell {
-        background: #f1f5f9;
-        border: 1px solid #cbd5e1;
+        background: rgba(241, 245, 249, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(203, 213, 225, 0.85);
         color: #1e293b;
         font-weight: 700;
       }
       @media (hover: hover) and (pointer: fine) {
         body.theme-light .pct-cell:hover {
-          background: #e2e8f0;
+          background: rgba(226, 232, 240, 0.85);
           color: #0f172a;
         }
       }
@@ -2964,8 +2988,10 @@
         box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
       }
       body.theme-light .holo-value-reactor-3d {
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
+        background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.82) 0%, rgba(240, 249, 255, 0.72) 100%);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(203, 213, 225, 0.85);
         box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
       }
       body.theme-light .reactor-val-left .tag {
@@ -2982,27 +3008,33 @@
         color: #b45309;
       }
       body.theme-light .prec-badge-btn {
-        background: #f1f5f9;
-        border: 1px solid #cbd5e1;
+        background: rgba(241, 245, 249, 0.75);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid rgba(203, 213, 225, 0.85);
         color: #334155;
       }
       body.theme-light .val-prec-dropdown-menu {
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(203, 213, 225, 0.85);
         box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
       }
       body.theme-light .val-prec-item {
         color: #334155;
       }
       body.theme-light .val-prec-item:hover {
-        background: #f1f5f9;
+        background: rgba(241, 245, 249, 0.85);
         color: #0f172a;
       }
 
-      /* 詞條群組容器 (白色外框底色) 與晶片 */
+      /* 詞條群組容器 (半透明磨砂玻璃) 與晶片 */
       body.theme-light .mutation-group-3d {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        background: rgba(255, 255, 255, 0.78) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(203, 213, 225, 0.85) !important;
         box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
       }
       body.theme-light .mutation-group-3d::before {
@@ -3040,8 +3072,10 @@
         color: #991b1b !important;
       }
       body.theme-light .dropdown-menu-3d {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        background: rgba(255, 255, 255, 0.88) !important;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(203, 213, 225, 0.85) !important;
         box-shadow: 0 16px 48px rgba(15, 23, 42, 0.15) !important;
       }
       body.theme-light .dropdown-filter-pills {
@@ -3152,8 +3186,10 @@
         -webkit-backdrop-filter: blur(6px);
       }
       body.theme-light .modal-card-3d {
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(203, 213, 225, 0.85);
         box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
         color: #1e293b;
       }
@@ -3242,18 +3278,20 @@
         color: #b45309 !important;
       }
       body.theme-light .blacklist-table-wrap {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        background: rgba(255, 255, 255, 0.80) !important;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(203, 213, 225, 0.85) !important;
         box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
       }
       body.theme-light .blacklist-table-3d th {
-        background: #f1f5f9 !important;
+        background: rgba(241, 245, 249, 0.85) !important;
         color: #0f172a !important;
         border-bottom: 1px solid #cbd5e1 !important;
         font-weight: 800;
       }
       body.theme-light .blacklist-table-3d td {
-        background: #ffffff !important;
+        background: rgba(255, 255, 255, 0.65) !important;
         border-bottom: 1px solid #e2e8f0 !important;
         color: #0f172a !important;
       }
@@ -3286,8 +3324,10 @@
 
       /* 免責聲明彈窗在淺色下的樣式 */
       body.theme-light .modal-section-card {
-        background: #f8fafc !important;
-        border: 1px solid #e2e8f0 !important;
+        background: rgba(248, 250, 252, 0.75) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(226, 232, 240, 0.85) !important;
       }
       body.theme-light .modal-section-card h4 {
         color: #0369a1 !important;
@@ -3414,37 +3454,41 @@
         color: #0369a1 !important;
       }
 
-      /* 比較清單容器與表格在淺色下的樣式 */
+      /* 比較清單容器與表格在淺色下的樣式 (半透明磨砂玻璃) */
       body.theme-light .table-container-3d {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        background: rgba(255, 255, 255, 0.80) !important;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(203, 213, 225, 0.85) !important;
         box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
       }
       body.theme-light table.cyber-table-3d th {
-        background: #f1f5f9 !important;
+        background: rgba(241, 245, 249, 0.85) !important;
         color: #0f172a !important;
         border-bottom: 1px solid #cbd5e1 !important;
       }
       body.theme-light table.cyber-table-3d td {
-        background: #ffffff !important;
+        background: rgba(255, 255, 255, 0.65) !important;
         border-bottom: 1px solid #e2e8f0 !important;
         color: #1e293b !important;
       }
       body.theme-light table.cyber-table-3d tr:hover td {
-        background: #f8fafc !important;
+        background: rgba(240, 249, 255, 0.85) !important;
       }
       body.theme-light .td-price-highlight {
         color: #0f766e !important;
         font-weight: 900 !important;
       }
       body.theme-light .btn-3d-icon {
-        background: #f1f5f9 !important;
-        border: 1px solid #cbd5e1 !important;
+        background: rgba(241, 245, 249, 0.80) !important;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(203, 213, 225, 0.85) !important;
         color: #1e293b !important;
         font-weight: 700 !important;
       }
       body.theme-light .btn-3d-icon:hover {
-        background: #e2e8f0 !important;
+        background: rgba(226, 232, 240, 0.90) !important;
         color: #0f172a !important;
       }
       body.theme-light .cyber-toggle-pill {
@@ -3461,10 +3505,12 @@
       body.theme-light .switch-label-group input:checked + .cyber-toggle-pill::after {
         background: #ffffff !important;
       }
-      /* 全作物對比基準拉條在淺色下：白底卡片與清晰對比 */
+      /* 全作物對比基準拉條在淺色下：半透明磨砂玻璃與清晰對比 */
       body.theme-light .compare-slider-bar {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
+        background: rgba(255, 255, 255, 0.80) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(203, 213, 225, 0.85) !important;
         box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
       }
       body.theme-light .slider-top-labels {
@@ -5095,7 +5141,6 @@
           state.weatherBatchMode = mode;
           CyberAudio.activate();
           vibrate(16);
-          if (window.pulse3DReactor) window.pulse3DReactor("至臻");
         }
         updateWeatherBatchButtons();
         renderAll();
@@ -5213,7 +5258,9 @@
         
         CyberAudio.activate();
         vibrate(18);
-        if (window.pulse3DReactor) window.pulse3DReactor(crop.quality);
+        if (window.pulse3DReactor && crop) {
+          window.pulse3DReactor(crop.quality, 1);
+        }
         setView("calculator");
         renderAll();
       }
@@ -5457,7 +5504,6 @@
           next = normalizeMutations(next);
           CyberAudio.activate();
           vibrate(14);
-          if (window.pulse3DReactor) window.pulse3DReactor("至臻");
         }
         state.selectedMutations = new Set(next);
         renderAll();
@@ -5812,7 +5858,7 @@
         });
       }
 
-      // 2. 退回作物清單 (回主頁自動清除全部詞條與數值)
+      // 2. 退回作物清單 (回主頁自動清除全部詞條與數值，並觸發逆時針反向天體脈衝)
       els.backToPickerBtn.addEventListener("click", () => {
         state.selectedMutations.clear();
         state.weatherBatchMode = null;
@@ -5825,6 +5871,9 @@
         updateQuickPctButtons();
         CyberAudio.tap(680);
         vibrate(10);
+        if (window.pulse3DReactor) {
+          window.pulse3DReactor("default", -1);
+        }
         setView("picker");
         renderAll();
       });
@@ -5843,7 +5892,6 @@
         } else {
           state.currentFilterQuality = clickedQ;
           CyberAudio.activate();
-          if (window.pulse3DReactor) window.pulse3DReactor(clickedQ);
         }
         vibrate(12);
         renderPicker(true);
@@ -7149,7 +7197,6 @@
           } else {
             state.dropdownFilterQuality = clickedQ;
             CyberAudio.activate();
-            if (window.pulse3DReactor) window.pulse3DReactor(clickedQ);
           }
           vibrate(12);
           renderDropdownCrops();
@@ -7525,13 +7572,13 @@
 
             // 指數分佈，外圈飽滿不稀疏
             const p = Math.pow((i - barCount) / armCount, 0.72);
-            // 旋轉圈數：連續盤旋 3.2 圈，外圍大氣舒展
-            const theta = p * (Math.PI * 6.5);
+            // 旋轉圈數：每環間距加大 0.5 倍 (圈數由 3.25 調整為約 2.17 圈，環距擴大至 1.5 倍)
+            const theta = p * (Math.PI * 4.333);
             // 半徑由棒端平滑遞增至大深空
-            const r = barLength + Math.pow(p, 1.15) * 620;
+            const r = barLength + Math.pow(p, 1.15) * 630;
             const armAngle = tipAngle + theta;
 
-            const spread = 4.5 + p * 22.0;
+            const spread = 4.0 + p * 18.0;
             const spreadR = (Math.random() - 0.5) * spread;
             const spreadTheta = (Math.random() - 0.5) * (spread / Math.max(30, r));
 
@@ -7688,9 +7735,13 @@
         celestialGroup.add(satelliteGroup);
 
         // ==========================================
-        // 4. 固定原始大氣尺寸 (改回原本大小剛好，不根據裝置縮小)
+        // 4. 裝置相應大氣尺寸 (手機固定 1.0，電腦上球體兩倍大 2.0，星系維持 1.0)
         // ==========================================
-        const baseRScale = 1.0;
+        function getSphereBaseScale() {
+          return (typeof window !== "undefined" && window.innerWidth > 768) ? 2.0 : 1.0;
+        }
+
+        let baseRScale = getSphereBaseScale();
         const baseGScale = 1.0;
         reactorGroup.scale.set(baseRScale, baseRScale, baseRScale);
         galaxyGroup.scale.set(baseGScale, baseGScale, baseGScale);
@@ -7759,14 +7810,20 @@
         let supernovaBurst = 0;
         const qualityColorHex = { 彩色: 0xff3377, 至臻: 0xff3377, 金色: 0xf5c443, 紫色: 0xb76cff, 藍色: 0x24d0c6, 綠色: 0x38e888, 灰色: 0x8ea4ad };
 
-        window.pulse3DReactor = function(qualityName) {
+        let currentRotDir = 1;
+        let targetRotDir = 1;
+
+        window.pulse3DReactor = function(qualityName, direction = 1) {
+          // 點擊作物卡片 (順時針 direction=1) 或退回清單 (逆時針 direction=-1) 觸發全方位天體動態反應；點擊詞條時平穩不觸發
           warpSpeed = 4.5;
           supernovaBurst = 0.6;
+          currentRotDir = direction;
+          targetRotDir = direction;
           const hex = qualityColorHex[qualityName] || 0x00f6ff;
-          innerGlowMat.color.setHex(hex);
-          starCoreMat.color.setHex(hex);
-          if (window.gsap) {
-            const currentScale = reactorGroup.scale.x;
+          if (innerGlowMat && innerGlowMat.color) innerGlowMat.color.setHex(hex);
+          if (starCoreMat && starCoreMat.color) starCoreMat.color.setHex(hex);
+          if (window.gsap && reactorGroup) {
+            const currentScale = getSphereBaseScale();
             gsap.fromTo(reactorGroup.scale,
               { x: currentScale * 1.25, y: currentScale * 1.25, z: currentScale * 1.25 },
               { x: currentScale, y: currentScale, z: currentScale, duration: 0.65, ease: "elastic.out(1.1, 0.4)" }
@@ -8111,7 +8168,6 @@
               celestialGroup.visible = true;
               shakeEnergy = 0;
               vibrate(30);
-              if (window.pulse3DReactor) window.pulse3DReactor("至臻");
             }
           }
 
@@ -8123,62 +8179,71 @@
             supernovaBurst = Math.max(0, supernovaBurst - dt * 0.75);
           }
 
-          // 3. 棒旋星系自轉 (平時速度 0.075；大爆炸時快速旋轉並伴隨星雲衝擊擴散！)
-          const galaxySpeed = (0.075 + (warpSpeed - 1) * 0.12 + supernovaBurst * 0.65);
+          // 平滑過渡旋轉方向：在反向脈衝尾聲平滑回正為自然順時針旋轉
+          if (warpSpeed <= 1.15 && supernovaBurst <= 0.05) {
+            targetRotDir = 1;
+          }
+          currentRotDir += (targetRotDir - currentRotDir) * dt * 3.5;
+
+          // 3. 棒旋星系自轉 (順時針 -=；退回清單時逆時針 +=)
+          const galaxySpeed = (0.075 + (warpSpeed - 1) * 0.12 + supernovaBurst * 0.65) * currentRotDir;
           galaxyGroup.rotation.z -= galaxySpeed * dt;
 
           if (supernovaBurst > 0.01) {
-            const pulseWave = 1.0 + Math.sin(Math.min(Math.PI, explosionTimer * 3.2)) * 0.22 * supernovaBurst;
+            const waveMult = explosionState === "EXPLODING" ? Math.sin(Math.min(Math.PI, explosionTimer * 3.2)) : 0.6;
+            const pulseWave = 1.0 + waveMult * 0.22 * supernovaBurst;
             galaxyGroup.scale.set(baseGScale * pulseWave, baseGScale * pulseWave, baseGScale * pulseWave);
           } else {
             galaxyGroup.scale.set(baseGScale, baseGScale, baseGScale);
           }
 
-          // 4. 背景星空微塵 (平時持續飄移；大爆炸時高速前進衝刺！)
-          const starsSpeedY = (0.045 + (warpSpeed - 1) * 0.10 + supernovaBurst * 0.55);
-          const starsSpeedX = (0.025 + (warpSpeed - 1) * 0.06 + supernovaBurst * 0.32);
+          // 4. 背景星空微塵 (點擊作物或退回清單時高速衝刺，方向受 currentRotDir 驅動)
+          const starsSpeedY = (0.045 + (warpSpeed - 1) * 0.10 + supernovaBurst * 0.55) * currentRotDir;
+          const starsSpeedX = (0.025 + (warpSpeed - 1) * 0.06 + supernovaBurst * 0.32) * currentRotDir;
           stars.rotation.y += starsSpeedY * dt;
           stars.rotation.x += starsSpeedX * dt;
-          stars.rotation.z += (supernovaBurst * 0.35) * dt;
+          stars.rotation.z += (supernovaBurst * 0.35) * dt * currentRotDir;
 
           if (supernovaBurst > 0.01) {
-            stars.position.z = Math.sin(Math.min(Math.PI, explosionTimer * 3.0)) * 110 * supernovaBurst;
+            const zMult = explosionState === "EXPLODING" ? Math.sin(Math.min(Math.PI, explosionTimer * 3.0)) : 0.6;
+            stars.position.z = zMult * 110 * supernovaBurst;
           } else {
             stars.position.z = 0;
           }
 
-          // 5. 3D 幾何量子球體本體與四道星環多維立體旋轉 (最外層紫晶環多維立體翻滾！)
-          solidCoreMesh.rotation.y += 0.15 * dt * warpSpeed;
-          innerGlowMesh.rotation.y -= 0.35 * dt * warpSpeed;
-          innerGlowMesh.rotation.x += 0.25 * dt * warpSpeed;
+          // 5. 3D 幾何量子球體本體與四道星環多維立體旋轉 (包含反向動態！)
+          const ringSpeed = dt * warpSpeed * currentRotDir;
+          solidCoreMesh.rotation.y += 0.15 * ringSpeed;
+          innerGlowMesh.rotation.y -= 0.35 * ringSpeed;
+          innerGlowMesh.rotation.x += 0.25 * ringSpeed;
 
-          starCoreMesh.rotation.x += 0.35 * dt * warpSpeed;
-          starCoreMesh.rotation.y += 0.55 * dt * warpSpeed;
+          starCoreMesh.rotation.x += 0.35 * ringSpeed;
+          starCoreMesh.rotation.y += 0.55 * ringSpeed;
 
           // 環 1 (金環)
-          bRing1.rotation.z -= 0.45 * dt * warpSpeed;
-          bRing1.rotation.y += 0.12 * dt * warpSpeed;
+          bRing1.rotation.z -= 0.45 * ringSpeed;
+          bRing1.rotation.y += 0.12 * ringSpeed;
 
           // 環 2 (青環)
-          bRing2.rotation.y += 0.40 * dt * warpSpeed;
-          bRing2.rotation.x += 0.20 * dt * warpSpeed;
+          bRing2.rotation.y += 0.40 * ringSpeed;
+          bRing2.rotation.x += 0.20 * ringSpeed;
 
           // 環 3 (綠環)
-          bRing3.rotation.x += 0.35 * dt * warpSpeed;
-          bRing3.rotation.z -= 0.25 * dt * warpSpeed;
+          bRing3.rotation.x += 0.35 * ringSpeed;
+          bRing3.rotation.z -= 0.25 * ringSpeed;
 
           // 環 4 (最外層紫晶環)：多維動態翻滾傾轉
-          bRing4.rotation.x += 0.38 * dt * warpSpeed;
-          bRing4.rotation.y -= 0.28 * dt * warpSpeed;
-          bRing4.rotation.z += 0.22 * dt * warpSpeed;
+          bRing4.rotation.x += 0.38 * ringSpeed;
+          bRing4.rotation.y -= 0.28 * ringSpeed;
+          bRing4.rotation.z += 0.22 * ringSpeed;
 
           satellites.forEach(s => {
-            const ang = elapsed * s.speed * warpSpeed + s.phase;
+            const ang = elapsed * s.speed * warpSpeed * currentRotDir + s.phase;
             s.mesh.position.x = Math.cos(ang) * s.orbitR;
             s.mesh.position.z = Math.sin(ang) * s.orbitR;
             s.mesh.position.y = Math.sin(ang * 1.5) * (s.orbitR * 0.25);
-            s.mesh.rotation.x += 1.5 * dt;
-            s.mesh.rotation.y += 2.0 * dt;
+            s.mesh.rotation.x += 1.5 * dt * currentRotDir;
+            s.mesh.rotation.y += 2.0 * dt * currentRotDir;
           });
 
           renderer.render(scene, camera);
@@ -8189,6 +8254,10 @@
           camera.aspect = window.innerWidth / window.innerHeight;
           camera.updateProjectionMatrix();
           renderer.setSize(window.innerWidth, window.innerHeight);
+          baseRScale = getSphereBaseScale();
+          if (!window.gsap || !gsap.isTweening(reactorGroup.scale)) {
+            reactorGroup.scale.set(baseRScale, baseRScale, baseRScale);
+          }
         });
       })();
 
