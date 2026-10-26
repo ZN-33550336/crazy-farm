@@ -6016,14 +6016,22 @@
         if (/Windows NT/i.test(ua) && !/Windows Phone|IEMobile/i.test(ua)) {
           return false;
         }
-        // 2. 若為 Mac 電腦（排除具備多點觸控之 iPad）
+        // 實體手機特徵：螢幕短邊 < 600px 必定為手機（即使開啟「電腦版網站」）
+        if (window.screen && typeof window.screen.width === "number" && typeof window.screen.height === "number") {
+          if (Math.min(window.screen.width, window.screen.height) < 600) {
+            return true;
+          }
+        }
+        // 2. 若為 Mac 電腦（排除具備多點觸控之 iPad 與 iPhone 電腦版模式）
         const isMac = /Macintosh/i.test(ua);
-        const isIPad = /iPad/i.test(ua) || (isMac && (navigator.maxTouchPoints > 1));
+        const hasMultiTouch = typeof navigator !== "undefined" && navigator.maxTouchPoints > 1;
+        const isIPad = /iPad/i.test(ua) || (isMac && hasMultiTouch);
         if (isMac && !isIPad) {
           return false;
         }
-        // 3. 若為 Linux 桌機（排除 Android 行動系統）
-        if (/Linux/i.test(ua) && !/Android/i.test(ua)) {
+        // 3. 若為 Linux 桌機（排除 Android 行動系統與 Android 電腦版模式）
+        const isCoarse = typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)") && window.matchMedia("(pointer: coarse)").matches;
+        if (/Linux/i.test(ua) && !/Android/i.test(ua) && !(hasMultiTouch && isCoarse)) {
           return false;
         }
         // 4. 行動裝置 UA 判定 (Android, iPhone, iPod, iPad, BlackBerry, IEMobile 等)
@@ -7761,14 +7769,53 @@
         ringsGroup.add(satelliteGroup);
 
         // ==========================================
-        // 4. 裝置相應大氣尺寸 (手機固定 1.0；電腦上中心球體 2.0x，外環微幅 1.26x 雅緻環繞不遮蔽視線，星系維持 1.0)
+        // 4. 裝置相應大氣尺寸 (手機或手機開啟電腦版網站均固定 1.0；僅實際電腦大螢幕中心球體 2.0x，外環微幅 1.26x 雅緻環繞不遮蔽視線，星系維持 1.0)
         // ==========================================
+        function isPhoneDevice() {
+          if (typeof window === "undefined") return false;
+          const nav = typeof navigator !== "undefined" ? navigator : null;
+          const ua = (nav && nav.userAgent) ? nav.userAgent : "";
+          // 1. 若為 Windows 桌面作業系統（排除 Windows Phone），確定為 PC 電腦
+          if (/Windows NT/i.test(ua) && !/Windows Phone|IEMobile/i.test(ua)) {
+            return false;
+          }
+          // 2. 螢幕物理尺寸判定：任何手機在直向或橫向時，物理螢幕較短邊在 CSS 像素中均小於 600px
+          // 即使在手機瀏覽器勾選「切換為電腦版網站」/「要求電腦版網站」，物理螢幕尺寸依然不變！
+          if (window.screen && typeof window.screen.width === "number" && typeof window.screen.height === "number") {
+            const minDim = Math.min(window.screen.width, window.screen.height);
+            if (minDim < 600) {
+              return true;
+            }
+            const dpr = window.devicePixelRatio || 1;
+            if (dpr > 1 && (minDim / dpr) < 600 && (("ontouchstart" in window) || (nav && nav.maxTouchPoints > 0))) {
+              return true;
+            }
+          }
+          // 3. UA 明確包含手機行動裝置特徵
+          if (/iPhone|iPod|Android.*Mobile|Mobile.*Android|Windows Phone|BlackBerry|BB10|IEMobile|Opera Mini/i.test(ua)) {
+            return true;
+          }
+          // 4. iOS Safari 要求電腦版網站時 UA 偽裝成 Macintosh，但具備多點觸控且主要為粗指針
+          const isMac = /Macintosh/i.test(ua);
+          const hasTouch = (nav && typeof nav.maxTouchPoints === "number" && nav.maxTouchPoints > 1);
+          const isCoarse = typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)") && window.matchMedia("(pointer: coarse)").matches;
+          if (isMac && hasTouch && isCoarse) {
+            return true;
+          }
+          // 5. Android Chrome 電腦版網站會偽裝成 Linux x86_64，但具備觸控與 coarse 指針
+          const isLinux = /Linux/i.test(ua);
+          if (isLinux && hasTouch && isCoarse) {
+            return true;
+          }
+          return false;
+        }
+
         function getSphereBaseScale() {
-          return (typeof window !== "undefined" && window.innerWidth > 768) ? 2.0 : 1.0;
+          return (typeof window !== "undefined" && !isPhoneDevice() && window.innerWidth > 768) ? 2.0 : 1.0;
         }
 
         function getRingsBaseScale() {
-          return (typeof window !== "undefined" && window.innerWidth > 768) ? 1.26 : 1.0;
+          return (typeof window !== "undefined" && !isPhoneDevice() && window.innerWidth > 768) ? 1.26 : 1.0;
         }
 
         function applySphereRingsScaling() {
