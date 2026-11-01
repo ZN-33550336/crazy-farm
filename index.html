@@ -5216,6 +5216,15 @@
       }
 
       function minPercent(crop) {
+        if (!crop) return 3;
+        const name = crop.name || "";
+        const disp = typeof displayName === "function" ? displayName(name) : name;
+        if (
+          name === "迷路的疯象南瓜" || disp === "迷路的瘋象南瓜" ||
+          name === "听歌的柿黛拉" || disp === "聽歌的柿黛拉"
+        ) {
+          return 1;
+        }
         return 3;
       }
       function minWeight(crop) {
@@ -5647,7 +5656,8 @@
           els.weightRangeLabel.textContent = `${minW}kg ~ ${maxW}kg`;
         }
         if (els.percentRangeLabel) {
-          els.percentRangeLabel.textContent = `3~100%`;
+          const minP = minPercent(current);
+          els.percentRangeLabel.textContent = `${minP}~100%`;
         }
 
         renderDropdownCrops();
