@@ -2076,7 +2076,7 @@
         box-shadow: 0 0 8px rgba(0, 246, 255, 0.4);
       }
 
-      /* 日誌模式切換開關 (簡易 / 專業) */
+      /* 日誌模式切換開關 (簡易 / 詳細) */
       .changelog-mode-ctrl {
         display: inline-flex;
         background: rgba(3, 10, 20, 0.85);
@@ -2363,6 +2363,209 @@
         border-color: var(--neon-pink);
         color: #fff;
         box-shadow: 0 0 12px rgba(255, 42, 122, 0.45);
+      }
+      /* 黑名單類別篩選控制區 */
+      .bl-filter-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+      }
+      .bl-dropdown-wrap {
+        position: relative;
+        display: inline-block;
+      }
+      .bl-dropdown-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(28, 8, 18, 0.85);
+        border: 1px solid rgba(255, 42, 122, 0.45);
+        border-radius: 4px;
+        color: #ff9ebd;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 12px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        outline: none;
+      }
+      .bl-dropdown-btn:hover {
+        background: rgba(255, 42, 122, 0.22);
+        border-color: #ff427a;
+        box-shadow: 0 0 10px rgba(255, 42, 122, 0.35);
+      }
+      .bl-dropdown-arrow {
+        font-size: 9px;
+        color: #ff759f;
+        transition: transform 0.2s ease;
+      }
+      .bl-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        z-index: 100;
+        min-width: 155px;
+        background: rgba(18, 5, 12, 0.96);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 42, 122, 0.45);
+        border-radius: 4px;
+        padding: 4px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7), 0 0 12px rgba(255, 42, 122, 0.25);
+        display: none;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .bl-dropdown-menu.active {
+        display: flex;
+      }
+      .bl-dropdown-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-radius: 3px;
+        color: #e2cad6;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 10px;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.15s ease;
+      }
+      .bl-dropdown-item:hover {
+        background: rgba(255, 42, 122, 0.2);
+        color: #ffffff;
+      }
+      .bl-dropdown-item.active {
+        background: rgba(255, 42, 122, 0.35);
+        color: #ff9ebd;
+        font-weight: 800;
+      }
+      .bl-item-count {
+        font-size: 10.5px;
+        padding: 1px 6px;
+        border-radius: 8px;
+        background: rgba(255, 42, 122, 0.25);
+        color: #ffb8cf;
+      }
+      .bl-filter-stat {
+        font-size: 11.5px;
+        color: #c49eb0;
+      }
+      .bl-filter-stat strong {
+        color: #ff9ebd;
+      }
+
+      /* 黑名單分組與頭號標籤樣式 */
+      .bl-group-header td {
+        background: rgba(35, 10, 22, 0.88) !important;
+        padding: 7px 12px !important;
+        border-top: 1px solid rgba(255, 42, 122, 0.35) !important;
+        border-bottom: 1px solid rgba(255, 42, 122, 0.2) !important;
+      }
+      .bl-group-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 800;
+        margin-right: 6px;
+      }
+      .bl-badge-scam {
+        background: rgba(255, 42, 122, 0.3);
+        color: #ff759f;
+        border: 1px solid rgba(255, 42, 122, 0.6);
+      }
+      .bl-badge-block {
+        background: rgba(249, 115, 22, 0.3);
+        color: #ff9248;
+        border: 1px solid rgba(249, 115, 22, 0.6);
+      }
+      .bl-group-desc {
+        font-size: 11px;
+        color: #c49eb0;
+      }
+      .bl-row-top-scam {
+        background: linear-gradient(90deg, rgba(255, 42, 122, 0.22) 0%, rgba(35, 8, 18, 0.75) 100%) !important;
+        box-shadow: inset 0 0 10px rgba(255, 42, 122, 0.2);
+      }
+      .bl-row-top-block {
+        background: linear-gradient(90deg, rgba(249, 115, 22, 0.22) 0%, rgba(35, 12, 8, 0.75) 100%) !important;
+        box-shadow: inset 0 0 10px rgba(249, 115, 22, 0.2);
+      }
+      .bl-name-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+      }
+      .bl-name-top {
+        font-weight: 900 !important;
+        color: #fff !important;
+        text-shadow: 0 0 6px rgba(255, 42, 122, 0.6);
+      }
+      .bl-crown-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        padding: 1px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+      .bl-crown-scam {
+        background: rgba(255, 42, 122, 0.35);
+        color: #ff6599;
+        border: 1px solid #ff3377;
+        box-shadow: 0 0 6px rgba(255, 42, 122, 0.5);
+      }
+      .bl-crown-block {
+        background: rgba(249, 115, 22, 0.35);
+        color: #ffaa40;
+        border: 1px solid #f97316;
+        box-shadow: 0 0 6px rgba(249, 115, 22, 0.5);
+      }
+      .bl-tag-top-scam {
+        background: rgba(255, 42, 122, 0.28) !important;
+        color: #ff85a8 !important;
+        border: 1px solid #ff3377 !important;
+        font-weight: 800 !important;
+      }
+      .bl-tag-top-block {
+        background: rgba(249, 115, 22, 0.28) !important;
+        color: #ffbe76 !important;
+        border: 1px solid #f97316 !important;
+        font-weight: 800 !important;
+      }
+
+      .bl-category-card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .bl-card-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 2px;
+      }
+      .bl-sub-reason {
+        font-size: 11.5px;
+        color: #ff9ebd;
+        margin-top: 4px;
+        line-height: 1.45;
+        font-weight: 500;
+      }
+      body.theme-light .bl-sub-reason {
+        color: #b91c1c;
       }
       .blacklist-table-wrap {
         overflow-x: auto;
@@ -3343,6 +3546,97 @@
       body.theme-light #blacklistModal .modal-section-card p:last-child {
         color: #b45309 !important;
       }
+      body.theme-light .bl-dropdown-btn {
+        background: #fff1f2;
+        border: 1px solid #fecdd3;
+        color: #be123c;
+      }
+      body.theme-light .bl-dropdown-btn:hover {
+        background: #ffe4e6;
+        border-color: #fda4af;
+        box-shadow: 0 2px 6px rgba(190, 18, 60, 0.15);
+      }
+      body.theme-light .bl-dropdown-arrow {
+        color: #be123c;
+      }
+      body.theme-light .bl-dropdown-menu {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid #fecdd3;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+      }
+      body.theme-light .bl-dropdown-item {
+        color: #475569;
+      }
+      body.theme-light .bl-dropdown-item:hover {
+        background: #fff1f2;
+        color: #be123c;
+      }
+      body.theme-light .bl-dropdown-item.active {
+        background: #fee2e2;
+        color: #be123c;
+        font-weight: 800;
+      }
+      body.theme-light .bl-item-count {
+        background: #fecdd3;
+        color: #9f1239;
+      }
+      body.theme-light .bl-filter-stat {
+        color: #64748b;
+      }
+      body.theme-light .bl-filter-stat strong {
+        color: #be123c;
+      }
+      body.theme-light .bl-group-header td {
+        background: #fff5f5 !important;
+        border-top: 1px solid #fecdd3 !important;
+        border-bottom: 1px solid #fee2e2 !important;
+      }
+      body.theme-light .bl-badge-scam {
+        background: #fee2e2;
+        color: #be123c;
+        border: 1px solid #fca5a5;
+      }
+      body.theme-light .bl-badge-block {
+        background: #ffedd5;
+        color: #c2410c;
+        border: 1px solid #fdba74;
+      }
+      body.theme-light .bl-group-desc {
+        color: #64748b;
+      }
+      body.theme-light .bl-row-top-scam {
+        background: linear-gradient(90deg, #fff1f2 0%, #ffffff 100%) !important;
+      }
+      body.theme-light .bl-row-top-block {
+        background: linear-gradient(90deg, #fff7ed 0%, #ffffff 100%) !important;
+      }
+      body.theme-light .bl-name-top {
+        color: #0f172a !important;
+        text-shadow: none !important;
+      }
+      body.theme-light .bl-crown-scam {
+        background: #fee2e2;
+        color: #be123c;
+        border: 1px solid #fca5a5;
+        box-shadow: none;
+      }
+      body.theme-light .bl-crown-block {
+        background: #ffedd5;
+        color: #c2410c;
+        border: 1px solid #fdba74;
+        box-shadow: none;
+      }
+      body.theme-light .bl-tag-top-scam {
+        background: #fee2e2 !important;
+        color: #be123c !important;
+        border: 1px solid #fca5a5 !important;
+      }
+      body.theme-light .bl-tag-top-block {
+        background: #ffedd5 !important;
+        color: #c2410c !important;
+        border: 1px solid #fdba74 !important;
+      }
+
       body.theme-light .blacklist-table-wrap {
         background: rgba(255, 255, 255, 0.80) !important;
         backdrop-filter: blur(14px);
@@ -4098,7 +4392,7 @@
       <footer class="cyber-footer-3d">
         <div class="footer-astra-tag mobile-only" aria-hidden="true">Astra</div>
         <div class="footer-badge-row">
-          <span class="footer-badge">v4.1.1</span>
+          <span class="footer-badge">v4.2.0</span>
           <span class="footer-author">Crafted with ⚡ by ZN...</span>
         </div>
         <p class="footer-copyright">
@@ -4165,7 +4459,7 @@
           <div style="display: flex; align-items: center; gap: 8px;">
             <div class="changelog-mode-ctrl" role="group" aria-label="日誌模式切換">
               <button id="changelogModeSimpleBtn" class="theme-seg-btn active" type="button" data-mode="simple">簡易</button>
-              <button id="changelogModeProBtn" class="theme-seg-btn" type="button" data-mode="pro">專業</button>
+              <button id="changelogModeProBtn" class="theme-seg-btn" type="button" data-mode="pro">詳細</button>
             </div>
             <button id="changelogCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
           </div>
@@ -4189,8 +4483,18 @@
           <div id="changelogSimpleView" class="changelog-view-container">
           <div class="modal-section-card changelog-card changelog-latest-release">
             <div class="changelog-version-header">
-              <span class="changelog-version-badge">v4.1.1</span>
+              <span class="changelog-version-badge">v4.2.0</span>
               <span class="changelog-version-tag">最新版本</span>
+            </div>
+            <ul class="changelog-ul changelog-simple-ul">
+              <li>🚨 <strong>黑名單分類與雙表架構</strong>：新增「全部 / 詐騙&amp;害人 / 擋地」篩選選單，兩類別採獨立表格分開陳列（全部視角下詐騙&amp;害人排在上方、擋地排在下方），增設重點通報置頂與擋地原則說明，並同步校驗更新名單資料。</li>
+              <li>⏱️ <strong>補全與更新生長耗時</strong>：補全與同步校準月蟾蜍、跳舞的柿黛拉、沉靜的瘋象南瓜、鈴蘭幽幽、馬蹄蓮、雪蓮、藏紅花等果實之生長耗時。</li>
+            </ul>
+          </div>
+          <div class="modal-section-card changelog-card changelog-post-release">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">v4.1.1</span>
+              <span class="changelog-version-tag">已發布</span>
             </div>
             <ul class="changelog-ul changelog-simple-ul">
               <li>🎃 <strong>南瓜雙子數值收錄與排序置頂</strong>：
@@ -4292,17 +4596,39 @@
               <li>⏱️ <strong>成熟與滿重耗時逆推</strong>：根據生長速度公式自動逆推單顆果實成熟與滿重所需總耗時（日時分秒）。</li>
               <li>🧮 <strong>多詞條乘數加成矩陣</strong>：支援金色、彩色、紫色等多詞條複合加成乘算，符合遊戲真實結算。</li>
               <li>⌨️ <strong>輸入暫清原值與精度切換</strong>：實裝輸入時自動暫清原值開關，支援小數 2～6 位自訂精度。</li>
-              <li>📖 <strong>更多早期歷史技術細節</strong>：包含早期架構驗證與代碼演進，詳細內容請點擊右上角「<strong>專業</strong>」模式檢視。</li>
+              <li>📖 <strong>更多早期歷史技術細節</strong>：包含早期架構驗證與代碼演進，詳細內容請點擊右上角「<strong>詳細</strong>」模式檢視。</li>
             </ul>
           </div>
           </div>
 
-          <!-- 專業模式日誌 (預設隱藏) -->
+          <!-- 詳細模式日誌 (預設隱藏) -->
           <div id="changelogProView" class="changelog-view-container" style="display: none;">
           <div class="modal-section-card changelog-card changelog-latest-release">
             <div class="changelog-version-header">
-              <span class="changelog-version-badge">v4.1.1</span>
+              <span class="changelog-version-badge">v4.2.0</span>
               <span class="changelog-version-tag">最新版本</span>
+            </div>
+            <ul class="changelog-ul">
+              <li><strong>黑名單分類架構與界面重構</strong>：
+                <br>• <strong>獨立雙表排版與分類篩選</strong>：新增類別篩選選單，將「詐騙&amp;害人」與「擋地」拆分為兩張獨立表格陳列；「全部」模式下詐騙&amp;害人位於上方、擋地緊隨其後。每次開啟彈窗固定重置為全部。
+                <br>• <strong>重點個案置頂標記</strong>：為兩大分類設置專屬置頂標籤，強化名單警示能見度。
+                <br>• <strong>擋地通報原則聲明</strong>：增列擋地說明條文，明確收錄範圍為巨型作物長久遮擋影響他人農作之情形。
+                <br>• <strong>名冊資料庫校驗維護</strong>：同步校準各項通報事由，並執行名單項目增補與校驗。
+              </li>
+              <li><strong>生長耗時數據校準與補全</strong>：
+                <br>• <strong>果實週期校準</strong>：月蟾蜍調整為 <code>990秒</code>、跳舞柿黛拉與沉靜瘋象南瓜調整為 <code>800秒</code>、鈴蘭幽幽調整為 <code>1400秒</code>、馬蹄蓮調整為 <code>575秒</code>。
+                <br>• <strong>缺失數據補齊</strong>：補全雪蓮（<code>2400秒</code>）與藏紅花（<code>571.77秒</code>）之生長讀數。
+              </li>
+              <li><strong>代碼優化與後台節能調優</strong>：
+                <br>• <strong>3D 渲染智慧調控</strong>：加入 <code>document.hidden</code> 狀態偵測，頁面切換至後台或最小化時自動暫停重繪，降低 GPU 負載與設備耗電。
+                <br>• <strong>界面狀態管理優化</strong>：更新日誌模式調整為預設簡易，優化事件監聽機制維持操作順暢。
+              </li>
+            </ul>
+          </div>
+          <div class="modal-section-card changelog-card changelog-post-release">
+            <div class="changelog-version-header">
+              <span class="changelog-version-badge">v4.1.1</span>
+              <span class="changelog-version-tag">已發布</span>
             </div>
             <ul class="changelog-ul">
               <li><strong>瘋象南瓜數值實裝與全域排序置頂</strong>：
@@ -4560,7 +4886,7 @@
     </div>
 
     <!-- 農場黑名單彈窗 -->
-    <div id="blacklistModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="blacklistTitle">
+            <div id="blacklistModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="blacklistTitle">
       <div class="modal-card-3d" style="max-width: 640px;">
         <div class="modal-header-3d" style="border-bottom-color: rgba(255, 42, 122, 0.35); background: rgba(255, 42, 122, 0.08);">
           <div id="blacklistTitle" class="modal-title-3d" style="color: #ff759f; text-shadow: 0 0 10px rgba(255, 42, 122, 0.5);">
@@ -4577,65 +4903,139 @@
             <p style="font-size: 11.5px; color: #f5c443; margin-top: 6px; line-height: 1.5;">
               💡 標註為「未知」之玩家編號，若有玩家知悉其遊戲 ID，非常歡迎隨時向群組管理提供補全！
             </p>
+            <p style="font-size: 11.5px; color: #ffaa77; margin-top: 6px; line-height: 1.55; border-top: 1px dashed rgba(249, 115, 22, 0.35); padding-top: 6px;">
+              🚫 <strong>擋地通報說明</strong>：本名單收錄之「擋地」玩家為自身擺放特大作物之便，卻疏忽他人感受，導致巨型作物長久遮擋霸佔他人田地，造成鄰舍極大不便；因遮擋情節過於誇張或長久影響他人方予收錄，非短暫移地整改之誤會。
+            </p>
           </div>
 
-          <div class="blacklist-table-wrap">
-            <table class="blacklist-table-3d">
-              <thead>
-                <tr>
-                  <th style="width: 28%;">玩家暱稱</th>
-                  <th style="width: 32%;">玩家 ID</th>
-                  <th style="width: 40%;">通報事由</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="bl-name">睡不醒喵</span></td>
-                  <td><code class="bl-id">0744712827</code></td>
-                  <td><span class="bl-tag">騙作物</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">#0乘</span></td>
-                  <td><code class="bl-id">1139752798</code></td>
-                  <td><span class="bl-tag">騙作物</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">菲</span></td>
-                  <td><code class="bl-id">1105813830</code></td>
-                  <td><span class="bl-tag">幫忙騙作物</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">#c7093DB時透</span></td>
-                  <td><code class="bl-id">1133806328</code></td>
-                  <td><span class="bl-tag">騙大量蛋幣</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">无敌凤凰666</span></td>
-                  <td><code class="bl-id">1132615498</code></td>
-                  <td><span class="bl-tag">騙作物&amp;金灑</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">雅清月江254</span></td>
-                  <td><code class="bl-id">1140352543</code></td>
-                  <td><span class="bl-tag">騙作物</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">#B天空”</span></td>
-                  <td><code class="bl-id">1139211491</code></td>
-                  <td><span class="bl-tag">亂放流星仗</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">菇桃</span></td>
-                  <td><code class="bl-id">0021810911</code></td>
-                  <td><span class="bl-tag">三大象佔別人三塊地</span></td>
-                </tr>
-                <tr>
-                  <td><span class="bl-name">帥宸</span></td>
-                  <td><code class="bl-id">0342011115</code></td>
-                  <td><span class="bl-tag">大王菊捅地</span></td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- 類別篩選控制區 -->
+          <div class="bl-filter-bar">
+            <div class="bl-dropdown-wrap">
+              <button id="blCategoryBtn" class="bl-dropdown-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="bl-dropdown-icon">🏷️</span>
+                <span>類別：<strong id="blCategoryCurrent" class="bl-dropdown-current">全部</strong></span>
+                <span class="bl-dropdown-arrow">▼</span>
+              </button>
+              <div id="blCategoryMenu" class="bl-dropdown-menu" role="listbox">
+                <button type="button" class="bl-dropdown-item active" data-bl-filter="all" role="option">
+                  <span class="bl-item-name">🌐 全部</span>
+                  <span class="bl-item-count">10</span>
+                </button>
+                <button type="button" class="bl-dropdown-item" data-bl-filter="scam" role="option">
+                  <span class="bl-item-name">⚠️ 詐騙&amp;害人</span>
+                  <span class="bl-item-count">7</span>
+                </button>
+                <button type="button" class="bl-dropdown-item" data-bl-filter="block" role="option">
+                  <span class="bl-item-name">🚫 擋地</span>
+                  <span class="bl-item-count">3</span>
+                </button>
+              </div>
+            </div>
+            <div id="blCategoryStat" class="bl-filter-stat">
+              顯示：<strong>全部名單</strong>（詐騙&amp;害人 7 件 · 擋地 3 件）
+            </div>
+          </div>
+
+          <!-- 類別一：詐騙&害人通報表格區塊 -->
+          <div id="blScamSection" class="bl-category-card">
+            <div class="bl-card-header">
+              <span class="bl-group-badge bl-badge-scam">⚠️ 詐騙&amp;害人通報</span>
+              <span class="bl-group-desc">（共 7 位 · 交易詐騙／亂放流星仗）</span>
+            </div>
+            <div class="blacklist-table-wrap">
+              <table class="blacklist-table-3d">
+                <thead>
+                  <tr>
+                    <th style="width: 28%;">玩家暱稱</th>
+                    <th style="width: 32%;">玩家 ID</th>
+                    <th style="width: 40%;">通報事由</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="bl-row bl-row-top-scam">
+                    <td>
+                      <div class="bl-name-box">
+                        <span class="bl-name bl-name-top">睡不醒喵</span>
+                        <span class="bl-crown-badge bl-crown-scam">🚨 頭號通緝</span>
+                      </div>
+                    </td>
+                    <td><code class="bl-id bl-id-top">0744712827</code></td>
+                    <td><span class="bl-tag bl-tag-top-scam">多次詐騙作物（極惡劣累犯）</span></td>
+                  </tr>
+                  <tr class="bl-row">
+                    <td><span class="bl-name">#0乘</span></td>
+                    <td><code class="bl-id">1139752798</code></td>
+                    <td><span class="bl-tag">騙作物</span></td>
+                  </tr>
+                  <tr class="bl-row">
+                    <td><span class="bl-name">菲</span></td>
+                    <td><code class="bl-id">1105813830</code></td>
+                    <td><span class="bl-tag">幫忙騙作物</span></td>
+                  </tr>
+                  <tr class="bl-row">
+                    <td><span class="bl-name">#c7093DB時透</span></td>
+                    <td><code class="bl-id">1133806328</code></td>
+                    <td><span class="bl-tag">騙大量蛋幣</span></td>
+                  </tr>
+                  <tr class="bl-row">
+                    <td><span class="bl-name">无敌凤凰666</span></td>
+                    <td><code class="bl-id">1132615498</code></td>
+                    <td><span class="bl-tag">騙作物&amp;金灑</span></td>
+                  </tr>
+                  <tr class="bl-row">
+                    <td><span class="bl-name">雅清月江254</span></td>
+                    <td><code class="bl-id">1140352543</code></td>
+                    <td><span class="bl-tag">騙作物</span></td>
+                  </tr>
+                  <tr class="bl-row">
+                    <td><span class="bl-name">#B天空”</span></td>
+                    <td><code class="bl-id">1139211491</code></td>
+                    <td><span class="bl-tag">使用流星仗無差別攻擊果王(好友&amp;路人)</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 類別二：擋地影響通報表格區塊 (獨立分開，不黏在一起) -->
+          <div id="blBlockSection" class="bl-category-card" style="margin-top: 14px;">
+            <div class="bl-card-header">
+              <span class="bl-group-badge bl-badge-block">🚫 擋地影響通報</span>
+              <span class="bl-group-desc">（共 3 位 · 為己方便嚴重影響他人田地）</span>
+            </div>
+            <div class="blacklist-table-wrap">
+              <table class="blacklist-table-3d">
+                <thead>
+                  <tr>
+                    <th style="width: 28%;">玩家暱稱</th>
+                    <th style="width: 32%;">玩家 ID</th>
+                    <th style="width: 40%;">通報事由</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="bl-row bl-row-top-block">
+                    <td>
+                      <div class="bl-name-box">
+                        <span class="bl-name bl-name-top">菇桃</span>
+                        <span class="bl-crown-badge bl-crown-block">🚫 影響最甚</span>
+                      </div>
+                    </td>
+                    <td><code class="bl-id bl-id-top">0021810911</code></td>
+                    <td><span class="bl-tag bl-tag-top-block">四大象佔別人四塊地（為己方便嚴重影響鄰地／時間極長）</span></td>
+                  </tr>
+                  <tr class="bl-row">
+                    <td><span class="bl-name">瘋恐</span></td>
+                    <td><code class="bl-id">1140770463</code></td>
+                    <td><span class="bl-tag">兩大象佔別人兩塊地</span></td>
+                  </tr>
+                  <tr class="bl-row">
+                    <td><span class="bl-name">金山霜月池J1</span></td>
+                    <td><code class="bl-id">0031511930</code></td>
+                    <td><span class="bl-tag">大王菊擋地</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
         <div class="modal-footer-3d">
@@ -4849,7 +5249,7 @@
 
     <!-- 原始資料集 (完整保留秋水仙與 47 詞條演算法) -->
     <script>
-      window.GAME_DATA = {"versions":{"crops_version":143,"mutations_version":36},"crops":[{"name":"灰壤豆","quality":"灰色","maxWeight":3.4,"growthSpeed":180,"specialMutation":null,"priceCoefficient":1375.9391,"sortOrder":0},{"name":"土豆","quality":"灰色","maxWeight":11.9,"growthSpeed":28.5,"specialMutation":"薯片","priceCoefficient":26.2837,"sortOrder":1},{"name":"香菇","quality":"灰色","maxWeight":3.4,"growthSpeed":133,"specialMutation":null,"priceCoefficient":688.7738,"sortOrder":2},{"name":"番茄","quality":"灰色","maxWeight":10.2,"growthSpeed":33.33,"specialMutation":null,"priceCoefficient":66.2818,"sortOrder":3},{"name":"波斯菊","quality":"灰色","maxWeight":34,"growthSpeed":17,"specialMutation":null,"priceCoefficient":43.5454,"sortOrder":4},{"name":"月光草","quality":"灰色","maxWeight":3.4,"growthSpeed":111,"specialMutation":null,"priceCoefficient":345.1004,"sortOrder":5},{"name":"月番茄","quality":"绿色","maxWeight":10.2,"growthSpeed":111,"specialMutation":null,"priceCoefficient":663.0498,"sortOrder":6},{"name":"大豆","quality":"绿色","maxWeight":3.4,"growthSpeed":275,"specialMutation":null,"priceCoefficient":2583.0373,"sortOrder":7},{"name":"月灯草","quality":"绿色","maxWeight":5.1,"growthSpeed":205,"specialMutation":null,"priceCoefficient":1496.9466,"sortOrder":8},{"name":"黄瓜","quality":"绿色","maxWeight":13.6,"growthSpeed":50,"specialMutation":"黄瓜蛇","priceCoefficient":215.3072,"sortOrder":9},{"name":"竹子","quality":"绿色","maxWeight":136,"growthSpeed":7.5,"specialMutation":null,"priceCoefficient":12.2478,"sortOrder":10},{"name":"西瓜","quality":"蓝色","maxWeight":170,"growthSpeed":6,"specialMutation":"方形","priceCoefficient":10.7111,"sortOrder":11},{"name":"梨","quality":"蓝色","maxWeight":13.6,"growthSpeed":75,"specialMutation":null,"priceCoefficient":483.8679,"sortOrder":12},{"name":"橘子","quality":"蓝色","maxWeight":13.6,"growthSpeed":75,"specialMutation":null,"priceCoefficient":538.0993,"sortOrder":13},{"name":"蓝莓","quality":"蓝色","maxWeight":40.8,"growthSpeed":27.99,"specialMutation":null,"priceCoefficient":113.8638,"sortOrder":14},{"name":"玉米","quality":"蓝色","maxWeight":40.8,"growthSpeed":27.78,"specialMutation":null,"priceCoefficient":103.5146,"sortOrder":15},{"name":"白菜","quality":"蓝色","maxWeight":10.2,"growthSpeed":80,"specialMutation":null,"priceCoefficient":579.6116,"sortOrder":16},{"name":"花生","quality":"蓝色","maxWeight":5.1,"growthSpeed":207.11,"specialMutation":null,"priceCoefficient":2813.584,"sortOrder":17},{"name":"牵牛花","quality":"蓝色","maxWeight":5.1,"growthSpeed":200,"specialMutation":null,"priceCoefficient":2113.5728,"sortOrder":18},{"name":"棉花","quality":"蓝色","maxWeight":5.1,"growthSpeed":200,"specialMutation":null,"priceCoefficient":2574.6375,"sortOrder":19},{"name":"银辉苔","quality":"蓝色","maxWeight":5.1,"growthSpeed":280,"specialMutation":null,"priceCoefficient":3040.3725,"sortOrder":20},{"name":"月环树","quality":"蓝色","maxWeight":20.4,"growthSpeed":58,"specialMutation":null,"priceCoefficient":322.1718,"sortOrder":21},{"name":"苹果","quality":"紫色","maxWeight":37.4,"growthSpeed":40.5,"specialMutation":"糖葫芦","priceCoefficient":188.799,"sortOrder":22},{"name":"石榴","quality":"紫色","maxWeight":20.4,"growthSpeed":83.5,"specialMutation":null,"priceCoefficient":526.8633,"sortOrder":23},{"name":"月莓","quality":"紫色","maxWeight":8.5,"growthSpeed":375,"specialMutation":null,"priceCoefficient":3925.2664,"sortOrder":24},{"name":"星叶菜","quality":"紫色","maxWeight":10.2,"growthSpeed":416,"specialMutation":null,"priceCoefficient":3971.3932,"sortOrder":25},{"name":"香蕉","quality":"紫色","maxWeight":10.2,"growthSpeed":280,"specialMutation":"香蕉猴","priceCoefficient":2486.5362,"sortOrder":26},{"name":"车厘子","quality":"紫色","maxWeight":10.2,"growthSpeed":166,"specialMutation":null,"priceCoefficient":1655.8519,"sortOrder":27},{"name":"柿子","quality":"紫色","maxWeight":37.4,"growthSpeed":45.51,"specialMutation":null,"priceCoefficient":235.9062,"sortOrder":28},{"name":"椰子","quality":"紫色","maxWeight":40.8,"growthSpeed":32.5,"specialMutation":null,"priceCoefficient":144.923,"sortOrder":29},{"name":"南瓜","quality":"紫色","maxWeight":204,"growthSpeed":6.5,"specialMutation":"万圣夜","priceCoefficient":12.9627,"sortOrder":30},{"name":"龙眼","quality":"紫色","maxWeight":8.5,"growthSpeed":438.78,"specialMutation":null,"priceCoefficient":4343.6874,"sortOrder":31},{"name":"草莓","quality":"金色","maxWeight":8.5,"growthSpeed":888,"specialMutation":"连体","priceCoefficient":8727.9755,"sortOrder":32},{"name":"荔枝","quality":"金色","maxWeight":23.8,"growthSpeed":135,"specialMutation":null,"priceCoefficient":790.0566,"sortOrder":33},{"name":"菠菜","quality":"金色","maxWeight":20.4,"growthSpeed":495.76,"specialMutation":null,"priceCoefficient":3861.3768,"sortOrder":34},{"name":"柚子","quality":"金色","maxWeight":61.2,"growthSpeed":67.34,"specialMutation":null,"priceCoefficient":225.3807,"sortOrder":35},{"name":"液光藤","quality":"金色","maxWeight":20.4,"growthSpeed":520,"specialMutation":null,"priceCoefficient":3516.6614,"sortOrder":36},{"name":"月核树","quality":"金色","maxWeight":17,"growthSpeed":460,"specialMutation":null,"priceCoefficient":3389.4578,"sortOrder":37},{"name":"猕猴桃","quality":"金色","maxWeight":13.6,"growthSpeed":278,"specialMutation":null,"priceCoefficient":2151.6753,"sortOrder":38},{"name":"榴莲","quality":"金色","maxWeight":61.2,"growthSpeed":55.55,"specialMutation":null,"priceCoefficient":202.8554,"sortOrder":39},{"name":"葡萄","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":24839.9745,"sortOrder":40},{"name":"蟠桃","quality":"至臻","maxWeight":20.4,"growthSpeed":1333.33,"specialMutation":null,"priceCoefficient":8783.9561,"sortOrder":41},{"name":"星空玫瑰","quality":"至臻","maxWeight":10.2,"growthSpeed":2966.6,"specialMutation":null,"priceCoefficient":33129.1179,"sortOrder":42},{"name":"月影梅","quality":"至臻","maxWeight":3.4,"growthSpeed":4022.5,"specialMutation":null,"priceCoefficient":77401.7981,"sortOrder":43},{"name":"大王菊","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":24848.7857,"sortOrder":44},{"name":"惊奇菇","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":49708.0001,"sortOrder":45},{"name":"月兔","quality":"至臻","maxWeight":23.8,"growthSpeed":1523,"specialMutation":null,"priceCoefficient":11151.968,"sortOrder":46},{"name":"魔鬼朝天椒","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":33110.323,"sortOrder":47},{"name":"月蟾蜍","quality":"至臻","maxWeight":34,"growthSpeed":978.9,"specialMutation":null,"priceCoefficient":9797.3968,"sortOrder":48},{"name":"芦荟","quality":"至臻","maxWeight":10.2,"growthSpeed":2169.8,"specialMutation":null,"priceCoefficient":54680.2945,"sortOrder":49},{"name":"向日葵","quality":"至臻","maxWeight":51,"growthSpeed":80,"specialMutation":"笑日葵","priceCoefficient":370.3857,"sortOrder":50},{"name":"仙人掌象","quality":"至臻","maxWeight":34,"growthSpeed":720,"specialMutation":null,"priceCoefficient":9524.9248,"sortOrder":51},{"name":"红包树","quality":"至臻","maxWeight":5.1,"growthSpeed":5125,"specialMutation":null,"priceCoefficient":83180.1399,"sortOrder":52},{"name":"火龙狗","quality":"至臻","maxWeight":34,"growthSpeed":1084.43,"specialMutation":null,"priceCoefficient":10889.6528,"sortOrder":53},{"name":"松果","quality":"至臻","maxWeight":17,"growthSpeed":570,"specialMutation":null,"priceCoefficient":4618.5543,"sortOrder":54},{"name":"幻月花","quality":"至臻","maxWeight":23.8,"growthSpeed":1142.5,"specialMutation":null,"priceCoefficient":8364.9561,"sortOrder":55},{"name":"彼岸花","quality":"至臻","maxWeight":10.2,"growthSpeed":2908.5,"specialMutation":null,"priceCoefficient":49674.0134,"sortOrder":56},{"name":"马蹄莲","quality":"至臻","maxWeight":17,"growthSpeed":645.61,"specialMutation":null,"priceCoefficient":5081.0896,"sortOrder":57},{"name":"铃兰幽幽","quality":"至臻","maxWeight":23.8,"growthSpeed":1549.18,"specialMutation":null,"priceCoefficient":12086.5815,"sortOrder":58},{"name":"听歌的柿黛拉","quality":"金色","maxWeight":42.5,"growthSpeed":88,"specialMutation":null,"priceCoefficient":775.952,"sortOrder":59},{"name":"跳舞的柿黛拉","quality":"至臻","maxWeight":45.2,"growthSpeed":990.7,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":60},{"name":"秋水仙","quality":"至臻","maxWeight":34,"growthSpeed":667.77,"specialMutation":null,"priceCoefficient":10349.5256,"sortOrder":61},{"name":"银杏","quality":"至臻","maxWeight":5.1,"growthSpeed":0,"specialMutation":null,"priceCoefficient":93000,"sortOrder":62,"isNew":true,"newOrder":1},{"name":"沉静的疯象南瓜","quality":"至臻","maxWeight":45.2,"growthSpeed":0,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":59.5,"isNew":true,"newOrder":2},{"name":"雪莲","quality":"至臻","maxWeight":10.2,"growthSpeed":0,"specialMutation":null,"priceCoefficient":56270,"sortOrder":64,"isNew":true,"newOrder":3},{"name":"藏红花","quality":"金色","maxWeight":20.4,"growthSpeed":0,"specialMutation":null,"priceCoefficient":4274,"sortOrder":65,"isNew":true,"newOrder":1},{"name":"灵芝","quality":"金色","maxWeight":61.2,"growthSpeed":0,"specialMutation":null,"priceCoefficient":303.7,"sortOrder":66,"isNew":true,"newOrder":2},{"name":"迷路的疯象南瓜","quality":"金色","maxWeight":42.5,"growthSpeed":0,"specialMutation":null,"priceCoefficient":940.31,"sortOrder":67,"isNew":true,"newOrder":3},{"name":"芒果","quality":"紫色","maxWeight":8.5,"growthSpeed":0,"specialMutation":null,"priceCoefficient":4946,"sortOrder":68,"isNew":true,"newOrder":1}],"mutations":[{"name":"霓虹","color":"彩色","groupKey":"rare","isActive":true,"sortOrder":0,"multiplier":18,"shareBitIndex":30},{"name":"薯片","color":"紫色","groupKey":"special","isActive":true,"sortOrder":0,"multiplier":1.5,"shareBitIndex":5},{"name":"星环","color":"紫色","groupKey":"past","isActive":true,"sortOrder":0,"multiplier":10,"shareBitIndex":15},{"name":"橙钻","color":"金色","groupKey":"common","isActive":true,"sortOrder":1,"multiplier":18,"shareBitIndex":43},{"name":"幻彩","color":"金色","groupKey":"color","isActive":true,"sortOrder":0,"multiplier":3,"shareBitIndex":42},{"name":"亮晶晶","color":"紫色","groupKey":"intermediate","isActive":true,"sortOrder":4,"multiplier":10,"shareBitIndex":14},{"name":"星空","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":0,"multiplier":40,"shareBitIndex":3},{"name":"流火","color":"金色","groupKey":"rare","isActive":true,"sortOrder":2,"multiplier":15,"shareBitIndex":23},{"name":"方形","color":"紫色","groupKey":"special","isActive":true,"sortOrder":1,"multiplier":1.5,"shareBitIndex":6},{"name":"流光","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":1,"multiplier":30,"shareBitIndex":4},{"name":"异彩","color":"蓝色","groupKey":"color","isActive":true,"sortOrder":1,"multiplier":1.5,"shareBitIndex":44},{"name":"瓷化","color":"紫色","groupKey":"common","isActive":true,"sortOrder":5,"multiplier":8,"shareBitIndex":13},{"name":"琥珀","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":12,"multiplier":4.5,"shareBitIndex":45},{"name":"水晶","color":"金色","groupKey":"quality","isActive":true,"sortOrder":2,"multiplier":20,"shareBitIndex":2},{"name":"故障","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5,"shareBitIndex":41},{"name":"糖葫芦","color":"紫色","groupKey":"special","isActive":true,"sortOrder":2,"multiplier":1.5,"shareBitIndex":7},{"name":"彩尘","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5,"shareBitIndex":46},{"name":"太阳耀斑","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":8,"multiplier":5,"shareBitIndex":34},{"name":"日蚀","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":3,"multiplier":10,"shareBitIndex":24},{"name":"连体","color":"紫色","groupKey":"special","isActive":true,"sortOrder":3,"multiplier":1.5,"shareBitIndex":8},{"name":"金","color":"蓝色","groupKey":"quality","isActive":true,"sortOrder":3,"multiplier":10,"shareBitIndex":1},{"name":"哈基咪","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":3,"multiplier":5,"shareBitIndex":40},{"name":"冰冻","color":"绿色","groupKey":"common","isActive":true,"sortOrder":14,"multiplier":4,"shareBitIndex":17},{"name":"暗雾","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":6,"shareBitIndex":25},{"name":"陶化","color":"绿色","groupKey":"intermediate","isActive":true,"sortOrder":13,"multiplier":4,"shareBitIndex":38},{"name":"惊魂夜","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":4,"multiplier":5,"shareBitIndex":33},{"name":"落雷","color":"绿色","groupKey":"common","isActive":true,"sortOrder":15,"multiplier":3,"shareBitIndex":16},{"name":"银","color":"绿色","groupKey":"quality","isActive":true,"sortOrder":4,"multiplier":3,"shareBitIndex":0},{"name":"彩虹","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":11,"multiplier":5,"shareBitIndex":28},{"name":"结霜","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":20,"multiplier":2,"shareBitIndex":37},{"name":"黄瓜蛇","color":"金色","groupKey":"special","isActive":true,"sortOrder":4,"multiplier":2,"shareBitIndex":9},{"name":"沙尘","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":18,"multiplier":2,"shareBitIndex":35},{"name":"极光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":9,"multiplier":5,"shareBitIndex":32},{"name":"金币","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":5,"multiplier":5,"shareBitIndex":39},{"name":"万圣夜","color":"金色","groupKey":"special","isActive":true,"sortOrder":5,"multiplier":2,"shareBitIndex":10},{"name":"潮湿","color":"灰色","groupKey":"common","isActive":true,"sortOrder":23,"multiplier":1,"shareBitIndex":20},{"name":"血月","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":6,"multiplier":5,"shareBitIndex":27},{"name":"香蕉猴","color":"金色","groupKey":"special","isActive":true,"sortOrder":6,"multiplier":2,"shareBitIndex":11},{"name":"覆雪","color":"灰色","groupKey":"common","isActive":true,"sortOrder":22,"multiplier":2,"shareBitIndex":19},{"name":"生机","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":17,"multiplier":2,"shareBitIndex":22},{"name":"荧光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":10,"multiplier":5,"shareBitIndex":29},{"name":"迷雾","color":"灰色","groupKey":"common","isActive":true,"sortOrder":21,"multiplier":2,"shareBitIndex":21},{"name":"笑日葵","color":"彩色","groupKey":"special","isActive":true,"sortOrder":7,"multiplier":10,"shareBitIndex":12},{"name":"幽魂","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":7,"multiplier":5,"shareBitIndex":31},{"name":"灼热","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":19,"multiplier":2,"shareBitIndex":36},{"name":"颤栗","color":"灰色","groupKey":"common","isActive":true,"sortOrder":24,"multiplier":1,"shareBitIndex":18},{"name":"陨石","color":"绿色","groupKey":"rare","isActive":true,"sortOrder":16,"multiplier":3,"shareBitIndex":26},{"name":"花雨","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":7,"shareBitIndex":47,"isNew":true},{"name":"幽幽南瓜","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":1,"multiplier":5,"shareBitIndex":48}]};
+      window.GAME_DATA = {"versions":{"crops_version":143,"mutations_version":36},"crops":[{"name":"灰壤豆","quality":"灰色","maxWeight":3.4,"growthSpeed":180,"specialMutation":null,"priceCoefficient":1375.9391,"sortOrder":0},{"name":"土豆","quality":"灰色","maxWeight":11.9,"growthSpeed":28.5,"specialMutation":"薯片","priceCoefficient":26.2837,"sortOrder":1},{"name":"香菇","quality":"灰色","maxWeight":3.4,"growthSpeed":133,"specialMutation":null,"priceCoefficient":688.7738,"sortOrder":2},{"name":"番茄","quality":"灰色","maxWeight":10.2,"growthSpeed":33.33,"specialMutation":null,"priceCoefficient":66.2818,"sortOrder":3},{"name":"波斯菊","quality":"灰色","maxWeight":34,"growthSpeed":17,"specialMutation":null,"priceCoefficient":43.5454,"sortOrder":4},{"name":"月光草","quality":"灰色","maxWeight":3.4,"growthSpeed":111,"specialMutation":null,"priceCoefficient":345.1004,"sortOrder":5},{"name":"月番茄","quality":"绿色","maxWeight":10.2,"growthSpeed":111,"specialMutation":null,"priceCoefficient":663.0498,"sortOrder":6},{"name":"大豆","quality":"绿色","maxWeight":3.4,"growthSpeed":275,"specialMutation":null,"priceCoefficient":2583.0373,"sortOrder":7},{"name":"月灯草","quality":"绿色","maxWeight":5.1,"growthSpeed":205,"specialMutation":null,"priceCoefficient":1496.9466,"sortOrder":8},{"name":"黄瓜","quality":"绿色","maxWeight":13.6,"growthSpeed":50,"specialMutation":"黄瓜蛇","priceCoefficient":215.3072,"sortOrder":9},{"name":"竹子","quality":"绿色","maxWeight":136,"growthSpeed":7.5,"specialMutation":null,"priceCoefficient":12.2478,"sortOrder":10},{"name":"西瓜","quality":"蓝色","maxWeight":170,"growthSpeed":6,"specialMutation":"方形","priceCoefficient":10.7111,"sortOrder":11},{"name":"梨","quality":"蓝色","maxWeight":13.6,"growthSpeed":75,"specialMutation":null,"priceCoefficient":483.8679,"sortOrder":12},{"name":"橘子","quality":"蓝色","maxWeight":13.6,"growthSpeed":75,"specialMutation":null,"priceCoefficient":538.0993,"sortOrder":13},{"name":"蓝莓","quality":"蓝色","maxWeight":40.8,"growthSpeed":27.99,"specialMutation":null,"priceCoefficient":113.8638,"sortOrder":14},{"name":"玉米","quality":"蓝色","maxWeight":40.8,"growthSpeed":27.78,"specialMutation":null,"priceCoefficient":103.5146,"sortOrder":15},{"name":"白菜","quality":"蓝色","maxWeight":10.2,"growthSpeed":80,"specialMutation":null,"priceCoefficient":579.6116,"sortOrder":16},{"name":"花生","quality":"蓝色","maxWeight":5.1,"growthSpeed":207.11,"specialMutation":null,"priceCoefficient":2813.584,"sortOrder":17},{"name":"牵牛花","quality":"蓝色","maxWeight":5.1,"growthSpeed":200,"specialMutation":null,"priceCoefficient":2113.5728,"sortOrder":18},{"name":"棉花","quality":"蓝色","maxWeight":5.1,"growthSpeed":200,"specialMutation":null,"priceCoefficient":2574.6375,"sortOrder":19},{"name":"银辉苔","quality":"蓝色","maxWeight":5.1,"growthSpeed":280,"specialMutation":null,"priceCoefficient":3040.3725,"sortOrder":20},{"name":"月环树","quality":"蓝色","maxWeight":20.4,"growthSpeed":58,"specialMutation":null,"priceCoefficient":322.1718,"sortOrder":21},{"name":"苹果","quality":"紫色","maxWeight":37.4,"growthSpeed":40.5,"specialMutation":"糖葫芦","priceCoefficient":188.799,"sortOrder":22},{"name":"石榴","quality":"紫色","maxWeight":20.4,"growthSpeed":83.5,"specialMutation":null,"priceCoefficient":526.8633,"sortOrder":23},{"name":"月莓","quality":"紫色","maxWeight":8.5,"growthSpeed":375,"specialMutation":null,"priceCoefficient":3925.2664,"sortOrder":24},{"name":"星叶菜","quality":"紫色","maxWeight":10.2,"growthSpeed":416,"specialMutation":null,"priceCoefficient":3971.3932,"sortOrder":25},{"name":"香蕉","quality":"紫色","maxWeight":10.2,"growthSpeed":280,"specialMutation":"香蕉猴","priceCoefficient":2486.5362,"sortOrder":26},{"name":"车厘子","quality":"紫色","maxWeight":10.2,"growthSpeed":166,"specialMutation":null,"priceCoefficient":1655.8519,"sortOrder":27},{"name":"柿子","quality":"紫色","maxWeight":37.4,"growthSpeed":45.51,"specialMutation":null,"priceCoefficient":235.9062,"sortOrder":28},{"name":"椰子","quality":"紫色","maxWeight":40.8,"growthSpeed":32.5,"specialMutation":null,"priceCoefficient":144.923,"sortOrder":29},{"name":"南瓜","quality":"紫色","maxWeight":204,"growthSpeed":6.5,"specialMutation":"万圣夜","priceCoefficient":12.9627,"sortOrder":30},{"name":"龙眼","quality":"紫色","maxWeight":8.5,"growthSpeed":438.78,"specialMutation":null,"priceCoefficient":4343.6874,"sortOrder":31},{"name":"草莓","quality":"金色","maxWeight":8.5,"growthSpeed":888,"specialMutation":"连体","priceCoefficient":8727.9755,"sortOrder":32},{"name":"荔枝","quality":"金色","maxWeight":23.8,"growthSpeed":135,"specialMutation":null,"priceCoefficient":790.0566,"sortOrder":33},{"name":"菠菜","quality":"金色","maxWeight":20.4,"growthSpeed":495.76,"specialMutation":null,"priceCoefficient":3861.3768,"sortOrder":34},{"name":"柚子","quality":"金色","maxWeight":61.2,"growthSpeed":67.34,"specialMutation":null,"priceCoefficient":225.3807,"sortOrder":35},{"name":"液光藤","quality":"金色","maxWeight":20.4,"growthSpeed":520,"specialMutation":null,"priceCoefficient":3516.6614,"sortOrder":36},{"name":"月核树","quality":"金色","maxWeight":17,"growthSpeed":460,"specialMutation":null,"priceCoefficient":3389.4578,"sortOrder":37},{"name":"猕猴桃","quality":"金色","maxWeight":13.6,"growthSpeed":278,"specialMutation":null,"priceCoefficient":2151.6753,"sortOrder":38},{"name":"榴莲","quality":"金色","maxWeight":61.2,"growthSpeed":55.55,"specialMutation":null,"priceCoefficient":202.8554,"sortOrder":39},{"name":"葡萄","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":24839.9745,"sortOrder":40},{"name":"蟠桃","quality":"至臻","maxWeight":20.4,"growthSpeed":1333.33,"specialMutation":null,"priceCoefficient":8783.9561,"sortOrder":41},{"name":"星空玫瑰","quality":"至臻","maxWeight":10.2,"growthSpeed":2966.6,"specialMutation":null,"priceCoefficient":33129.1179,"sortOrder":42},{"name":"月影梅","quality":"至臻","maxWeight":3.4,"growthSpeed":4022.5,"specialMutation":null,"priceCoefficient":77401.7981,"sortOrder":43},{"name":"大王菊","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":24848.7857,"sortOrder":44},{"name":"惊奇菇","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":49708.0001,"sortOrder":45},{"name":"月兔","quality":"至臻","maxWeight":23.8,"growthSpeed":1523,"specialMutation":null,"priceCoefficient":11151.968,"sortOrder":46},{"name":"魔鬼朝天椒","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":33110.323,"sortOrder":47},{"name":"月蟾蜍","quality":"至臻","maxWeight":34,"growthSpeed":990,"specialMutation":null,"priceCoefficient":9797.3968,"sortOrder":48},{"name":"芦荟","quality":"至臻","maxWeight":10.2,"growthSpeed":2169.8,"specialMutation":null,"priceCoefficient":54680.2945,"sortOrder":49},{"name":"向日葵","quality":"至臻","maxWeight":51,"growthSpeed":80,"specialMutation":"笑日葵","priceCoefficient":370.3857,"sortOrder":50},{"name":"仙人掌象","quality":"至臻","maxWeight":34,"growthSpeed":720,"specialMutation":null,"priceCoefficient":9524.9248,"sortOrder":51},{"name":"红包树","quality":"至臻","maxWeight":5.1,"growthSpeed":5125,"specialMutation":null,"priceCoefficient":83180.1399,"sortOrder":52},{"name":"火龙狗","quality":"至臻","maxWeight":34,"growthSpeed":1084.43,"specialMutation":null,"priceCoefficient":10889.6528,"sortOrder":53},{"name":"松果","quality":"至臻","maxWeight":17,"growthSpeed":570,"specialMutation":null,"priceCoefficient":4618.5543,"sortOrder":54},{"name":"幻月花","quality":"至臻","maxWeight":23.8,"growthSpeed":1142.5,"specialMutation":null,"priceCoefficient":8364.9561,"sortOrder":55},{"name":"彼岸花","quality":"至臻","maxWeight":10.2,"growthSpeed":2908.5,"specialMutation":null,"priceCoefficient":49674.0134,"sortOrder":56},{"name":"马蹄莲","quality":"至臻","maxWeight":17,"growthSpeed":575,"specialMutation":null,"priceCoefficient":5081.0896,"sortOrder":57},{"name":"铃兰幽幽","quality":"至臻","maxWeight":23.8,"growthSpeed":1400,"specialMutation":null,"priceCoefficient":12086.5815,"sortOrder":58},{"name":"听歌的柿黛拉","quality":"金色","maxWeight":42.5,"growthSpeed":88,"specialMutation":null,"priceCoefficient":775.952,"sortOrder":59},{"name":"跳舞的柿黛拉","quality":"至臻","maxWeight":45.2,"growthSpeed":800,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":60},{"name":"秋水仙","quality":"至臻","maxWeight":34,"growthSpeed":667.77,"specialMutation":null,"priceCoefficient":10349.5256,"sortOrder":61},{"name":"银杏","quality":"至臻","maxWeight":5.1,"growthSpeed":0,"specialMutation":null,"priceCoefficient":93000,"sortOrder":62,"isNew":true,"newOrder":1},{"name":"沉静的疯象南瓜","quality":"至臻","maxWeight":45.2,"growthSpeed":800,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":59.5,"isNew":true,"newOrder":2},{"name":"雪莲","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":56270,"sortOrder":64,"isNew":true,"newOrder":3},{"name":"藏红花","quality":"金色","maxWeight":20.4,"growthSpeed":571.77,"specialMutation":null,"priceCoefficient":4274,"sortOrder":65,"isNew":true,"newOrder":1},{"name":"灵芝","quality":"金色","maxWeight":61.2,"growthSpeed":0,"specialMutation":null,"priceCoefficient":303.7,"sortOrder":66,"isNew":true,"newOrder":2},{"name":"迷路的疯象南瓜","quality":"金色","maxWeight":42.5,"growthSpeed":0,"specialMutation":null,"priceCoefficient":940.31,"sortOrder":67,"isNew":true,"newOrder":3},{"name":"芒果","quality":"紫色","maxWeight":8.5,"growthSpeed":0,"specialMutation":null,"priceCoefficient":4946,"sortOrder":68,"isNew":true,"newOrder":1}],"mutations":[{"name":"霓虹","color":"彩色","groupKey":"rare","isActive":true,"sortOrder":0,"multiplier":18,"shareBitIndex":30},{"name":"薯片","color":"紫色","groupKey":"special","isActive":true,"sortOrder":0,"multiplier":1.5,"shareBitIndex":5},{"name":"星环","color":"紫色","groupKey":"past","isActive":true,"sortOrder":0,"multiplier":10,"shareBitIndex":15},{"name":"橙钻","color":"金色","groupKey":"common","isActive":true,"sortOrder":1,"multiplier":18,"shareBitIndex":43},{"name":"幻彩","color":"金色","groupKey":"color","isActive":true,"sortOrder":0,"multiplier":3,"shareBitIndex":42},{"name":"亮晶晶","color":"紫色","groupKey":"intermediate","isActive":true,"sortOrder":4,"multiplier":10,"shareBitIndex":14},{"name":"星空","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":0,"multiplier":40,"shareBitIndex":3},{"name":"流火","color":"金色","groupKey":"rare","isActive":true,"sortOrder":2,"multiplier":15,"shareBitIndex":23},{"name":"方形","color":"紫色","groupKey":"special","isActive":true,"sortOrder":1,"multiplier":1.5,"shareBitIndex":6},{"name":"流光","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":1,"multiplier":30,"shareBitIndex":4},{"name":"异彩","color":"蓝色","groupKey":"color","isActive":true,"sortOrder":1,"multiplier":1.5,"shareBitIndex":44},{"name":"瓷化","color":"紫色","groupKey":"common","isActive":true,"sortOrder":5,"multiplier":8,"shareBitIndex":13},{"name":"琥珀","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":12,"multiplier":4.5,"shareBitIndex":45},{"name":"水晶","color":"金色","groupKey":"quality","isActive":true,"sortOrder":2,"multiplier":20,"shareBitIndex":2},{"name":"故障","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5,"shareBitIndex":41},{"name":"糖葫芦","color":"紫色","groupKey":"special","isActive":true,"sortOrder":2,"multiplier":1.5,"shareBitIndex":7},{"name":"彩尘","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5,"shareBitIndex":46},{"name":"太阳耀斑","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":8,"multiplier":5,"shareBitIndex":34},{"name":"日蚀","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":3,"multiplier":10,"shareBitIndex":24},{"name":"连体","color":"紫色","groupKey":"special","isActive":true,"sortOrder":3,"multiplier":1.5,"shareBitIndex":8},{"name":"金","color":"蓝色","groupKey":"quality","isActive":true,"sortOrder":3,"multiplier":10,"shareBitIndex":1},{"name":"哈基咪","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":3,"multiplier":5,"shareBitIndex":40},{"name":"冰冻","color":"绿色","groupKey":"common","isActive":true,"sortOrder":14,"multiplier":4,"shareBitIndex":17},{"name":"暗雾","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":6,"shareBitIndex":25},{"name":"陶化","color":"绿色","groupKey":"intermediate","isActive":true,"sortOrder":13,"multiplier":4,"shareBitIndex":38},{"name":"惊魂夜","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":4,"multiplier":5,"shareBitIndex":33},{"name":"落雷","color":"绿色","groupKey":"common","isActive":true,"sortOrder":15,"multiplier":3,"shareBitIndex":16},{"name":"银","color":"绿色","groupKey":"quality","isActive":true,"sortOrder":4,"multiplier":3,"shareBitIndex":0},{"name":"彩虹","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":11,"multiplier":5,"shareBitIndex":28},{"name":"结霜","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":20,"multiplier":2,"shareBitIndex":37},{"name":"黄瓜蛇","color":"金色","groupKey":"special","isActive":true,"sortOrder":4,"multiplier":2,"shareBitIndex":9},{"name":"沙尘","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":18,"multiplier":2,"shareBitIndex":35},{"name":"极光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":9,"multiplier":5,"shareBitIndex":32},{"name":"金币","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":5,"multiplier":5,"shareBitIndex":39},{"name":"万圣夜","color":"金色","groupKey":"special","isActive":true,"sortOrder":5,"multiplier":2,"shareBitIndex":10},{"name":"潮湿","color":"灰色","groupKey":"common","isActive":true,"sortOrder":23,"multiplier":1,"shareBitIndex":20},{"name":"血月","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":6,"multiplier":5,"shareBitIndex":27},{"name":"香蕉猴","color":"金色","groupKey":"special","isActive":true,"sortOrder":6,"multiplier":2,"shareBitIndex":11},{"name":"覆雪","color":"灰色","groupKey":"common","isActive":true,"sortOrder":22,"multiplier":2,"shareBitIndex":19},{"name":"生机","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":17,"multiplier":2,"shareBitIndex":22},{"name":"荧光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":10,"multiplier":5,"shareBitIndex":29},{"name":"迷雾","color":"灰色","groupKey":"common","isActive":true,"sortOrder":21,"multiplier":2,"shareBitIndex":21},{"name":"笑日葵","color":"彩色","groupKey":"special","isActive":true,"sortOrder":7,"multiplier":10,"shareBitIndex":12},{"name":"幽魂","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":7,"multiplier":5,"shareBitIndex":31},{"name":"灼热","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":19,"multiplier":2,"shareBitIndex":36},{"name":"颤栗","color":"灰色","groupKey":"common","isActive":true,"sortOrder":24,"multiplier":1,"shareBitIndex":18},{"name":"陨石","color":"绿色","groupKey":"rare","isActive":true,"sortOrder":16,"multiplier":3,"shareBitIndex":26},{"name":"花雨","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":7,"shareBitIndex":47,"isNew":true},{"name":"幽幽南瓜","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":1,"multiplier":5,"shareBitIndex":48}]};
     </script>
 
     <script>
@@ -4931,7 +5331,7 @@
         lastManualWeatherMutations: null, // array of names
         customMutationLayout: null, // null = 預設排列; Array = 自訂分組排序
         theme: "dark",
-        changelogMode: localStorage.getItem("fknc_changelog_mode") || "simple",
+        changelogMode: "simple",
       };
 
       const els = {
@@ -6242,6 +6642,7 @@
 
       // 更新日誌彈窗交互
       function openChangelogModal() {
+        if (typeof setChangelogMode === "function") setChangelogMode("simple", false);
         if (els.changelogModal) {
           els.changelogModal.classList.add("active");
           CyberAudio.tap(800);
@@ -6270,6 +6671,7 @@
 
       // 農場黑名單彈窗交互
       function openBlacklistModal() {
+        if (typeof setBlacklistFilter === "function") setBlacklistFilter("all", false);
         if (els.blacklistModal) {
           els.blacklistModal.classList.add("active");
           CyberAudio.tap(740);
@@ -6292,6 +6694,74 @@
         els.blacklistModal.addEventListener("click", (e) => {
           if (e.target === els.blacklistModal) {
             closeBlacklistModal();
+          }
+        });
+      }
+
+      // 黑名單類別篩選邏輯 (全部 / 詐騙&害人 / 擋地，無需記憶，開啟預設全部)
+      const blCategoryBtn = document.getElementById("blCategoryBtn");
+      const blCategoryMenu = document.getElementById("blCategoryMenu");
+      const blCategoryCurrent = document.getElementById("blCategoryCurrent");
+      const blCategoryStat = document.getElementById("blCategoryStat");
+      const blDropdownItems = document.querySelectorAll(".bl-dropdown-item");
+      const blScamSection = document.getElementById("blScamSection");
+      const blBlockSection = document.getElementById("blBlockSection");
+
+      function setBlacklistFilter(cat, playSound = true) {
+        if (blCategoryCurrent) {
+          blCategoryCurrent.textContent = cat === "scam" ? "詐騙&害人" : (cat === "block" ? "擋地" : "全部");
+        }
+        if (blCategoryStat) {
+          if (cat === "scam") {
+            blCategoryStat.innerHTML = '顯示：<strong>詐騙&amp;害人通報</strong>（共 7 件）';
+          } else if (cat === "block") {
+            blCategoryStat.innerHTML = '顯示：<strong>擋地影響通報</strong>（共 3 件）';
+          } else {
+            blCategoryStat.innerHTML = '顯示：<strong>全部名單</strong>（詐騙&amp;害人 7 件 · 擋地 3 件）';
+          }
+        }
+        blDropdownItems.forEach((btn) => {
+          if (btn.getAttribute("data-bl-filter") === cat) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+        if (blScamSection) {
+          blScamSection.style.display = (cat === "all" || cat === "scam") ? "" : "none";
+        }
+        if (blBlockSection) {
+          blBlockSection.style.display = (cat === "all" || cat === "block") ? "" : "none";
+        }
+        if (blCategoryMenu) {
+          blCategoryMenu.classList.remove("active");
+        }
+        if (playSound && typeof CyberAudio !== "undefined" && CyberAudio.tap) {
+          CyberAudio.tap(640);
+        }
+      }
+
+      if (blCategoryBtn && blCategoryMenu) {
+        blCategoryBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = blCategoryMenu.classList.contains("active");
+          blCategoryMenu.classList.toggle("active", !isOpen);
+          if (typeof CyberAudio !== "undefined" && CyberAudio.tap) {
+            CyberAudio.tap(isOpen ? 520 : 680);
+          }
+        });
+
+        blDropdownItems.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const cat = btn.getAttribute("data-bl-filter") || "all";
+            setBlacklistFilter(cat, true);
+          });
+        });
+
+        document.addEventListener("click", (e) => {
+          if (blCategoryMenu.classList.contains("active") && !e.target.closest(".bl-dropdown-wrap")) {
+            blCategoryMenu.classList.remove("active");
           }
         });
       }
@@ -7285,12 +7755,9 @@
         });
       }
 
-      // 日誌模式切換 (簡易 / 專業，預設簡易，之後照記憶)
+      // 日誌模式切換 (簡易 / 詳細，預設簡易，不記憶)
       function setChangelogMode(mode, playSfx = false) {
         state.changelogMode = mode === "pro" ? "pro" : "simple";
-        try {
-          localStorage.setItem("fknc_changelog_mode", state.changelogMode);
-        } catch (e) {}
 
         const simpleBtn = document.getElementById("changelogModeSimpleBtn");
         const proBtn = document.getElementById("changelogModeProBtn");
@@ -8527,7 +8994,7 @@
         function animate3D() {
           requestAnimationFrame(animate3D);
           // 拖曳詞條時暫停 3D 重繪，將全部 GPU/CPU 算力保留給拖曳手感，徹底告別卡頓
-          if (window.isCustomSortDragging) return;
+          if (document.hidden || window.isCustomSortDragging) return;
           const rawDt = clock.getDelta();
           const dt = (rawDt > 0 && rawDt < 0.1) ? rawDt : (1 / 60);
           const elapsed = clock.getElapsedTime();
