@@ -246,7 +246,7 @@ body.view-calculator .app-stage {
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 body.theme-light .spatial-panel {
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.54) 0%, rgba(236, 246, 255, 0.44) 100%);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.18) 0%, rgba(232, 244, 255, 0.12) 100%);
 }
 
 @media (max-width: 680px) {
@@ -276,8 +276,8 @@ body.theme-light .spatial-panel {
     0 14px 32px rgba(2, 8, 20, 0.32);
 }
 body.theme-light .cyber-header-3d {
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.66) 0%, rgba(238, 247, 255, 0.56) 100%);
-  box-shadow: inset 0 1px 0 #fff, 0 5px 0 var(--glass-extrude), 0 12px 26px rgba(18, 52, 92, 0.14);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.24) 0%, rgba(235, 246, 255, 0.16) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 5px 0 var(--glass-extrude), 0 12px 26px rgba(18, 52, 92, 0.12);
 }
 
 .header-title-box {
@@ -349,38 +349,33 @@ body.theme-light .cyber-header-3d {
 @media (max-width: 600px) {
   .header-subtitle-tag { display: none; }
   .cyber-header-3d {
-    padding: 8px 10px;
+    padding: 7px 9px;
     gap: 6px;
     margin-bottom: 10px;
     border-radius: 14px;
   }
   .header-title-box {
-    gap: 7px;
+    gap: 6px;
   }
   .header-logo-gem {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    font-size: 12px;
   }
   .header-title {
-    font-size: 15px;
+    font-size: 13.5px;
     letter-spacing: 0;
   }
   .header-actions {
-    gap: 5px;
+    gap: 4px;
   }
   .header-actions .btn-3d-icon {
-    padding: 5px 9px;
-    font-size: 11.5px;
-    border-radius: 9px;
-    gap: 4px;
+    padding: 4px 7px;
+    font-size: 11px;
+    border-radius: 8px;
+    gap: 3px;
     box-shadow: 0 2px 0 var(--keycap-lip), 0 4px 8px rgba(0, 0, 0, 0.2), var(--keycap-inset);
-  }
-}
-@media (max-width: 480px) {
-  .header-title-prefix {
-    display: none;
   }
 }
 
@@ -477,7 +472,7 @@ body.theme-light .btn-3d-danger {
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.38), 0 4px 14px rgba(0, 0, 0, 0.22);
 }
 body.theme-light .search-bar-3d {
-  background: rgba(255, 255, 255, 0.90);
+  background: rgba(255, 255, 255, 0.34);
   border-color: rgba(24, 72, 122, 0.28);
   box-shadow: inset 0 2px 6px rgba(18, 52, 92, 0.10), 0 4px 12px rgba(18, 52, 92, 0.08);
 }
@@ -552,7 +547,7 @@ body.theme-light .filter-tab-pill.active {
 }
 body.theme-light .settings-memory-tip-card,
 body.theme-light .calc-memory-tip-card {
-  background: rgba(246, 251, 255, 0.92);
+  background: rgba(246, 251, 255, 0.34);
   border-color: rgba(13, 148, 136, 0.36);
   box-shadow: inset 0 1px 0 #fff, 0 8px 18px rgba(18, 52, 92, 0.12);
 }
@@ -989,9 +984,9 @@ body.legacy-ui .cyber-header-3d {
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
 }
 body.legacy-ui.theme-light .cyber-header-3d {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.90) 0%, rgba(235, 244, 253, 0.86) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(235, 244, 253, 0.20) 100%);
   border-color: rgba(20, 68, 118, 0.26);
-  box-shadow: 0 8px 20px rgba(18, 52, 92, 0.14);
+  box-shadow: 0 8px 20px rgba(18, 52, 92, 0.12);
 }
 
 body.legacy-ui .spatial-panel,
@@ -1006,9 +1001,9 @@ body.legacy-ui .cyber-footer-3d {
 }
 body.legacy-ui.theme-light .spatial-panel,
 body.legacy-ui.theme-light .cyber-footer-3d {
-  background: rgba(255, 255, 255, 0.48);
-  border-color: rgba(20, 68, 118, 0.28);
-  box-shadow: 0 8px 22px rgba(18, 52, 92, 0.14);
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(20, 68, 118, 0.26);
+  box-shadow: 0 8px 22px rgba(18, 52, 92, 0.10);
 }
 body.legacy-ui .spatial-panel::before {
   display: none;
@@ -1419,7 +1414,7 @@ body.theme-light .reactor-total-price {
   border: 1px solid var(--glass-border);
 }
 body.theme-light .reactor-right-mult {
-  background: rgba(240, 248, 255, 0.90);
+  background: rgba(240, 248, 255, 0.34);
 }
 
 .mult-tag {
@@ -1453,9 +1448,9 @@ body.theme-light .reactor-right-mult {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 body.theme-light .chamber-box {
-  background: rgba(255, 255, 255, 0.90);
+  background: rgba(255, 255, 255, 0.36);
   border-color: rgba(24, 72, 122, 0.28);
-  box-shadow: inset 0 2px 6px rgba(18, 52, 92, 0.10);
+  box-shadow: inset 0 2px 6px rgba(18, 52, 92, 0.08);
 }
 .chamber-box:focus-within {
   border-color: var(--accent-primary);
@@ -1502,7 +1497,7 @@ body.theme-light .chamber-box {
   font-weight: 700;
 }
 body.theme-light .time-hud-box {
-  background: rgba(235, 248, 252, 0.92);
+  background: rgba(235, 248, 252, 0.36);
 }
 .time-val {
   font-family: "Share Tech Mono", "Noto Sans TC", monospace;
@@ -4559,19 +4554,20 @@ body.theme-light .btn-cat-del {
         attribute float aSize;
         attribute float aPhase;
         attribute float aMix;
+        attribute vec3 aColor;
         uniform float uTime;
         uniform float uPixelRatio;
         varying float vAlpha;
-        varying float vMix;
+        varying vec3 vColor;
         void main() {
-          vMix = aMix;
+          vColor = aColor;
           vec3 pos = position;
-          pos.y += mod(uTime * (0.35 + aMix * 0.4) + aPhase * 8.0, 48.0) - 24.0;
+          pos.y += mod(uTime * (0.32 + aMix * 0.36) + aPhase * 8.0, 56.0) - 28.0;
           pos.x += sin(uTime * 0.35 + aPhase * 6.283) * 0.8;
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          float twinkle = 0.45 + 0.55 * sin(uTime * (1.2 + aMix) + aPhase * 12.56);
-          vAlpha = twinkle * smoothstep(-150.0, -25.0, mvPosition.z);
-          gl_PointSize = clamp(aSize * uPixelRatio * (115.0 / max(-mvPosition.z, 10.0)), 1.5, 22.0);
+          float twinkle = 0.50 + 0.50 * sin(uTime * (1.2 + aMix) + aPhase * 12.56);
+          vAlpha = twinkle * smoothstep(-180.0, -25.0, mvPosition.z);
+          gl_PointSize = clamp(aSize * uPixelRatio * (115.0 / max(-mvPosition.z, 10.0)), 1.5, 20.0);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -4580,20 +4576,15 @@ body.theme-light .btn-cat-del {
         uniform vec3 uColorA;
         uniform vec3 uColorB;
         varying float vAlpha;
-        varying float vMix;
+        varying vec3 vColor;
         void main() {
           vec2 c = gl_PointCoord - 0.5;
           float d = length(c);
           if (d > 0.5) discard;
-          float soft = pow(1.0 - d * 2.0, 2.2);
-          vec3 darkTint = vMix < 0.33
-            ? mix(uColorA, vec3(0.98, 0.78, 0.32), vMix * 3.0)
-            : (vMix < 0.66
-              ? mix(vec3(0.98, 0.78, 0.32), uColorB, (vMix - 0.33) * 3.0)
-              : mix(uColorB, vec3(0.92, 0.42, 0.88), (vMix - 0.66) * 3.0));
-          vec3 lightTint = mix(vec3(0.88, 0.68, 0.25), vec3(0.15, 0.68, 0.78), vMix);
-          vec3 col = mix(darkTint, lightTint, uLightMode);
-          float a = soft * vAlpha * mix(0.92, 0.46, uLightMode);
+          float core = pow(max(0.0, 1.0 - d * 2.0), 2.4);
+          float halo = pow(max(0.0, 1.0 - d * 2.0), 1.2) * 0.55;
+          vec3 col = mix(vColor * 1.35, vColor * 0.82, uLightMode);
+          float a = clamp(core + halo, 0.0, 1.0) * vAlpha * mix(0.88, 0.44, uLightMode);
           gl_FragColor = vec4(col, a);
         }
       `
@@ -4783,6 +4774,126 @@ body.theme-light .btn-cat-del {
           float core = 0.55 + 0.45 * sin(vUv.y * 12.0 - uTime * 6.0);
           vec3 col = mix(uColorA, uColorB, vUv.y) * (1.25 + core * 0.45);
           gl_FragColor = vec4(col, vFade * streak * uOpacity);
+        }
+      `
+    },
+
+    /* 14. 新版星穹宮殿專屬：超絢麗七彩旋臂星海 (Grand Cosmic Galaxy) */
+    cosmicGrandGalaxy: {
+      vertexShader: /* glsl */ `
+        varying vec2 vCentered;
+        void main() {
+          vCentered = (uv - 0.5) * 2.0;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform float uTime;
+        uniform float uLightMode;
+        uniform float uPulseBoost;
+        varying vec2 vCentered;
+
+        ${NOISE_GLSL}
+
+        void main() {
+          vec2 p = vCentered;
+          float r = length(p);
+          if (r > 0.99) discard;
+
+          float twist = 3.6 * log(r + 0.08) - uTime * 0.06;
+          float cs = cos(twist);
+          float sn = sin(twist);
+          vec2 tp = vec2(p.x * cs - p.y * sn, p.x * sn + p.y * cs);
+
+          float cA = fbm2(tp * 3.4 + vec2(uTime * 0.014, 1.3));
+          float cB = fbm2Fast(tp * 7.2 - vec2(uTime * 0.02, -2.1));
+
+          float ang = atan(p.y, p.x);
+          float phase = ang + twist + (cA - 0.5) * 1.8;
+          float armMain = pow(0.5 + 0.5 * cos(phase * 3.0), 2.2);
+          float armSub  = pow(0.5 + 0.5 * cos(phase * 6.0 + 0.9), 2.8) * 0.55;
+          float arms = clamp(armMain + armSub, 0.0, 1.0);
+
+          float nebula = (0.25 + arms * 1.05) * smoothstep(0.16, 0.84, cA * 0.62 + cB * 0.38);
+          float coreHot = exp(-r * 7.5);
+          float coreWarm = exp(-r * 3.0);
+          float outerHaze = smoothstep(0.96, 0.18, r) * exp(-r * 1.15);
+
+          // 絢麗 6 色宇宙漸層 (金白核 -> 珊瑚橘 -> 霓虹洋紅 -> 皇家紫 -> 寶石青藍 -> 極光翡翠)
+          vec3 colCore = vec3(1.00, 0.95, 0.80);
+          vec3 colCoral = vec3(1.00, 0.54, 0.24);
+          vec3 colMagenta = vec3(0.96, 0.24, 0.68);
+          vec3 colViolet = vec3(0.54, 0.26, 0.98);
+          vec3 colCyan = vec3(0.08, 0.86, 0.96);
+          vec3 colEmerald = vec3(0.18, 0.95, 0.64);
+
+          vec3 armCol = mix(colCoral, colMagenta, smoothstep(0.08, 0.28, r));
+          armCol = mix(armCol, colViolet, smoothstep(0.24, 0.48, r));
+          armCol = mix(armCol, colCyan, smoothstep(0.44, 0.72, r));
+          armCol = mix(armCol, colEmerald, smoothstep(0.68, 0.92, r));
+          armCol = mix(armCol, colCyan, smoothstep(0.60, 0.90, cA) * 0.38);
+
+          vec3 darkCol = armCol * (nebula * 0.92 + outerHaze * 0.26)
+                       + colCoral * coreWarm * 0.45
+                       + colCore * coreHot * (0.85 + uPulseBoost * 0.35);
+          darkCol = min(darkCol, vec3(1.0));
+
+          vec3 lightArm = mix(vec3(0.92, 0.42, 0.68), vec3(0.46, 0.38, 0.92), smoothstep(0.15, 0.50, r));
+          lightArm = mix(lightArm, vec3(0.12, 0.66, 0.84), smoothstep(0.48, 0.88, r));
+          vec3 lightCol = lightArm * (nebula * 0.58 + outerHaze * 0.20)
+                        + vec3(0.95, 0.80, 0.54) * coreWarm * 0.35;
+
+          vec3 finalCol = mix(darkCol, lightCol, uLightMode);
+          float edgeFade = smoothstep(0.98, 0.32, r);
+          float alpha = clamp((nebula * 0.68 + coreWarm * 0.48 + coreHot * 0.78 + outerHaze * 0.22), 0.0, 1.0)
+                      * edgeFade * mix(0.88, 0.45, uLightMode);
+          gl_FragColor = vec4(finalCol, alpha);
+        }
+      `
+    },
+
+    /* 15. 新版星穹宮殿專屬：流動蒼穹極光幕 (Cosmic Aurora Curtains) */
+    cosmicAurora: {
+      vertexShader: /* glsl */ `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform float uTime;
+        uniform float uLightMode;
+        uniform float uSeed;
+        varying vec2 vUv;
+
+        ${NOISE_GLSL}
+
+        void main() {
+          vec2 uv = vUv;
+          float wave = sin(uv.x * 9.0 + uTime * 0.45 + uSeed) * 0.12
+                     + sin(uv.x * 19.0 - uTime * 0.32 + uSeed * 2.0) * 0.06;
+          float yShift = uv.y + wave;
+
+          float curtain = fbm2Fast(vec2(uv.x * 7.5 + uTime * 0.08 + uSeed, yShift * 2.2 - uTime * 0.06));
+          float rays = pow(smoothstep(0.28, 0.85, curtain), 1.6);
+          float vMask = smoothstep(0.05, 0.38, yShift) * smoothstep(0.98, 0.42, yShift);
+          float hMask = smoothstep(0.0, 0.14, uv.x) * smoothstep(1.0, 0.86, uv.x);
+
+          // 多層極光色彩 (翡翠綠 -> 電光青 -> 紫羅蘭 -> 玫瑰粉)
+          vec3 aEmerald = vec3(0.12, 0.96, 0.68);
+          vec3 aCyan    = vec3(0.10, 0.82, 0.98);
+          vec3 aViolet  = vec3(0.62, 0.28, 0.98);
+          vec3 aRose    = vec3(0.95, 0.32, 0.72);
+
+          vec3 col = mix(aEmerald, aCyan, smoothstep(0.18, 0.52, yShift));
+          col = mix(col, aViolet, smoothstep(0.45, 0.78, yShift));
+          col = mix(col, aRose, smoothstep(0.62, 0.92, curtain) * smoothstep(0.4, 0.85, yShift) * 0.65);
+
+          vec3 lightCol = mix(vec3(0.28, 0.78, 0.88), vec3(0.76, 0.52, 0.92), yShift);
+          vec3 finalCol = mix(col, lightCol, uLightMode);
+          float alpha = rays * vMask * hMask * mix(0.58, 0.24, uLightMode);
+          gl_FragColor = vec4(finalCol, alpha);
         }
       `
     }
@@ -5082,9 +5193,12 @@ body.theme-light .btn-cat-del {
     let legacyGlassShellMat = null;
     let legacyLatticeMesh = null;
     let legacyLatticeMat = null;
+    let legacyInnerCageMesh = null;
+    let legacyInnerCageMat = null;
     let legacyRings = [];
     let legacyRingMats = [];
     let legacySatMat = null;
+    let legacySatMats = [];
     let legacySatellites = [];
     let legacyWarp = 1.0;
     let legacyRotDir = 1.0;
@@ -5113,6 +5227,10 @@ body.theme-light .btn-cat-del {
     let palaceBeamMat = null;
     let palaceCrownGroup = null;
     let palaceBaseHalo = null;
+    let newGrandGalaxyGroup = null;
+    let newGrandGalaxyMat = null;
+    let auroraGroup = null;
+    let auroraMats = [];
     let newBurstSpeed = 0;
     let newBurstDir = 1;
     let cometOrbiters = [];
@@ -5143,24 +5261,24 @@ body.theme-light .btn-cat-del {
     let lastTileTiltY = -999;
 
     function getLegacyReactorBaseScale() {
-      return (global.innerWidth || 1280) <= 680 ? 0.68 : 1.0;
+      return (global.innerWidth || 1280) <= 680 ? 1.36 : 1.0;
     }
 
     function getResponsiveSceneMetrics() {
       const w = global.innerWidth || 1280;
       const h = global.innerHeight || 720;
       const aspect = w / Math.max(1, h);
-      // 僅在行動裝置或窄螢幕 (aspect < 1.1) 時拉遠攝影機並微縮場景比例，電腦版完全不變
+      // 僅在行動裝置或窄螢幕 (aspect < 1.1) 時調整攝影機與場景比例，電腦版完全不變
       const narrow = aspect < 1.1 ? Math.min(1, Math.max(0, (1.1 - aspect) / 0.65)) : 0;
       return {
         narrow,
         fov: 48 + narrow * 10,
-        pickerZ: 40.0 + narrow * 40.0,
-        calcZ: 34.0 + narrow * 40.0,
-        palaceScale: 1.0 - narrow * 0.28,
-        planetScaleX: 1.0 - narrow * 0.54,
-        planetScaleY: 1.0 - narrow * 0.12,
-        legacyDiscScale: 2.0 - narrow * 0.72
+        pickerZ: 40.0 + narrow * 36.0,
+        calcZ: 34.0 + narrow * 36.0,
+        palaceScale: 1.0 + narrow * 0.08,
+        planetScaleX: 1.0 - narrow * 0.48,
+        planetScaleY: 1.0 - narrow * 0.10,
+        legacyDiscScale: 2.0 - narrow * 0.55
       };
     }
 
@@ -5905,25 +6023,110 @@ body.theme-light .btn-cat-del {
       }
       const geo = new THREE.BufferGeometry();
       const positions = new Float32Array(count * 3);
+      const colors = new Float32Array(count * 3);
       const sizes = new Float32Array(count);
       const phases = new Float32Array(count);
       const mixes = new Float32Array(count);
 
+      const pal = [
+        new THREE.Color("#ff4da6"),
+        new THREE.Color("#ff9233"),
+        new THREE.Color("#ffd43b"),
+        new THREE.Color("#22f598"),
+        new THREE.Color("#00e5ff"),
+        new THREE.Color("#3b82f6"),
+        new THREE.Color("#a855f7"),
+        new THREE.Color("#f042ff"),
+        new THREE.Color("#34e2d8"),
+        new THREE.Color("#fb7185")
+      ];
+
       for (let i = 0; i < count; i++) {
-        positions[i * 3]     = (Math.random() - 0.5) * 115;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 56;
-        positions[i * 3 + 2] = -75 + Math.random() * 90;
-        sizes[i] = 1.6 + Math.random() * 3.8;
+        let x = (Math.random() - 0.5) * 145;
+        let y = (Math.random() - 0.5) * 76;
+        let z = -115 + Math.random() * 110;
+        // 避開宮殿正前方與正上方走廊，避免白點粒子遮擋宮殿
+        if (Math.abs(x) < 28 && y > -12 && y < 32 && z > -42) {
+          z = -46 - Math.random() * 68;
+        }
+        positions[i * 3]     = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+
+        const c = pal[Math.floor(Math.random() * pal.length)];
+        colors[i * 3]     = c.r;
+        colors[i * 3 + 1] = c.g;
+        colors[i * 3 + 2] = c.b;
+
+        sizes[i] = 1.6 + Math.random() * 3.4;
         phases[i] = Math.random();
         mixes[i] = Math.random();
       }
       geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
       geo.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
       geo.setAttribute("aPhase", new THREE.BufferAttribute(phases, 1));
       geo.setAttribute("aMix", new THREE.BufferAttribute(mixes, 1));
 
       stardustPoints = new THREE.Points(geo, stardustMat);
       scene.add(stardustPoints);
+    }
+
+    function buildNewCosmicBackdrop() {
+      const S = global.ASTRAL_SHADERS;
+
+      // 1. 新版專屬：比舊版更絢麗的七彩三主臂體積感星海 (位於宮殿遠後方)
+      newGrandGalaxyGroup = new THREE.Group();
+      newGrandGalaxyGroup.position.set(0, 18, -118);
+      newGrandGalaxyGroup.rotation.set(-0.96, 0.14, -0.26);
+      newGrandGalaxyMat = new THREE.ShaderMaterial({
+        vertexShader: S.cosmicGrandGalaxy.vertexShader,
+        fragmentShader: S.cosmicGrandGalaxy.fragmentShader,
+        uniforms: {
+          uTime: { value: 0 },
+          uLightMode: { value: animState.lightMode },
+          uPulseBoost: { value: 0 }
+        },
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
+      const grandDisc = new THREE.Mesh(new THREE.PlaneGeometry(245, 245), newGrandGalaxyMat);
+      newGrandGalaxyGroup.add(grandDisc);
+      scene.add(newGrandGalaxyGroup);
+
+      // 2. 新版專屬：雙層流動蒼穹極光幕 (弧形環繞高空背景)
+      auroraGroup = new THREE.Group();
+      auroraMats = [];
+      const auroraSpecs = [
+        { r: 128, h: 64, y: 26, z: -20, rotY: Math.PI * 0.72, arc: Math.PI * 0.62, seed: 1.2 },
+        { r: 142, h: 58, y: 34, z: -26, rotY: Math.PI * 0.66, arc: Math.PI * 0.72, seed: 4.7 }
+      ];
+      auroraSpecs.forEach((as) => {
+        const mat = new THREE.ShaderMaterial({
+          vertexShader: S.cosmicAurora.vertexShader,
+          fragmentShader: S.cosmicAurora.fragmentShader,
+          uniforms: {
+            uTime: { value: 0 },
+            uLightMode: { value: animState.lightMode },
+            uSeed: { value: as.seed }
+          },
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+        const mesh = new THREE.Mesh(
+          new THREE.CylinderGeometry(as.r, as.r, as.h, 48, 1, true, -as.arc * 0.5, as.arc),
+          mat
+        );
+        mesh.position.set(0, as.y, as.z);
+        mesh.rotation.y = as.rotY;
+        auroraGroup.add(mesh);
+        auroraMats.push(mat);
+      });
+      scene.add(auroraGroup);
     }
 
     function buildLegacyStars(starCount) {
@@ -6111,18 +6314,28 @@ body.theme-light .btn-cat-del {
       legacyInnerGlowMesh = new THREE.Mesh(new THREE.SphereGeometry(5.8, 24, 20), legacyInnerGlowMat);
       legacyReactorGroup.add(legacyInnerGlowMesh);
 
-      // 中層深藍半透明晶球護核 (讓內核金光自然透出)
+      // 中層深靛紫半透明晶球護核 (與內核金光、雙色外網形成豐富多彩層次)
       legacyCoreMat = new THREE.MeshStandardMaterial({
-        color: isLight ? 0xdbeafe : 0x0a2548,
-        emissive: isLight ? 0x93c5fd : 0x082046,
-        emissiveIntensity: isLight ? 0.35 : 0.65,
-        metalness: 0.28,
-        roughness: 0.25,
+        color: isLight ? 0xc7d2fe : 0x1b1558,
+        emissive: isLight ? 0x818cf8 : 0x3b1f7a,
+        emissiveIntensity: isLight ? 0.35 : 0.78,
+        metalness: 0.22,
+        roughness: 0.22,
         transparent: true,
-        opacity: isLight ? 0.68 : 0.72
+        opacity: isLight ? 0.64 : 0.68
       });
       legacyCoreMesh = new THREE.Mesh(new THREE.SphereGeometry(8.6, 30, 24), legacyCoreMat);
       legacyReactorGroup.add(legacyCoreMesh);
+
+      // 內層反轉玫紅／紫羅蘭幾何籠網 (與外層青色網格交錯呈現多彩立體球體)
+      legacyInnerCageMat = new THREE.MeshBasicMaterial({
+        color: isLight ? 0x9333ea : 0xf472b6,
+        wireframe: true,
+        transparent: true,
+        opacity: isLight ? 0.45 : 0.78
+      });
+      legacyInnerCageMesh = new THREE.Mesh(new THREE.OctahedronGeometry(9.6, 1), legacyInnerCageMat);
+      legacyReactorGroup.add(legacyInnerCageMesh);
 
       legacyGlassShellMat = new THREE.MeshPhysicalMaterial({
         color: isLight ? 0x38bdf8 : 0x24d0c6,
@@ -6130,7 +6343,7 @@ body.theme-light .btn-cat-del {
         roughness: 0.1,
         clearcoat: 1.0,
         transparent: true,
-        opacity: isLight ? 0.24 : 0.22,
+        opacity: isLight ? 0.22 : 0.20,
         depthWrite: false
       });
       legacyGlassShell = new THREE.Mesh(new THREE.SphereGeometry(9.8, 26, 20), legacyGlassShellMat);
@@ -6141,16 +6354,17 @@ body.theme-light .btn-cat-del {
         color: isLight ? 0x0284c7 : 0x00f6ff,
         wireframe: true,
         transparent: true,
-        opacity: isLight ? 0.50 : 0.85
+        opacity: isLight ? 0.52 : 0.88
       });
       legacyLatticeMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(10.8, 2), legacyLatticeMat);
       legacyReactorGroup.add(legacyLatticeMesh);
 
+      // 四道鮮明多色寶石星環 (降低金屬度避免只反射灰色環境光，呈現清晰金／青／玫粉／翡翠四色)
       const ringSpecs = [
-        { r: 14.5, tube: 0.24, dark: 0xf5c443, light: 0xc27803, rot: [Math.PI / 2, 0, 0] },
-        { r: 17.6, tube: 0.20, dark: 0x00f6ff, light: 0x0284c7, rot: [Math.PI / 3.2, Math.PI / 4, 0] },
-        { r: 21.0, tube: 0.17, dark: 0x38e888, light: 0x059669, rot: [-Math.PI / 3.5, 0, Math.PI / 5] },
-        { r: 24.6, tube: 0.15, dark: 0xc084fc, light: 0x7c3aed, rot: [Math.PI / 4.5, Math.PI / 2.4, 0] }
+        { r: 14.5, tube: 0.26, dark: 0xffbe2e, light: 0xd97706, rot: [Math.PI / 2, 0, 0] },
+        { r: 17.6, tube: 0.22, dark: 0x00f6ff, light: 0x0284c7, rot: [Math.PI / 3.2, Math.PI / 4, 0] },
+        { r: 21.0, tube: 0.19, dark: 0xff3ea5, light: 0xdb2777, rot: [-Math.PI / 3.5, 0, Math.PI / 5] },
+        { r: 24.6, tube: 0.17, dark: 0x22f598, light: 0x059669, rot: [Math.PI / 4.5, Math.PI / 2.4, 0] }
       ];
       legacyRings = [];
       legacyRingMats = [];
@@ -6159,35 +6373,46 @@ body.theme-light .btn-cat-del {
         const rMat = new THREE.MeshStandardMaterial({
           color: colHex,
           emissive: colHex,
-          emissiveIntensity: isLight ? 0.22 : 0.72,
-          metalness: 0.78,
-          roughness: 0.22,
+          emissiveIntensity: isLight ? 0.55 : 1.15,
+          metalness: 0.25,
+          roughness: 0.28,
           transparent: true,
-          opacity: isLight ? 0.78 : 0.86
+          opacity: isLight ? 0.84 : 0.92
         });
+        const beaconMat = new THREE.MeshBasicMaterial({ color: colHex });
         const ringGroup = new THREE.Group();
         ringGroup.add(new THREE.Mesh(new THREE.TorusGeometry(spec.r, spec.tube, 12, 84), rMat));
         for (let b = 0; b < 2; b++) {
-          const beacon = new THREE.Mesh(new THREE.OctahedronGeometry(0.45, 0), rMat);
+          const beacon = new THREE.Mesh(new THREE.OctahedronGeometry(0.55, 0), beaconMat);
           beacon.position.set(b === 0 ? spec.r : -spec.r, 0, 0);
           ringGroup.add(beacon);
         }
         ringGroup.rotation.set(spec.rot[0], spec.rot[1], spec.rot[2]);
         legacyReactorGroup.add(ringGroup);
         legacyRings.push(ringGroup);
-        legacyRingMats.push({ mat: rMat, dark: spec.dark, light: spec.light });
+        legacyRingMats.push({ mat: rMat, beaconMat, dark: spec.dark, light: spec.light });
       });
 
-      legacySatMat = new THREE.MeshStandardMaterial({
-        color: isLight ? 0x0284c7 : 0x34e2d8,
-        emissive: isLight ? 0x0284c7 : 0x34e2d8,
-        emissiveIntensity: isLight ? 0.25 : 0.85,
-        metalness: 0.7,
-        roughness: 0.2
-      });
+      const satColors = [
+        { dark: 0xffbe2e, light: 0xd97706 },
+        { dark: 0x00f6ff, light: 0x0284c7 },
+        { dark: 0xff3ea5, light: 0xdb2777 },
+        { dark: 0x22f598, light: 0x059669 }
+      ];
+      legacySatMats = [];
       legacySatellites = [];
       for (let i = 0; i < 4; i++) {
-        const sat = new THREE.Mesh(new THREE.OctahedronGeometry(0.76, 0), legacySatMat);
+        const sc = satColors[i];
+        const sHex = isLight ? sc.light : sc.dark;
+        const sMat = new THREE.MeshStandardMaterial({
+          color: sHex,
+          emissive: sHex,
+          emissiveIntensity: isLight ? 0.45 : 1.1,
+          metalness: 0.25,
+          roughness: 0.22
+        });
+        legacySatMats.push({ mat: sMat, dark: sc.dark, light: sc.light });
+        const sat = new THREE.Mesh(new THREE.OctahedronGeometry(0.82, 0), sMat);
         legacyReactorGroup.add(sat);
         legacySatellites.push({
           mesh: sat,
@@ -6725,6 +6950,7 @@ body.theme-light .btn-cat-del {
       buildSupernovaSystem();
       buildSpiralGalaxy(currentQuality === "ultra" ? 6400 : currentQuality === "high" ? 4600 : 3200);
       buildStardust(currentQuality === "ultra" ? 2600 : currentQuality === "high" ? 1800 : 1100);
+      buildNewCosmicBackdrop();
       buildLegacyVolumetricGalaxy(currentQuality === "ultra" ? 2800 : currentQuality === "high" ? 2200 : 1600);
       applyResponsiveSceneScale();
 
@@ -6877,6 +7103,22 @@ body.theme-light .btn-cat-del {
         stardustMat.uniforms.uTime.value = t;
         stardustMat.uniforms.uLightMode.value = animState.lightMode;
 
+        if (newGrandGalaxyMat) {
+          newGrandGalaxyMat.uniforms.uTime.value = t;
+          newGrandGalaxyMat.uniforms.uLightMode.value = animState.lightMode;
+          newGrandGalaxyMat.uniforms.uPulseBoost.value = animState.pulseBoost;
+        }
+        if (newGrandGalaxyGroup) {
+          newGrandGalaxyGroup.rotation.z += dt * (0.045 + newBurstSpeed * 0.65) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
+        }
+        for (let i = 0; i < auroraMats.length; i++) {
+          auroraMats[i].uniforms.uTime.value = t;
+          auroraMats[i].uniforms.uLightMode.value = animState.lightMode;
+        }
+        if (auroraGroup) {
+          auroraGroup.rotation.y = Math.sin(t * 0.08) * 0.08;
+        }
+
         for (let i = 0; i < legacyGalaxyMats.length; i++) {
           if (legacyGalaxyMeshes[i] && !legacyGalaxyMeshes[i].visible) continue;
           legacyGalaxyMats[i].uniforms.uTime.value = t;
@@ -6988,6 +7230,10 @@ body.theme-light .btn-cat-del {
             legacyInnerGlowMesh.rotation.y -= lSpeed * 0.35;
             legacyInnerGlowMesh.rotation.x += lSpeed * 0.25;
           }
+          if (legacyInnerCageMesh) {
+            legacyInnerCageMesh.rotation.y -= lSpeed * 0.48;
+            legacyInnerCageMesh.rotation.z += lSpeed * 0.32;
+          }
           if (legacyGlassShell) legacyGlassShell.rotation.y += lSpeed * 0.22;
           if (legacyLatticeMesh) {
             legacyLatticeMesh.rotation.x += lSpeed * 0.36;
@@ -7044,6 +7290,22 @@ body.theme-light .btn-cat-del {
 
         stardustMat.uniforms.uTime.value = t;
         stardustMat.uniforms.uLightMode.value = animState.lightMode;
+
+        if (newGrandGalaxyMat) {
+          newGrandGalaxyMat.uniforms.uTime.value = t;
+          newGrandGalaxyMat.uniforms.uLightMode.value = animState.lightMode;
+          newGrandGalaxyMat.uniforms.uPulseBoost.value = animState.pulseBoost;
+        }
+        if (newGrandGalaxyGroup) {
+          newGrandGalaxyGroup.rotation.z += dt * (0.045 + newBurstSpeed * 0.65) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
+        }
+        for (let i = 0; i < auroraMats.length; i++) {
+          auroraMats[i].uniforms.uTime.value = t;
+          auroraMats[i].uniforms.uLightMode.value = animState.lightMode;
+        }
+        if (auroraGroup) {
+          auroraGroup.rotation.y = Math.sin(t * 0.08) * 0.08;
+        }
 
         if (palaceBeamMesh?.visible && palaceBeamMat) {
           palaceBeamMat.uniforms.uTime.value = t;
@@ -7228,34 +7490,40 @@ body.theme-light .btn-cat-del {
           global.gsap.to(legacyInnerGlowMat, { opacity: isLight ? 0.58 : 0.78, duration: dur });
         }
         if (legacyCoreMat) {
-          const cc = new THREE.Color(isLight ? 0xdbeafe : 0x0a2548);
-          const ec = new THREE.Color(isLight ? 0x93c5fd : 0x082046);
+          const cc = new THREE.Color(isLight ? 0xc7d2fe : 0x1b1558);
+          const ec = new THREE.Color(isLight ? 0x818cf8 : 0x3b1f7a);
           global.gsap.to(legacyCoreMat.color, { r: cc.r, g: cc.g, b: cc.b, duration: dur });
           global.gsap.to(legacyCoreMat.emissive, { r: ec.r, g: ec.g, b: ec.b, duration: dur });
-          global.gsap.to(legacyCoreMat, { opacity: isLight ? 0.68 : 0.72, duration: dur });
+          global.gsap.to(legacyCoreMat, { opacity: isLight ? 0.64 : 0.68, duration: dur });
+        }
+        if (legacyInnerCageMat) {
+          const icc = new THREE.Color(isLight ? 0x9333ea : 0xf472b6);
+          global.gsap.to(legacyInnerCageMat.color, { r: icc.r, g: icc.g, b: icc.b, duration: dur });
+          global.gsap.to(legacyInnerCageMat, { opacity: isLight ? 0.45 : 0.78, duration: dur });
         }
         if (legacyGlassShellMat) {
           const gc = new THREE.Color(isLight ? 0x38bdf8 : 0x24d0c6);
           global.gsap.to(legacyGlassShellMat.color, { r: gc.r, g: gc.g, b: gc.b, duration: dur });
-          global.gsap.to(legacyGlassShellMat, { opacity: isLight ? 0.24 : 0.22, duration: dur });
+          global.gsap.to(legacyGlassShellMat, { opacity: isLight ? 0.22 : 0.20, duration: dur });
         }
         if (legacyLatticeMat) {
           const lc = new THREE.Color(isLight ? 0x0284c7 : 0x00f6ff);
           global.gsap.to(legacyLatticeMat.color, { r: lc.r, g: lc.g, b: lc.b, duration: dur });
-          global.gsap.to(legacyLatticeMat, { opacity: isLight ? 0.50 : 0.85, duration: dur });
+          global.gsap.to(legacyLatticeMat, { opacity: isLight ? 0.52 : 0.88, duration: dur });
         }
         legacyRingMats.forEach((entry) => {
           const rc = new THREE.Color(isLight ? entry.light : entry.dark);
           global.gsap.to(entry.mat.color, { r: rc.r, g: rc.g, b: rc.b, duration: dur });
           global.gsap.to(entry.mat.emissive, { r: rc.r, g: rc.g, b: rc.b, duration: dur });
-          global.gsap.to(entry.mat, { emissiveIntensity: isLight ? 0.22 : 0.72, opacity: isLight ? 0.78 : 0.86, duration: dur });
+          global.gsap.to(entry.mat, { emissiveIntensity: isLight ? 0.55 : 1.15, opacity: isLight ? 0.84 : 0.92, duration: dur });
+          if (entry.beaconMat) global.gsap.to(entry.beaconMat.color, { r: rc.r, g: rc.g, b: rc.b, duration: dur });
         });
-        if (legacySatMat) {
-          const sc = new THREE.Color(isLight ? 0x0284c7 : 0x34e2d8);
-          global.gsap.to(legacySatMat.color, { r: sc.r, g: sc.g, b: sc.b, duration: dur });
-          global.gsap.to(legacySatMat.emissive, { r: sc.r, g: sc.g, b: sc.b, duration: dur });
-          global.gsap.to(legacySatMat, { emissiveIntensity: isLight ? 0.25 : 0.85, duration: dur });
-        }
+        legacySatMats.forEach((entry) => {
+          const sc = new THREE.Color(isLight ? entry.light : entry.dark);
+          global.gsap.to(entry.mat.color, { r: sc.r, g: sc.g, b: sc.b, duration: dur });
+          global.gsap.to(entry.mat.emissive, { r: sc.r, g: sc.g, b: sc.b, duration: dur });
+          global.gsap.to(entry.mat, { emissiveIntensity: isLight ? 0.45 : 1.1, duration: dur });
+        });
         if (legacyDebrisMat) {
           legacyDebrisMat.blending = isLight ? THREE.NormalBlending : THREE.AdditiveBlending;
           legacyDebrisMat.needsUpdate = true;
@@ -7539,7 +7807,9 @@ body.theme-light .btn-cat-del {
       if (planetGroup) planetGroup.visible = showNew;
       if (instancedShards) instancedShards.visible = showNew;
       if (galaxyPoints) galaxyPoints.visible = showNew;
-      if (stardustPoints) stardustPoints.visible = true;
+      if (newGrandGalaxyGroup) newGrandGalaxyGroup.visible = showNew;
+      if (auroraGroup) auroraGroup.visible = showNew;
+      if (stardustPoints) stardustPoints.visible = showNew;
       if (cloudPlane1) cloudPlane1.visible = showNew;
       if (cloudPlane2) cloudPlane2.visible = showNew && showDetailClouds;
       if (uiRigGroup) uiRigGroup.visible = showNew && currentView === "picker";
