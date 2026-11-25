@@ -251,8 +251,8 @@ body.theme-light .spatial-panel {
 
 @media (max-width: 680px) {
   .spatial-panel {
-    padding: 15px 14px;
-    border-radius: 16px;
+    padding: 12px 10px;
+    border-radius: 15px;
   }
 }
 
@@ -348,6 +348,40 @@ body.theme-light .cyber-header-3d {
 }
 @media (max-width: 600px) {
   .header-subtitle-tag { display: none; }
+  .cyber-header-3d {
+    padding: 8px 10px;
+    gap: 6px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+  }
+  .header-title-box {
+    gap: 7px;
+  }
+  .header-logo-gem {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .header-title {
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+  .header-actions {
+    gap: 5px;
+  }
+  .header-actions .btn-3d-icon {
+    padding: 5px 9px;
+    font-size: 11.5px;
+    border-radius: 9px;
+    gap: 4px;
+    box-shadow: 0 2px 0 var(--keycap-lip), 0 4px 8px rgba(0, 0, 0, 0.2), var(--keycap-inset);
+  }
+}
+@media (max-width: 480px) {
+  .header-title-prefix {
+    display: none;
+  }
 }
 
 .header-actions {
@@ -1409,11 +1443,6 @@ body.theme-light .reactor-right-mult {
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
-@media (max-width: 560px) {
-  .input-chambers-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
 .chamber-box {
   padding: 11px 14px;
@@ -1549,11 +1578,6 @@ body.theme-light .cyber-toggle-pill {
   grid-template-columns: repeat(6, 1fr);
   gap: 8px;
 }
-@media (max-width: 520px) {
-  .quick-pct-dock {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
 
 .pct-3d-btn {
   padding: 9px 4px;
@@ -1577,6 +1601,104 @@ body.theme-light .cyber-toggle-pill {
   border-color: var(--accent-gold);
   background: linear-gradient(135deg, #f59e0b, #d97706);
   box-shadow: 0 2px 0 #92400e, 0 0 18px rgba(245, 196, 67, 0.45);
+}
+
+@media (max-width: 680px) {
+  .input-chambers-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .chamber-box {
+    padding: 8px 10px;
+    border-radius: 11px;
+  }
+  .chamber-box label {
+    font-size: 11px;
+    margin-bottom: 2px;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .chamber-input {
+    font-size: 19px;
+  }
+  .time-hud-box {
+    padding: 7px 10px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+  .console-switch-bar {
+    gap: 6px 10px;
+  }
+  .switch-unit {
+    gap: 6px;
+    font-size: 11.5px;
+  }
+  .astra-toggle-switch,
+  .cyber-toggle-pill {
+    width: 36px;
+    height: 20px;
+  }
+  .astra-toggle-switch::after,
+  .cyber-toggle-pill::after {
+    width: 14px;
+    height: 14px;
+  }
+  .switch-unit input:checked + .astra-toggle-switch::after,
+  .switch-label-group input:checked + .cyber-toggle-pill::after {
+    transform: translateX(16px);
+  }
+  .control-pod-3d {
+    gap: 9px;
+  }
+  .active-crop-banner {
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 13px;
+  }
+  .banner-specimen-group {
+    gap: 9px;
+  }
+  .banner-crystal-frame {
+    width: 46px;
+    height: 46px;
+    border-radius: 11px;
+    padding: 4px;
+  }
+  .b-name {
+    font-size: 16px;
+  }
+  .b-quality-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+  .b-meta {
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .btn-repick-crop {
+    padding: 6px 9px;
+    font-size: 11.5px;
+    border-radius: 9px;
+  }
+  .reactor-total-price {
+    font-size: 28px;
+  }
+  .reactor-right-mult {
+    padding: 7px 10px;
+  }
+  .reactor-mult-num {
+    font-size: 18px;
+  }
+  .quick-pct-dock {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .pct-3d-btn {
+    padding: 7px 2px;
+    font-size: 11.5px;
+    border-radius: 8px;
+    box-shadow: 0 2px 0 var(--keycap-lip), var(--keycap-inset);
+  }
 }
 
 /* ============================================================================
@@ -1652,22 +1774,6 @@ body.theme-light .cyber-toggle-pill {
   grid-template-columns: repeat(6, 1fr);
   gap: 9px;
 }
-@media (max-width: 740px) {
-  .chips-grid-5 {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 7px;
-  }
-  .chips-grid-6 {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 7px;
-  }
-}
-@media (max-width: 460px) {
-  .chips-grid-5 {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
-}
 
 .chip-3d {
   position: relative;
@@ -1689,6 +1795,63 @@ body.theme-light .cyber-toggle-pill {
     0 6px 12px rgba(0, 0, 0, 0.16),
     var(--keycap-inset);
   transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+@media (max-width: 740px) {
+  .mutations-header-row {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .mutations-main-title {
+    font-size: 14.5px;
+  }
+  .mutations-actions-group {
+    gap: 5px;
+  }
+  .btn-weather-batch {
+    padding: 5px 8px;
+    font-size: 11px;
+    border-radius: 8px;
+    box-shadow: 0 2px 0 var(--keycap-lip), var(--keycap-inset);
+  }
+  .mutation-group-3d + .mutation-group-3d {
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  .mutation-group-title {
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+  .chips-grid-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .chips-grid-5.chips-grid-weather,
+  .chips-grid-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .chip-3d {
+    min-height: 32px;
+    padding: 5px 2px;
+    border-radius: 8px;
+    font-size: 11px;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow:
+      0 2px 0 var(--keycap-lip),
+      0 3px 6px rgba(0, 0, 0, 0.16),
+      var(--keycap-inset);
+  }
+}
+@media (max-width: 420px) {
+  .chip-3d {
+    font-size: 10.5px;
+    padding: 4px 1px;
+    min-height: 31px;
+  }
 }
 
 .chip-3d:hover:not(:disabled) {
@@ -2567,7 +2730,7 @@ body.theme-light .btn-cat-del {
           <div id="headerLogoGem" class="header-logo-gem" title="點擊三次觸發超新星過載大爆炸">
             <span>❖</span>
           </div>
-          <h1 class="header-title">瘋狂農場•果實計算器</h1>
+          <h1 class="header-title"><span class="header-title-prefix">瘋狂農場•</span>果實計算器</h1>
         </div>
         <div class="header-actions">
           <button id="blacklistBtn" class="btn-3d-icon btn-blacklist" type="button" aria-label="查看農場黑名單">
@@ -4983,6 +5146,39 @@ body.theme-light .btn-cat-del {
       return (global.innerWidth || 1280) <= 680 ? 0.68 : 1.0;
     }
 
+    function getResponsiveSceneMetrics() {
+      const w = global.innerWidth || 1280;
+      const h = global.innerHeight || 720;
+      const aspect = w / Math.max(1, h);
+      // 僅在行動裝置或窄螢幕 (aspect < 1.1) 時拉遠攝影機並微縮場景比例，電腦版完全不變
+      const narrow = aspect < 1.1 ? Math.min(1, Math.max(0, (1.1 - aspect) / 0.65)) : 0;
+      return {
+        narrow,
+        fov: 48 + narrow * 10,
+        pickerZ: 40.0 + narrow * 40.0,
+        calcZ: 34.0 + narrow * 40.0,
+        palaceScale: 1.0 - narrow * 0.28,
+        planetScaleX: 1.0 - narrow * 0.54,
+        planetScaleY: 1.0 - narrow * 0.12,
+        legacyDiscScale: 2.0 - narrow * 0.72
+      };
+    }
+
+    function applyResponsiveSceneScale() {
+      const m = getResponsiveSceneMetrics();
+      if (camera) {
+        camera.fov = m.fov;
+        camera.updateProjectionMatrix();
+      }
+      if (palaceGroup) palaceGroup.scale.setScalar(m.palaceScale);
+      if (planetGroup) planetGroup.scale.set(m.planetScaleX, m.planetScaleY, 1.0);
+      if (legacyDiscGroup) legacyDiscGroup.scale.setScalar(m.legacyDiscScale);
+      if (legacyReactorGroup && legacyExpState === "IDLE") {
+        legacyReactorGroup.scale.setScalar(getLegacyReactorBaseScale());
+      }
+      return m;
+    }
+
     function triggerScreenGlow() {
       const flash = document.getElementById("screenFlash");
       if (!flash) return;
@@ -6344,6 +6540,8 @@ body.theme-light .btn-cat-del {
 
       const w = global.innerWidth || 1280;
       const h = global.innerHeight || 720;
+      const initMetrics = getResponsiveSceneMetrics();
+      animState.camTargetZ = currentView === "calculator" ? initMetrics.calcZ : initMetrics.pickerZ;
 
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
       renderer.setSize(w, h);
@@ -6355,7 +6553,7 @@ body.theme-light .btn-cat-del {
       renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, maxDpr));
 
       scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(48, w / h, 0.5, 900);
+      camera = new THREE.PerspectiveCamera(initMetrics.fov, w / h, 0.5, 900);
       camera.position.set(0, animState.camTargetY, animState.camTargetZ);
       scene.add(camera);
 
@@ -6528,6 +6726,7 @@ body.theme-light .btn-cat-del {
       buildSpiralGalaxy(currentQuality === "ultra" ? 6400 : currentQuality === "high" ? 4600 : 3200);
       buildStardust(currentQuality === "ultra" ? 2600 : currentQuality === "high" ? 1800 : 1100);
       buildLegacyVolumetricGalaxy(currentQuality === "ultra" ? 2800 : currentQuality === "high" ? 2200 : 1600);
+      applyResponsiveSceneScale();
 
       initUI3DFrames();
       setupPostProcessing(w, h);
@@ -6635,13 +6834,15 @@ body.theme-light .btn-cat-del {
       uiRectsDirty = true;
       const w = global.innerWidth || 1280;
       const h = global.innerHeight || 720;
+      const m = applyResponsiveSceneScale();
       camera.aspect = w / h;
+      camera.fov = m.fov;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
       if (composer) composer.setSize(w, h);
       if (bloomPass) bloomPass.setSize(w, h);
-      if (legacyReactorGroup && legacyExpState === "IDLE") {
-        legacyReactorGroup.scale.setScalar(getLegacyReactorBaseScale());
+      if (!supernovaState.active && legacyExpState === "IDLE") {
+        animState.camTargetZ = currentView === "calculator" ? m.calcZ : m.pickerZ;
       }
     }
 
@@ -7067,9 +7268,10 @@ body.theme-light .btn-cat-del {
       uiRectsDirty = true;
       if (!initialized || !global.gsap) return;
       const isCalc = currentView === "calculator";
+      const m = getResponsiveSceneMetrics();
       global.gsap.to(animState, {
         camTargetY: isCalc ? 4.0 : 4.8,
-        camTargetZ: isCalc ? 34.0 : 40.0,
+        camTargetZ: isCalc ? m.calcZ : m.pickerZ,
         lookAtY: isCalc ? 2.2 : 2.0,
         duration: 0.95,
         ease: "power3.out"
@@ -7236,7 +7438,8 @@ body.theme-light .btn-cat-del {
       }
 
       if (global.gsap) {
-        const baseZ = currentView === "calculator" ? 34.0 : 40.0;
+        const m = getResponsiveSceneMetrics();
+        const baseZ = currentView === "calculator" ? m.calcZ : m.pickerZ;
         global.gsap.killTweensOf(animState, "pulseBoost,ringSpeedBoost,camTargetZ,camShake");
         animState.pulseBoost = 1.5;
         animState.ringSpeedBoost = 2.2;
@@ -7257,7 +7460,8 @@ body.theme-light .btn-cat-del {
         supernovaTimeline = null;
       }
 
-      const baseZ = currentView === "calculator" ? 34.0 : 40.0;
+      const m = getResponsiveSceneMetrics();
+      const baseZ = currentView === "calculator" ? m.calcZ : m.pickerZ;
       supernovaPoints.position.set(0, 2.7, -24);
       shockwaves.forEach((sw) => { sw.mesh.position.set(0, 2.7, -24); sw.mesh.visible = true; });
 
@@ -8286,7 +8490,9 @@ body.theme-light .btn-cat-del {
             return true;
           });
         if (validMutations.length > 0) {
-          const gridClass = (cat.id === "cat_weather" || cat.title?.includes("天氣") || validMutations.length >= 24) ? "chips-grid-5" : "chips-grid-6";
+          const isBaseCat = cat.id === "cat_base" || cat.title?.includes("基礎");
+          const isWeatherCat = cat.id === "cat_weather" || cat.title?.includes("天氣") || validMutations.length >= 24;
+          const gridClass = isBaseCat ? "chips-grid-5" : (isWeatherCat ? "chips-grid-5 chips-grid-weather" : "chips-grid-6");
           html += `
             <div class="mutation-group-3d">
               <div class="mutation-group-title">◆ ${escapeHtml(cat.title)}</div>
@@ -8307,7 +8513,7 @@ body.theme-light .btn-cat-del {
         </div>
         <div class="mutation-group-3d">
           <div class="mutation-group-title">◆ 天氣詞條</div>
-          <div class="chips-grid-5">${weather.map(createChip).join("")}</div>
+          <div class="chips-grid-5 chips-grid-weather">${weather.map(createChip).join("")}</div>
         </div>
         <div class="mutation-group-3d">
           <div class="mutation-group-title">◆ 活動與下架詞條</div>
