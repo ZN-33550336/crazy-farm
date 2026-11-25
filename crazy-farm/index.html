@@ -202,7 +202,7 @@ body.theme-light .ambient-vignette {
 }
 
 /* ============================================================================
- * 寬敞空間主舞台 (.app-stage) — 與 Three.js 3D 骨架同步視差傾角
+ * 寬敞空間主舞台 (.app-stage) — 保持平直穩固，避免 3D 傾斜造成游標閃爍與按鈕點擊失靈
  * ============================================================================ */
 .app-stage {
   position: relative;
@@ -210,21 +210,12 @@ body.theme-light .ambient-vignette {
   width: min(1160px, calc(100% - 28px));
   margin: 0 auto;
   padding: max(env(safe-area-inset-top, 14px), 14px) 0 max(env(safe-area-inset-bottom, 32px), 40px);
-  perspective: 1600px;
-  transform-style: preserve-3d;
-  transform: rotateX(var(--stage-rx, 0deg)) rotateY(var(--stage-ry, 0deg));
-  transition: transform 0.1s linear;
-}
-/* 進入計算區保持完全平直穩固，不隨游標傾斜 */
-body.view-calculator .app-stage {
-  transform: none !important;
 }
 
 @media (max-width: 680px) {
   .app-stage {
     width: calc(100% - 16px);
     padding-top: max(env(safe-area-inset-top, 10px), 10px);
-    transform: none;
   }
 }
 
@@ -412,11 +403,11 @@ body.theme-light .cyber-header-3d {
 
 .btn-3d-icon:hover,
 .btn-3d-action:hover {
-  transform: translateY(-2px);
   border-color: var(--accent-primary);
+  filter: brightness(1.08);
   box-shadow:
-    0 5px 0 var(--keycap-lip),
-    0 12px 22px rgba(0, 0, 0, 0.28),
+    0 3px 0 var(--keycap-lip),
+    0 8px 18px rgba(52, 226, 216, 0.24),
     var(--keycap-inset);
 }
 
@@ -977,10 +968,8 @@ body.legacy-ui .app-stage {
 body.legacy-ui .cyber-header-3d {
   border-radius: 0;
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
-  background: linear-gradient(180deg, rgba(12, 26, 44, 0.82) 0%, rgba(6, 16, 28, 0.78) 100%);
+  background: linear-gradient(180deg, rgba(12, 26, 44, 0.84) 0%, rgba(6, 16, 28, 0.80) 100%);
   border: 1px solid rgba(36, 208, 198, 0.36);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
 }
 body.legacy-ui.theme-light .cyber-header-3d {
@@ -1119,10 +1108,15 @@ body.theme-light .crop-legacy-name {
 
 /* 上方英雄主控列：左作物標本橫幅 + 右全息價值反應爐 */
 .hero-workstation-grid {
+  position: relative;
+  z-index: 40;
   display: grid;
   grid-template-columns: 1.32fr 1fr;
   gap: 16px;
   align-items: stretch;
+}
+.hero-workstation-grid:has(.dropdown-open, .precision-dropdown-open) {
+  z-index: 999;
 }
 @media (max-width: 860px) {
   .hero-workstation-grid {
@@ -1137,7 +1131,9 @@ body.theme-light .crop-legacy-name {
   z-index: 25;
 }
 .control-pod-3d.dropdown-open {
-  z-index: 80;
+  z-index: 999 !important;
+  overflow: visible !important;
+  clip-path: none !important;
 }
 
 .active-crop-banner-wrap {
@@ -1253,17 +1249,16 @@ body.theme-light .banner-crystal-frame {
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  z-index: 120;
-  padding: 14px;
+  z-index: 1200;
+  padding: 12px;
   border-radius: 16px;
-  background: var(--glass-bg-elevated);
-  border: 1px solid var(--accent-primary);
-  backdrop-filter: blur(26px);
-  -webkit-backdrop-filter: blur(26px);
-  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.55);
+  background: rgba(8, 20, 38, 0.96);
+  border: 1.5px solid var(--accent-primary);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.65);
 }
 body.theme-light .dropdown-menu-3d {
-  box-shadow: 0 20px 44px rgba(18, 52, 92, 0.22);
+  background: rgba(244, 250, 255, 0.96);
+  box-shadow: 0 20px 44px rgba(18, 52, 92, 0.24);
 }
 
 .dropdown-filter-pills {
@@ -1274,28 +1269,114 @@ body.theme-light .dropdown-menu-3d {
   max-height: 290px;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
   padding-right: 4px;
 }
 
 .dropdown-item-btn {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 11px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px 8px;
   border-radius: 10px;
   border: 1px solid var(--glass-border);
   background: var(--keycap-bg);
   color: var(--text-strong);
-  font-size: 12.5px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   cursor: pointer;
   text-align: left;
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
+}
+.dropdown-item-btn span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dropdown-item-btn:hover {
+  transform: translateY(-1px);
+}
+.dropdown-item-btn.q-theme-至臻 {
+  background: linear-gradient(135deg, rgba(16, 152, 168, 0.72), rgba(138, 44, 204, 0.72), rgba(212, 46, 134, 0.68));
+  border-color: rgba(120, 240, 255, 0.75);
+  color: #ffffff;
+}
+.dropdown-item-btn.q-theme-金色 {
+  background: linear-gradient(135deg, rgba(186, 126, 18, 0.76), rgba(138, 76, 10, 0.76));
+  border-color: rgba(251, 200, 56, 0.72);
+  color: #fffbeb;
+}
+.dropdown-item-btn.q-theme-紫色 {
+  background: linear-gradient(135deg, rgba(124, 52, 202, 0.76), rgba(84, 26, 162, 0.76));
+  border-color: rgba(202, 148, 255, 0.72);
+  color: #faf5ff;
+}
+.dropdown-item-btn.q-theme-藍色,
+.dropdown-item-btn.q-theme-蓝色 {
+  background: linear-gradient(135deg, rgba(20, 124, 194, 0.76), rgba(24, 78, 188, 0.76));
+  border-color: rgba(110, 185, 255, 0.72);
+  color: #f0f9ff;
+}
+.dropdown-item-btn.q-theme-綠色,
+.dropdown-item-btn.q-theme-绿色 {
+  background: linear-gradient(135deg, rgba(18, 142, 92, 0.76), rgba(10, 102, 68, 0.76));
+  border-color: rgba(88, 228, 142, 0.72);
+  color: #ecfdf5;
+}
+.dropdown-item-btn.q-theme-灰色 {
+  background: linear-gradient(135deg, rgba(78, 92, 112, 0.78), rgba(52, 62, 78, 0.80));
+  border-color: rgba(188, 200, 218, 0.65);
+  color: #f8fafc;
+}
+body.theme-light .dropdown-item-btn.q-theme-至臻 {
+  background: linear-gradient(135deg, #bae6fd, #ddd6fe, #fbcfe8);
+  border-color: rgba(124, 58, 237, 0.55);
+  color: #3b0764;
+}
+body.theme-light .dropdown-item-btn.q-theme-金色 {
+  background: linear-gradient(135deg, #fef08a, #fde047);
+  border-color: rgba(217, 119, 6, 0.55);
+  color: #78350f;
+}
+body.theme-light .dropdown-item-btn.q-theme-紫色 {
+  background: linear-gradient(135deg, #e9d5ff, #d8b4fe);
+  border-color: rgba(126, 34, 206, 0.52);
+  color: #4c1d95;
+}
+body.theme-light .dropdown-item-btn.q-theme-藍色,
+body.theme-light .dropdown-item-btn.q-theme-蓝色 {
+  background: linear-gradient(135deg, #bae6fd, #93c5fd);
+  border-color: rgba(2, 132, 199, 0.52);
+  color: #075985;
+}
+body.theme-light .dropdown-item-btn.q-theme-綠色,
+body.theme-light .dropdown-item-btn.q-theme-绿色 {
+  background: linear-gradient(135deg, #a7f3d0, #6ee7b7);
+  border-color: rgba(5, 150, 105, 0.52);
+  color: #064e3b;
+}
+body.theme-light .dropdown-item-btn.q-theme-灰色 {
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  border-color: rgba(71, 85, 105, 0.48);
+  color: #1e293b;
 }
 .dropdown-item-btn.selected {
-  outline: 2px solid var(--accent-primary);
+  outline: 2px solid #ffffff;
+  box-shadow: 0 0 12px rgba(52, 226, 216, 0.7);
+}
+@media (max-width: 520px) {
+  #dropdownCropsContainer {
+    gap: 5px;
+  }
+  .dropdown-item-btn {
+    padding: 6px 5px;
+    font-size: 11px;
+  }
 }
 
 /* ============================================================================
@@ -1313,7 +1394,9 @@ body.theme-light .dropdown-menu-3d {
   z-index: 20;
 }
 .energy-reactor-dock.precision-dropdown-open {
-  z-index: 90;
+  z-index: 999 !important;
+  overflow: visible !important;
+  clip-path: none !important;
 }
 
 .reactor-val-left {
@@ -1359,15 +1442,18 @@ body.theme-light .dropdown-menu-3d {
   top: calc(100% + 6px);
   right: 0;
   min-width: 145px;
-  z-index: 150;
+  z-index: 1200;
   padding: 6px;
   border-radius: 12px;
-  background: var(--glass-bg-elevated);
-  border: 1px solid var(--accent-primary);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  background: rgba(8, 20, 38, 0.96);
+  border: 1.5px solid var(--accent-primary);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+body.theme-light .val-prec-dropdown-menu {
+  background: rgba(244, 250, 255, 0.97);
 }
 
 .val-prec-item {
@@ -1876,125 +1962,163 @@ body.theme-light .cyber-toggle-pill {
   color: #ffffff;
   box-shadow: 0 4px 0 #3b1d6a, 0 6px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
+/* 未選中：低飽和暗底色（參考果實計算器.html），點選後鮮明高對比發光點亮 */
+.chip-color-彩色,
+.chip-color-至臻 {
+  background: linear-gradient(135deg, rgba(0, 246, 255, 0.22), rgba(255, 0, 127, 0.22));
+  border-color: rgba(255, 0, 127, 0.60);
+  color: #ffffff;
+  box-shadow: 0 3px 0 rgba(56, 12, 72, 0.8), 0 4px 10px rgba(0, 0, 0, 0.28);
+}
 .chip-color-金色 {
-  background: linear-gradient(135deg, rgba(186, 130, 22, 0.84), rgba(148, 84, 12, 0.84));
-  border-color: rgba(251, 200, 56, 0.72);
-  color: #fffbeb;
-  box-shadow: 0 4px 0 #682e0b, 0 6px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: rgba(65, 42, 5, 0.78);
+  border-color: rgba(255, 187, 0, 0.55);
+  color: #fff2c2;
+  box-shadow: 0 3px 0 #3a2204, 0 4px 10px rgba(0, 0, 0, 0.28);
 }
 .chip-color-紫色 {
-  background: linear-gradient(135deg, rgba(124, 58, 202, 0.84), rgba(88, 32, 168, 0.84));
-  border-color: rgba(202, 148, 255, 0.70);
-  color: #faf5ff;
-  box-shadow: 0 4px 0 #35065a, 0 6px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  background: rgba(50, 14, 75, 0.78);
+  border-color: rgba(217, 70, 239, 0.55);
+  color: #fad8ff;
+  box-shadow: 0 3px 0 #26083b, 0 4px 10px rgba(0, 0, 0, 0.28);
 }
 .chip-color-蓝色, .chip-color-藍色 {
-  background: linear-gradient(135deg, rgba(22, 128, 196, 0.84), rgba(28, 82, 194, 0.84));
-  border-color: rgba(110, 185, 255, 0.68);
-  color: #f0f9ff;
-  box-shadow: 0 4px 0 #172e6e, 0 6px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  background: rgba(12, 38, 78, 0.78);
+  border-color: rgba(0, 212, 255, 0.55);
+  color: #dcf7ff;
+  box-shadow: 0 3px 0 #091d40, 0 4px 10px rgba(0, 0, 0, 0.28);
 }
 .chip-color-绿色, .chip-color-綠色 {
-  background: linear-gradient(135deg, rgba(20, 146, 98, 0.84), rgba(10, 108, 74, 0.84));
-  border-color: rgba(88, 228, 142, 0.68);
-  color: #ecfdf5;
-  box-shadow: 0 4px 0 #054030, 0 6px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  background: rgba(10, 48, 28, 0.78);
+  border-color: rgba(0, 255, 136, 0.55);
+  color: #dcffe9;
+  box-shadow: 0 3px 0 #062918, 0 4px 10px rgba(0, 0, 0, 0.28);
 }
 .chip-color-灰色 {
-  background: linear-gradient(135deg, rgba(84, 98, 118, 0.84), rgba(58, 68, 84, 0.86));
-  border-color: rgba(188, 200, 218, 0.60);
-  color: #f8fafc;
-  box-shadow: 0 4px 0 #182230, 0 6px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  background: rgba(30, 41, 59, 0.78);
+  border-color: rgba(148, 163, 184, 0.42);
+  color: #e2e8f0;
+  box-shadow: 0 3px 0 #131c29, 0 4px 10px rgba(0, 0, 0, 0.28);
 }
 
-/* 淺色模式下全表面上色詞條的高對比實體調色 */
-body.theme-light .chip-color-彩色 {
-  background: linear-gradient(135deg, rgba(186, 230, 253, 0.94), rgba(221, 214, 254, 0.94), rgba(251, 207, 232, 0.92));
-  border-color: rgba(124, 58, 237, 0.58);
+/* 淺色模式未選中：柔和粉彩底色；選中後深飽和實色 + 白字 */
+body.theme-light .chip-color-彩色,
+body.theme-light .chip-color-至臻 {
+  background: linear-gradient(135deg, rgba(186, 230, 253, 0.75), rgba(221, 214, 254, 0.75), rgba(251, 207, 232, 0.75));
+  border-color: rgba(124, 58, 237, 0.52);
   color: #3b0764;
-  box-shadow: 0 4px 0 #8b5cf6, 0 6px 12px rgba(76, 29, 149, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 0 rgba(139, 92, 246, 0.5), 0 4px 8px rgba(76, 29, 149, 0.12);
 }
 body.theme-light .chip-color-金色 {
-  background: linear-gradient(135deg, rgba(254, 240, 138, 0.94), rgba(253, 210, 110, 0.92));
-  border-color: rgba(217, 119, 6, 0.60);
+  background: rgba(254, 240, 138, 0.72);
+  border-color: rgba(217, 119, 6, 0.55);
   color: #78350f;
-  box-shadow: 0 4px 0 #d97706, 0 6px 12px rgba(146, 64, 14, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 0 rgba(217, 119, 6, 0.48), 0 4px 8px rgba(146, 64, 14, 0.12);
 }
 body.theme-light .chip-color-紫色 {
-  background: linear-gradient(135deg, rgba(233, 213, 255, 0.94), rgba(216, 180, 254, 0.92));
-  border-color: rgba(126, 34, 206, 0.56);
+  background: rgba(233, 213, 255, 0.72);
+  border-color: rgba(126, 34, 206, 0.52);
   color: #4c1d95;
-  box-shadow: 0 4px 0 #9333ea, 0 6px 12px rgba(88, 28, 135, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 0 rgba(147, 51, 234, 0.48), 0 4px 8px rgba(88, 28, 135, 0.12);
 }
 body.theme-light .chip-color-蓝色, body.theme-light .chip-color-藍色 {
-  background: linear-gradient(135deg, rgba(186, 230, 253, 0.94), rgba(147, 197, 253, 0.92));
-  border-color: rgba(2, 132, 199, 0.56);
+  background: rgba(186, 230, 253, 0.72);
+  border-color: rgba(2, 132, 199, 0.52);
   color: #075985;
-  box-shadow: 0 4px 0 #0284c7, 0 6px 12px rgba(7, 89, 133, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 0 rgba(2, 132, 199, 0.48), 0 4px 8px rgba(7, 89, 133, 0.12);
 }
 body.theme-light .chip-color-绿色, body.theme-light .chip-color-綠色 {
-  background: linear-gradient(135deg, rgba(167, 243, 208, 0.94), rgba(110, 231, 183, 0.92));
-  border-color: rgba(5, 150, 105, 0.56);
+  background: rgba(167, 243, 208, 0.72);
+  border-color: rgba(5, 150, 105, 0.52);
   color: #064e3b;
-  box-shadow: 0 4px 0 #10b981, 0 6px 12px rgba(6, 95, 70, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 0 rgba(16, 185, 129, 0.48), 0 4px 8px rgba(6, 95, 70, 0.12);
 }
 body.theme-light .chip-color-灰色 {
-  background: linear-gradient(135deg, rgba(226, 232, 240, 0.94), rgba(203, 213, 225, 0.92));
-  border-color: rgba(71, 85, 105, 0.50);
+  background: rgba(226, 232, 240, 0.74);
+  border-color: rgba(71, 85, 105, 0.48);
   color: #1e293b;
-  box-shadow: 0 4px 0 #64748b, 0 6px 12px rgba(30, 41, 59, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 0 rgba(100, 116, 139, 0.45), 0 4px 8px rgba(30, 41, 59, 0.10);
 }
 
-/* 選中時全面立體高飽和發光點亮 + 右上角 ✦ 標記 */
-.chip-3d.selected,
-body.theme-light .chip-3d.selected {
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.88);
-  transform: translateY(-2px);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+/* 深色模式選中：比照果實計算器.html 亮色實心填滿 + 深色字 + 白色外框 + 外發光 */
+.chip-3d.selected {
+  color: #030814 !important;
+  font-weight: 900;
+  border-color: #ffffff;
+  transform: translateY(-1px);
+  text-shadow: none;
 }
 .chip-3d.selected::after {
   content: "✦";
   position: absolute;
-  top: 2px;
-  right: 5px;
-  font-size: 9px;
-  color: rgba(255, 255, 255, 0.92);
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  top: 1px;
+  right: 3px;
+  font-size: 8px;
+  color: #030814;
 }
 .chip-3d.selected.chip-color-彩色,
-body.theme-light .chip-3d.selected.chip-color-彩色 {
-  background: linear-gradient(135deg, #0ea5e9, #a855f7, #ec4899);
-  box-shadow: 0 4px 0 #581c87, 0 0 22px rgba(168, 85, 247, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+.chip-3d.selected.chip-color-至臻 {
+  background: linear-gradient(135deg, #00f6ff, #ff007f);
+  box-shadow: 0 3px 0 #701a75, 0 0 16px #ff007f;
 }
-.chip-3d.selected.chip-color-金色,
-body.theme-light .chip-3d.selected.chip-color-金色 {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 4px 0 #92400e, 0 0 20px rgba(245, 158, 11, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+.chip-3d.selected.chip-color-金色 {
+  background: #ffbb00;
+  box-shadow: 0 3px 0 #92400e, 0 0 16px #ffbb00;
 }
-.chip-3d.selected.chip-color-紫色,
-body.theme-light .chip-3d.selected.chip-color-紫色 {
-  background: linear-gradient(135deg, #9333ea, #6d28d9);
-  box-shadow: 0 4px 0 #4c1d95, 0 0 20px rgba(147, 51, 234, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+.chip-3d.selected.chip-color-紫色 {
+  background: #d946ef;
+  box-shadow: 0 3px 0 #581c87, 0 0 16px #d946ef;
 }
 .chip-3d.selected.chip-color-蓝色,
-.chip-3d.selected.chip-color-藍色,
-body.theme-light .chip-3d.selected.chip-color-蓝色,
-body.theme-light .chip-3d.selected.chip-color-藍色 {
-  background: linear-gradient(135deg, #0284c7, #2563eb);
-  box-shadow: 0 4px 0 #1e3a8a, 0 0 20px rgba(37, 99, 235, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+.chip-3d.selected.chip-color-藍色 {
+  background: #00d4ff;
+  box-shadow: 0 3px 0 #075985, 0 0 16px #00d4ff;
 }
 .chip-3d.selected.chip-color-绿色,
-.chip-3d.selected.chip-color-綠色,
+.chip-3d.selected.chip-color-綠色 {
+  background: #00ff88;
+  box-shadow: 0 3px 0 #065f46, 0 0 16px #00ff88;
+}
+.chip-3d.selected.chip-color-灰色 {
+  background: #cbd5e1;
+  box-shadow: 0 3px 0 #475569, 0 0 14px #94a3b8;
+}
+
+/* 淺色模式選中：深飽和實色 + 純白字，點擊辨識度極高 */
+body.theme-light .chip-3d.selected {
+  color: #ffffff !important;
+  border-color: #0f172a;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+body.theme-light .chip-3d.selected::after {
+  color: #ffffff;
+}
+body.theme-light .chip-3d.selected.chip-color-彩色,
+body.theme-light .chip-3d.selected.chip-color-至臻 {
+  background: linear-gradient(135deg, #0284c7, #7c3aed, #db2777);
+  box-shadow: 0 3px 0 #4c1d95, 0 0 14px rgba(124, 58, 237, 0.55);
+}
+body.theme-light .chip-3d.selected.chip-color-金色 {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  box-shadow: 0 3px 0 #78350f, 0 0 12px rgba(217, 119, 6, 0.5);
+}
+body.theme-light .chip-3d.selected.chip-color-紫色 {
+  background: linear-gradient(135deg, #9333ea, #6d28d9);
+  box-shadow: 0 3px 0 #4c1d95, 0 0 12px rgba(147, 51, 234, 0.5);
+}
+body.theme-light .chip-3d.selected.chip-color-蓝色,
+body.theme-light .chip-3d.selected.chip-color-藍色 {
+  background: linear-gradient(135deg, #0284c7, #1d4ed8);
+  box-shadow: 0 3px 0 #1e3a8a, 0 0 12px rgba(2, 132, 199, 0.5);
+}
 body.theme-light .chip-3d.selected.chip-color-绿色,
 body.theme-light .chip-3d.selected.chip-color-綠色 {
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 4px 0 #064e3b, 0 0 20px rgba(16, 185, 129, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 3px 0 #064e3b, 0 0 12px rgba(5, 150, 105, 0.5);
 }
-.chip-3d.selected.chip-color-灰色,
 body.theme-light .chip-3d.selected.chip-color-灰色 {
-  background: linear-gradient(135deg, #64748b, #475569);
-  box-shadow: 0 4px 0 #1e293b, 0 0 16px rgba(100, 116, 139, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  background: linear-gradient(135deg, #475569, #334155);
+  box-shadow: 0 3px 0 #0f172a, 0 0 10px rgba(71, 85, 105, 0.45);
 }
 
 /* ============================================================================
@@ -2044,6 +2168,11 @@ body.theme-light .chip-3d.selected.chip-color-灰色 {
   cursor: pointer;
 }
 
+.compare-sort-bar {
+  position: relative;
+  z-index: 30;
+}
+
 .table-container-3d {
   margin-top: 12px;
   max-height: 460px;
@@ -2055,20 +2184,26 @@ body.theme-light .chip-3d.selected.chip-color-灰色 {
 
 .cyber-table-3d {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 13px;
 }
-.cyber-table-3d th {
+.cyber-table-3d thead th {
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 6;
   padding: 10px 12px;
   text-align: left;
   font-weight: 800;
   color: var(--accent-primary);
-  background: var(--glass-bg-elevated);
-  border-bottom: 1px solid var(--glass-border);
+  background: #0b182c;
+  border-bottom: 1.5px solid var(--glass-border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
   white-space: nowrap;
+}
+body.theme-light .cyber-table-3d thead th {
+  background: #e6f2ff;
+  box-shadow: 0 2px 6px rgba(18, 52, 92, 0.14);
 }
 .cyber-table-3d td {
   padding: 9px 12px;
@@ -2101,8 +2236,6 @@ body.theme-light .td-price-highlight {
   border-radius: 18px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(10px) saturate(140%);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
   text-shadow: var(--text-readability-shadow);
   box-shadow: inset 0 1px 0 var(--glass-top-lip), 0 5px 0 var(--glass-extrude), 0 14px 32px rgba(2, 8, 20, 0.25);
   display: flex;
@@ -2936,6 +3069,8 @@ body.theme-light .btn-cat-del {
             <div class="compare-sort-bar" style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 8px; flex-wrap: wrap;">
               <span style="font-size: 12px; font-weight: 800; color: var(--text-muted);">顯示方式：</span>
               <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button id="sortDirBtn" class="btn-3d-icon" type="button">高到低 ▼</button>
+                <button id="sortModeBtn" class="btn-3d-icon" type="button">依價值排序</button>
                 <div class="value-precision-box compare-val-prec-box" style="position: relative;">
                   <button id="compareValPrecTriggerBtn" class="btn-3d-icon" type="button" aria-label="選擇表格預估價值小數顯示位數">
                     <span>小數: <span id="compareValPrecCurrentNum">2</span>位</span>
@@ -2949,8 +3084,6 @@ body.theme-light .btn-cat-del {
                     <button class="compare-val-prec-item val-prec-item" type="button" data-digits="6">6位小數</button>
                   </div>
                 </div>
-                <button id="sortModeBtn" class="btn-3d-icon" type="button">依價值排序</button>
-                <button id="sortDirBtn" class="btn-3d-icon" type="button">高到低 ▼</button>
               </div>
             </div>
 
@@ -4184,21 +4317,21 @@ body.theme-light .btn-cat-del {
           float horizon = smoothstep(-0.12, 0.48, dir.y);
           float zenith = smoothstep(0.16, 0.92, dir.y);
 
-          // --- Dark Palette: Deep Multi-Layer Cosmic Nebula & Starfield ---
-          vec3 dZenith  = vec3(0.012, 0.022, 0.068);
-          vec3 dMid     = vec3(0.026, 0.068, 0.148);
-          vec3 dHorizon = mix(vec3(0.065, 0.130, 0.220), uMoodPrimary * 0.26, 0.38);
+          // --- Dark Palette: Deep Cosmic Midnight Sky (不泛白、襯托宮殿與極光) ---
+          vec3 dZenith  = vec3(0.005, 0.010, 0.032);
+          vec3 dMid     = vec3(0.012, 0.028, 0.070);
+          vec3 dHorizon = mix(vec3(0.024, 0.052, 0.102), uMoodPrimary * 0.14, 0.28);
           vec3 darkSky  = mix(dHorizon, dMid, horizon);
           darkSky       = mix(darkSky, dZenith, zenith);
 
-          // 銀河星雲帶 (斜切天際的絢麗紫青金星塵)
+          // 銀河星雲帶 (深邃低調背景層，避免與前景星系疊加過曝)
           vec2 nebUv = vec2(dir.x * 2.2 + dir.y * 1.4, dir.z * 2.2 - dir.y * 1.1);
           float nebA = fbm2(nebUv * 1.6 + vec2(uTime * 0.01, -uTime * 0.008));
           float nebB = fbm2Fast(nebUv * 3.1 - vec2(uTime * 0.012, uTime * 0.009));
-          float galacticBand = smoothstep(0.32, 0.85, nebA * 0.65 + nebB * 0.35);
-          vec3 nebCol = mix(vec3(0.12, 0.36, 0.58), vec3(0.45, 0.18, 0.62), nebB);
-          nebCol = mix(nebCol, uMoodSecondary * 0.85, smoothstep(0.55, 0.85, nebA) * 0.45);
-          darkSky += nebCol * galacticBand * 0.34;
+          float galacticBand = smoothstep(0.35, 0.85, nebA * 0.65 + nebB * 0.35);
+          vec3 nebCol = mix(vec3(0.07, 0.20, 0.36), vec3(0.28, 0.10, 0.42), nebB);
+          nebCol = mix(nebCol, uMoodSecondary * 0.52, smoothstep(0.55, 0.85, nebA) * 0.35);
+          darkSky += nebCol * galacticBand * 0.20;
 
           // 雙層閃爍星辰
           if (dir.y > -0.25) {
@@ -4212,19 +4345,19 @@ body.theme-light .btn-cat-del {
               float tw1 = 0.60 + 0.40 * sin(uTime * (1.8 + rnd1 * 3.2) + rnd1 * 40.0);
               float s1 = smoothstep(0.09, 0.0, d1) * tw1;
               vec3 st1 = mix(vec3(0.75, 0.92, 1.0), vec3(1.0, 0.88, 0.66), fract(rnd1 * 19.3));
-              darkSky += st1 * s1 * 1.05;
+              darkSky += st1 * s1 * 0.85;
             }
           }
 
-          // 極光光幕
+          // 極光光幕 (柔化底層強度，避免與前景極光幕疊加成白霧)
           if (dir.y > 0.0) {
             vec2 aUv = vec2(atan(dir.z, dir.x) * 1.5, dir.y * 3.0);
             float w1 = fbm2(vec2(aUv.x * 1.8 + uTime * 0.035, aUv.y * 0.9 - uTime * 0.02));
             float w2 = fbm2Fast(vec2(aUv.x * 3.1 - uTime * 0.025, aUv.y * 1.3 + uTime * 0.015));
-            float curtain = smoothstep(0.45, 0.78, w1 * 0.65 + w2 * 0.35);
-            float hMask = smoothstep(0.02, 0.22, dir.y) * smoothstep(0.85, 0.28, dir.y);
+            float curtain = smoothstep(0.48, 0.80, w1 * 0.65 + w2 * 0.35);
+            float hMask = smoothstep(0.04, 0.24, dir.y) * smoothstep(0.85, 0.30, dir.y);
             vec3 auroraCol = mix(uMoodPrimary, uMoodSecondary, w2);
-            darkSky += auroraCol * curtain * hMask * (0.45 + uPulseBoost * 0.35);
+            darkSky += auroraCol * curtain * hMask * (0.18 + uPulseBoost * 0.22);
           }
 
           // --- Light Palette: Crisp Daytime Royal-Sapphire Sky (clamped <= 0.88) ---
@@ -4805,7 +4938,7 @@ body.theme-light .btn-cat-del {
           float sn = sin(twist);
           vec2 tp = vec2(p.x * cs - p.y * sn, p.x * sn + p.y * cs);
 
-          float cA = fbm2(tp * 3.4 + vec2(uTime * 0.014, 1.3));
+          float cA = fbm2Fast(tp * 3.4 + vec2(uTime * 0.014, 1.3));
           float cB = fbm2Fast(tp * 7.2 - vec2(uTime * 0.02, -2.1));
 
           float ang = atan(p.y, p.x);
@@ -4814,39 +4947,40 @@ body.theme-light .btn-cat-del {
           float armSub  = pow(0.5 + 0.5 * cos(phase * 6.0 + 0.9), 2.8) * 0.55;
           float arms = clamp(armMain + armSub, 0.0, 1.0);
 
-          float nebula = (0.25 + arms * 1.05) * smoothstep(0.16, 0.84, cA * 0.62 + cB * 0.38);
-          float coreHot = exp(-r * 7.5);
-          float coreWarm = exp(-r * 3.0);
-          float outerHaze = smoothstep(0.96, 0.18, r) * exp(-r * 1.15);
+          float nebula = (0.22 + arms * 0.96) * smoothstep(0.16, 0.84, cA * 0.62 + cB * 0.38);
+          float outerRingBoost = smoothstep(0.14, 0.42, r) * smoothstep(0.98, 0.52, r);
+          float coreHot = exp(-r * 11.0);
+          float coreWarm = exp(-r * 4.5);
+          float outerHaze = smoothstep(0.98, 0.22, r) * exp(-r * 0.85);
 
-          // 絢麗 6 色宇宙漸層 (金白核 -> 珊瑚橘 -> 霓虹洋紅 -> 皇家紫 -> 寶石青藍 -> 極光翡翠)
-          vec3 colCore = vec3(1.00, 0.95, 0.80);
-          vec3 colCoral = vec3(1.00, 0.54, 0.24);
-          vec3 colMagenta = vec3(0.96, 0.24, 0.68);
-          vec3 colViolet = vec3(0.54, 0.26, 0.98);
-          vec3 colCyan = vec3(0.08, 0.86, 0.96);
-          vec3 colEmerald = vec3(0.18, 0.95, 0.64);
+          // 絢麗 6 色宇宙漸層 (重點呈現於宮殿外圍的大片旋臂星雲，中心柔暗不刺眼)
+          vec3 colCore = vec3(0.68, 0.60, 0.48);
+          vec3 colCoral = vec3(0.86, 0.38, 0.20);
+          vec3 colMagenta = vec3(0.82, 0.20, 0.58);
+          vec3 colViolet = vec3(0.46, 0.20, 0.84);
+          vec3 colCyan = vec3(0.08, 0.70, 0.84);
+          vec3 colEmerald = vec3(0.12, 0.78, 0.54);
 
-          vec3 armCol = mix(colCoral, colMagenta, smoothstep(0.08, 0.28, r));
-          armCol = mix(armCol, colViolet, smoothstep(0.24, 0.48, r));
-          armCol = mix(armCol, colCyan, smoothstep(0.44, 0.72, r));
-          armCol = mix(armCol, colEmerald, smoothstep(0.68, 0.92, r));
-          armCol = mix(armCol, colCyan, smoothstep(0.60, 0.90, cA) * 0.38);
+          vec3 armCol = mix(colCoral, colMagenta, smoothstep(0.10, 0.30, r));
+          armCol = mix(armCol, colViolet, smoothstep(0.28, 0.50, r));
+          armCol = mix(armCol, colCyan, smoothstep(0.46, 0.74, r));
+          armCol = mix(armCol, colEmerald, smoothstep(0.70, 0.94, r));
+          armCol = mix(armCol, colCyan, smoothstep(0.60, 0.90, cA) * 0.35);
 
-          vec3 darkCol = armCol * (nebula * 0.92 + outerHaze * 0.26)
-                       + colCoral * coreWarm * 0.45
-                       + colCore * coreHot * (0.85 + uPulseBoost * 0.35);
-          darkCol = min(darkCol, vec3(1.0));
+          vec3 darkCol = armCol * (nebula * (0.48 + outerRingBoost * 0.62) + outerHaze * 0.22)
+                       + colCoral * coreWarm * 0.16
+                       + colCore * coreHot * (0.22 + uPulseBoost * 0.16);
+          darkCol = min(darkCol, vec3(0.74));
 
           vec3 lightArm = mix(vec3(0.92, 0.42, 0.68), vec3(0.46, 0.38, 0.92), smoothstep(0.15, 0.50, r));
           lightArm = mix(lightArm, vec3(0.12, 0.66, 0.84), smoothstep(0.48, 0.88, r));
-          vec3 lightCol = lightArm * (nebula * 0.58 + outerHaze * 0.20)
-                        + vec3(0.95, 0.80, 0.54) * coreWarm * 0.35;
+          vec3 lightCol = lightArm * (nebula * (0.40 + outerRingBoost * 0.38) + outerHaze * 0.18)
+                        + vec3(0.92, 0.76, 0.52) * coreWarm * 0.18;
 
           vec3 finalCol = mix(darkCol, lightCol, uLightMode);
-          float edgeFade = smoothstep(0.98, 0.32, r);
-          float alpha = clamp((nebula * 0.68 + coreWarm * 0.48 + coreHot * 0.78 + outerHaze * 0.22), 0.0, 1.0)
-                      * edgeFade * mix(0.88, 0.45, uLightMode);
+          float edgeFade = smoothstep(0.99, 0.42, r);
+          float alpha = clamp((nebula * (0.42 + outerRingBoost * 0.48) + coreWarm * 0.22 + coreHot * 0.34 + outerHaze * 0.22), 0.0, 1.0)
+                      * edgeFade * mix(0.84, 0.44, uLightMode);
           gl_FragColor = vec4(finalCol, alpha);
         }
       `
@@ -4891,8 +5025,8 @@ body.theme-light .btn-cat-del {
           col = mix(col, aRose, smoothstep(0.62, 0.92, curtain) * smoothstep(0.4, 0.85, yShift) * 0.65);
 
           vec3 lightCol = mix(vec3(0.28, 0.78, 0.88), vec3(0.76, 0.52, 0.92), yShift);
-          vec3 finalCol = mix(col, lightCol, uLightMode);
-          float alpha = rays * vMask * hMask * mix(0.58, 0.24, uLightMode);
+          vec3 finalCol = mix(col * 0.78, lightCol, uLightMode);
+          float alpha = rays * vMask * hMask * mix(0.28, 0.16, uLightMode);
           gl_FragColor = vec4(finalCol, alpha);
         }
       `
@@ -5261,7 +5395,18 @@ body.theme-light .btn-cat-del {
     let lastTileTiltY = -999;
 
     function getLegacyReactorBaseScale() {
-      return (global.innerWidth || 1280) <= 680 ? 1.36 : 1.0;
+      const w = global.innerWidth || 1280;
+      const h = global.innerHeight || 720;
+      const aspect = w / Math.max(1, h);
+      // 依畫面寬高比判斷直向手機，無論是否開啟電腦版網站皆一致放大為原手機尺寸 (0.68) 的 1.7 倍 (~1.16)
+      return aspect < 1.1 ? 1.16 : 1.0;
+    }
+
+    function getPointPixelScale() {
+      const w = global.innerWidth || 1280;
+      const dpr = renderer ? renderer.getPixelRatio() : 1;
+      // 讓行動版與手機開啟電腦版網站時的粒子視覺大小比例完全一致
+      return dpr * Math.max(0.55, Math.min(1.0, w / 960));
     }
 
     function getResponsiveSceneMetrics() {
@@ -5294,6 +5439,11 @@ body.theme-light .btn-cat-del {
       if (legacyReactorGroup && legacyExpState === "IDLE") {
         legacyReactorGroup.scale.setScalar(getLegacyReactorBaseScale());
       }
+      const pScale = getPointPixelScale();
+      if (stardustMat) stardustMat.uniforms.uPixelRatio.value = pScale;
+      if (galaxyMat) galaxyMat.uniforms.uPixelRatio.value = pScale;
+      if (supernovaMat) supernovaMat.uniforms.uPixelRatio.value = pScale;
+      if (legacyStarMat) legacyStarMat.uniforms.uPixelRatio.value = pScale;
       return m;
     }
 
@@ -5869,7 +6019,7 @@ body.theme-light .btn-cat-del {
         galaxyPoints.geometry.dispose();
       }
       const arms = 4;
-      const maxRadius = 128;
+      const maxRadius = 175;
       const geo = new THREE.BufferGeometry();
       const positions = new Float32Array(starCount * 3);
       const colors = new Float32Array(starCount * 3);
@@ -6075,10 +6225,10 @@ body.theme-light .btn-cat-del {
     function buildNewCosmicBackdrop() {
       const S = global.ASTRAL_SHADERS;
 
-      // 1. 新版專屬：比舊版更絢麗的七彩三主臂體積感星海 (位於宮殿遠後方)
+      // 1. 新版專屬：比舊版更絢麗的巨型七彩旋臂星海 (大範圍鋪展於宮殿外圍不被宮殿遮擋)
       newGrandGalaxyGroup = new THREE.Group();
-      newGrandGalaxyGroup.position.set(0, 18, -118);
-      newGrandGalaxyGroup.rotation.set(-0.96, 0.14, -0.26);
+      newGrandGalaxyGroup.position.set(0, 10, -118);
+      newGrandGalaxyGroup.rotation.set(-0.78, 0.14, -0.24);
       newGrandGalaxyMat = new THREE.ShaderMaterial({
         vertexShader: S.cosmicGrandGalaxy.vertexShader,
         fragmentShader: S.cosmicGrandGalaxy.fragmentShader,
@@ -6088,11 +6238,11 @@ body.theme-light .btn-cat-del {
           uPulseBoost: { value: 0 }
         },
         transparent: true,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
         side: THREE.DoubleSide,
         depthWrite: false
       });
-      const grandDisc = new THREE.Mesh(new THREE.PlaneGeometry(245, 245), newGrandGalaxyMat);
+      const grandDisc = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), newGrandGalaxyMat);
       newGrandGalaxyGroup.add(grandDisc);
       scene.add(newGrandGalaxyGroup);
 
@@ -6679,18 +6829,9 @@ body.theme-light .btn-cat-del {
       uiRigGroup.visible = showFrames;
 
       const rx = showFrames && parallaxEnabled ? -smoothPY * 0.008 : 0;
-      const ry = showFrames && parallaxEnabled ? smoothPX * 0.008 : 0;
-      uiRigGroup.rotation.set(rx, ry, 0);
-
-      if (!showFrames) {
-        if (appStageEl && (lastStageRX !== 0 || lastStageRY !== 0)) {
-          lastStageRX = 0;
-          lastStageRY = 0;
-          appStageEl.style.setProperty("--stage-rx", "0deg");
-          appStageEl.style.setProperty("--stage-ry", "0deg");
-        }
-        return;
-      }
+      // 僅在主頁顯示 3D 骨架外框，不再傾斜 .app-stage 避免按鈕 hover 閃爍與點擊失效
+      uiRigGroup.rotation.set(0, 0, 0);
+      if (!showFrames) return;
 
       const vw = global.innerWidth || 1280;
       const vh = global.innerHeight || 720;
@@ -6732,21 +6873,16 @@ body.theme-light .btn-cat-del {
 
         const hx = wWorld * 0.5, hy = hWorld * 0.5;
         const coords = [[-hx, hy], [hx, hy], [-hx, -hy], [hx, -hy]];
-        for (let c = 0; c < 4; c++) {
-          const cg = item.corners[c];
-          cg.cornerGroup.position.set(coords[c][0], coords[c][1], 0.02);
-          cg.gem.rotation.y = t * 1.4 + c * 0.8 + i * 0.5;
-          cg.gem.rotation.x = Math.sin(t * 1.1 + c) * 0.3;
+        if (uiRectsDirty || frameCounter % 2 === 0) {
+          for (let c = 0; c < 4; c++) {
+            const cg = item.corners[c];
+            cg.cornerGroup.position.set(coords[c][0], coords[c][1], 0.02);
+            cg.gem.rotation.y = t * 1.4 + c * 0.8 + i * 0.5;
+            cg.gem.rotation.x = Math.sin(t * 1.1 + c) * 0.3;
+          }
         }
       }
       uiRectsDirty = false;
-
-      if (appStageEl && (Math.abs(rx - lastStageRX) > 0.0004 || Math.abs(ry - lastStageRY) > 0.0004)) {
-        lastStageRX = rx;
-        lastStageRY = ry;
-        appStageEl.style.setProperty("--stage-rx", `${(rx * 57.2958 * 0.65).toFixed(3)}deg`);
-        appStageEl.style.setProperty("--stage-ry", `${(ry * 57.2958 * 0.65).toFixed(3)}deg`);
-      }
     }
 
     /* ------------------------------------------------------------------
@@ -6771,10 +6907,10 @@ body.theme-light .btn-cat-del {
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
       renderer.setSize(w, h);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = currentTheme === "light" ? 0.90 : 1.02;
+      renderer.toneMappingExposure = currentTheme === "light" ? 0.90 : 0.88;
       renderer.outputEncoding = THREE.sRGBEncoding;
 
-      const maxDpr = currentQuality === "ultra" ? 2.0 : currentQuality === "high" ? 1.5 : 1.0;
+      const maxDpr = currentQuality === "ultra" ? 1.75 : currentQuality === "high" ? 1.25 : 1.0;
       renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, maxDpr));
 
       scene = new THREE.Scene();
@@ -7096,29 +7232,6 @@ body.theme-light .btn-cat-del {
         legacyRotDir += (legacyTargetDir - legacyRotDir) * Math.min(1.0, dt * 3.5);
         if (legacyBurstSpeed > 0) legacyBurstSpeed = Math.max(0, legacyBurstSpeed - dt * 0.85);
 
-        crystalMat.uniforms.uTime.value = t;
-        crystalMat.uniforms.uLightMode.value = animState.lightMode;
-        crystalMat.uniforms.uPulseBoost.value = animState.pulseBoost;
-
-        stardustMat.uniforms.uTime.value = t;
-        stardustMat.uniforms.uLightMode.value = animState.lightMode;
-
-        if (newGrandGalaxyMat) {
-          newGrandGalaxyMat.uniforms.uTime.value = t;
-          newGrandGalaxyMat.uniforms.uLightMode.value = animState.lightMode;
-          newGrandGalaxyMat.uniforms.uPulseBoost.value = animState.pulseBoost;
-        }
-        if (newGrandGalaxyGroup) {
-          newGrandGalaxyGroup.rotation.z += dt * (0.045 + newBurstSpeed * 0.65) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
-        }
-        for (let i = 0; i < auroraMats.length; i++) {
-          auroraMats[i].uniforms.uTime.value = t;
-          auroraMats[i].uniforms.uLightMode.value = animState.lightMode;
-        }
-        if (auroraGroup) {
-          auroraGroup.rotation.y = Math.sin(t * 0.08) * 0.08;
-        }
-
         for (let i = 0; i < legacyGalaxyMats.length; i++) {
           if (legacyGalaxyMeshes[i] && !legacyGalaxyMeshes[i].visible) continue;
           legacyGalaxyMats[i].uniforms.uTime.value = t;
@@ -7359,10 +7472,26 @@ body.theme-light .btn-cat-del {
           fruitSeedsGroup.rotation.y -= dt * 0.9;
         }
 
-        if (ring1Group) { ring1Group.rotation.z += dt * (0.24 * speedMult + 1.45 * burstSigned); ring1Group.rotation.y += dt * (0.09 * speedMult + 0.55 * burstSigned); }
-        if (ring2Group) { ring2Group.rotation.z -= dt * (0.16 * speedMult - 1.25 * burstSigned); ring2Group.rotation.x += dt * 0.06 * speedMult; }
-        if (ring3Group) { ring3Group.rotation.z += dt * (0.05 * speedMult + 0.85 * burstSigned); }
-        if (ring4Group) { ring4Group.rotation.z -= dt * (0.07 * speedMult - 0.72 * burstSigned); }
+        // 宮殿外環：1、2、4 號金屬星環全角度 360° 立體繞轉＋自轉（如同舊版星環）；3 號多彩寬幅土星環維持原位純自轉
+        if (ring1Group) {
+          ring1Group.rotation.z -= dt * (0.42 * speedMult - 1.45 * burstSigned);
+          ring1Group.rotation.y += dt * (0.28 * speedMult + 0.55 * burstSigned);
+          ring1Group.rotation.x += dt * (0.22 * speedMult + 0.35 * burstSigned);
+        }
+        if (ring2Group) {
+          ring2Group.rotation.y += dt * (0.38 * speedMult + 1.25 * burstSigned);
+          ring2Group.rotation.x += dt * (0.26 * speedMult + 0.45 * burstSigned);
+          ring2Group.rotation.z -= dt * (0.20 * speedMult - 0.35 * burstSigned);
+        }
+        if (ring3Group) {
+          // 多彩寬幅星環僅在原先傾角上純自轉
+          ring3Group.rotation.z += dt * (0.08 * speedMult + 0.85 * burstSigned);
+        }
+        if (ring4Group) {
+          ring4Group.rotation.x += dt * (0.30 * speedMult + 0.72 * burstSigned);
+          ring4Group.rotation.y -= dt * (0.25 * speedMult - 0.42 * burstSigned);
+          ring4Group.rotation.z += dt * (0.22 * speedMult + 0.38 * burstSigned);
+        }
 
         // 懸浮晶簇隔幀更新，並重用全域 _dummy 消除每幀配置 GC
         if (instancedShards && shardMeta.length > 0 && (frameCounter % 2 === 0)) {
@@ -7454,7 +7583,7 @@ body.theme-light .btn-cat-del {
       const dur = 0.85;
       if (global.gsap) {
         global.gsap.to(animState, { lightMode: isLight ? 1.0 : 0.0, duration: dur, ease: "power2.inOut" });
-        global.gsap.to(renderer, { toneMappingExposure: isLight ? 0.90 : 1.02, duration: dur });
+        global.gsap.to(renderer, { toneMappingExposure: isLight ? 0.90 : 0.88, duration: dur });
 
         const tweenCol = (mat, hex) => {
           const c = new THREE.Color(hex);
@@ -7850,13 +7979,14 @@ body.theme-light .btn-cat-del {
       currentQuality = tier;
       if (!initialized || !renderer) return;
 
-      const maxDpr = tier === "ultra" ? 2.0 : tier === "high" ? 1.5 : 1.0;
+      const maxDpr = tier === "ultra" ? 1.75 : tier === "high" ? 1.25 : 1.0;
       const dpr = Math.min(global.devicePixelRatio || 1, maxDpr);
       renderer.setPixelRatio(dpr);
-      stardustMat.uniforms.uPixelRatio.value = dpr;
-      galaxyMat.uniforms.uPixelRatio.value = dpr;
-      supernovaMat.uniforms.uPixelRatio.value = dpr;
-      if (legacyStarMat) legacyStarMat.uniforms.uPixelRatio.value = dpr;
+      const pScale = getPointPixelScale();
+      stardustMat.uniforms.uPixelRatio.value = pScale;
+      galaxyMat.uniforms.uPixelRatio.value = pScale;
+      supernovaMat.uniforms.uPixelRatio.value = pScale;
+      if (legacyStarMat) legacyStarMat.uniforms.uPixelRatio.value = pScale;
 
       useBloom = !legacyMode && currentTheme === "dark" && tier !== "smooth" && Boolean(composer);
       if (composer) composer.setPixelRatio(dpr);
