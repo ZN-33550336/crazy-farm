@@ -1965,10 +1965,10 @@ body.theme-light .cyber-toggle-pill {
 /* 未選中：低飽和暗底色（參考果實計算器.html），點選後鮮明高對比發光點亮 */
 .chip-color-彩色,
 .chip-color-至臻 {
-  background: linear-gradient(135deg, rgba(0, 246, 255, 0.22), rgba(255, 0, 127, 0.22));
-  border-color: rgba(255, 0, 127, 0.60);
+  background: linear-gradient(135deg, rgba(14, 116, 144, 0.84), rgba(107, 33, 168, 0.84), rgba(157, 23, 77, 0.84));
+  border-color: rgba(244, 114, 182, 0.82);
   color: #ffffff;
-  box-shadow: 0 3px 0 rgba(56, 12, 72, 0.8), 0 4px 10px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 3px 0 rgba(76, 16, 84, 0.88), 0 4px 10px rgba(0, 0, 0, 0.28);
 }
 .chip-color-金色 {
   background: rgba(65, 42, 5, 0.78);
@@ -2004,10 +2004,10 @@ body.theme-light .cyber-toggle-pill {
 /* 淺色模式未選中：柔和粉彩底色；選中後深飽和實色 + 白字 */
 body.theme-light .chip-color-彩色,
 body.theme-light .chip-color-至臻 {
-  background: linear-gradient(135deg, rgba(186, 230, 253, 0.75), rgba(221, 214, 254, 0.75), rgba(251, 207, 232, 0.75));
-  border-color: rgba(124, 58, 237, 0.52);
+  background: linear-gradient(135deg, rgba(165, 224, 252, 0.88), rgba(216, 198, 254, 0.88), rgba(251, 196, 226, 0.88));
+  border-color: rgba(168, 85, 247, 0.78);
   color: #3b0764;
-  box-shadow: 0 3px 0 rgba(139, 92, 246, 0.5), 0 4px 8px rgba(76, 29, 149, 0.12);
+  box-shadow: 0 3px 0 rgba(139, 92, 246, 0.56), 0 4px 8px rgba(76, 29, 149, 0.14);
 }
 body.theme-light .chip-color-金色 {
   background: rgba(254, 240, 138, 0.72);
@@ -5402,11 +5402,21 @@ body.theme-light .btn-cat-del {
       return aspect < 1.1 ? 1.16 : 1.0;
     }
 
+    function getEffectivePixelRatio(tier = currentQuality) {
+      const w = global.innerWidth || 1280;
+      const nativeDpr = global.devicePixelRatio || 1;
+      // 讓手機行動版 (360~430px) 的實體渲染寬度對齊手機開電腦版網站 (~960px)，畫質 100% 同等精緻
+      const targetMinWidth = tier === "ultra" ? 1280 : tier === "high" ? 1100 : 960;
+      const neededDpr = targetMinWidth / Math.max(320, w);
+      const baseMaxDpr = tier === "ultra" ? 1.75 : tier === "high" ? 1.25 : 1.0;
+      return Math.min(nativeDpr, Math.max(baseMaxDpr, Math.min(2.5, neededDpr)));
+    }
+
     function getPointPixelScale() {
       const w = global.innerWidth || 1280;
       const dpr = renderer ? renderer.getPixelRatio() : 1;
       // 讓行動版與手機開啟電腦版網站時的粒子視覺大小比例完全一致
-      return dpr * Math.max(0.55, Math.min(1.0, w / 960));
+      return Math.max(0.75, Math.min(1.65, (w * dpr) / 980));
     }
 
     function getResponsiveSceneMetrics() {
@@ -6910,8 +6920,7 @@ body.theme-light .btn-cat-del {
       renderer.toneMappingExposure = currentTheme === "light" ? 0.90 : 0.88;
       renderer.outputEncoding = THREE.sRGBEncoding;
 
-      const maxDpr = currentQuality === "ultra" ? 1.75 : currentQuality === "high" ? 1.25 : 1.0;
-      renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, maxDpr));
+      renderer.setPixelRatio(getEffectivePixelRatio(currentQuality));
 
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(initMetrics.fov, w / h, 0.5, 900);
@@ -7196,6 +7205,9 @@ body.theme-light .btn-cat-del {
       uiRectsDirty = true;
       const w = global.innerWidth || 1280;
       const h = global.innerHeight || 720;
+      const dpr = getEffectivePixelRatio(currentQuality);
+      renderer.setPixelRatio(dpr);
+      if (composer) composer.setPixelRatio(dpr);
       const m = applyResponsiveSceneScale();
       camera.aspect = w / h;
       camera.fov = m.fov;
@@ -7979,8 +7991,7 @@ body.theme-light .btn-cat-del {
       currentQuality = tier;
       if (!initialized || !renderer) return;
 
-      const maxDpr = tier === "ultra" ? 1.75 : tier === "high" ? 1.25 : 1.0;
-      const dpr = Math.min(global.devicePixelRatio || 1, maxDpr);
+      const dpr = getEffectivePixelRatio(tier);
       renderer.setPixelRatio(dpr);
       const pScale = getPointPixelScale();
       stardustMat.uniforms.uPixelRatio.value = pScale;
