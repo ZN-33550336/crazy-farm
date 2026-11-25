@@ -822,7 +822,7 @@ body.view-calculator .crop-3d-ground-shadow {
   }
 }
 
-/* 3D 擠出晶體側壁厚層 (雙層 Z 軸退深展現實體立體厚度) */
+/* 3D 擠出晶體側壁厚層 (精巧立體厚度，不顯厚重) */
 .crop-3d-depth {
   position: absolute;
   inset: 0;
@@ -831,13 +831,13 @@ body.view-calculator .crop-3d-ground-shadow {
 }
 .crop-3d-depth-1 {
   background: var(--spec-side);
-  transform: translate3d(2px, 3px, -4px);
-  box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.35);
+  transform: translate3d(1.2px, 1.8px, -2px);
+  box-shadow: inset 0 -1px 1.5px rgba(0, 0, 0, 0.32);
 }
 .crop-3d-depth-2 {
   background: var(--spec-side-deep);
-  transform: translate3d(4px, 6px, -8px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  transform: translate3d(2.2px, 3.4px, -4px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.34);
 }
 
 .crop-3d-face {
@@ -846,11 +846,11 @@ body.view-calculator .crop-3d-ground-shadow {
   height: 100%;
   border-radius: inherit;
   overflow: hidden;
-  transform: translateZ(2px);
+  transform: translateZ(1px);
   box-shadow:
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.62),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.22),
-    0 8px 16px rgba(0, 0, 0, 0.38);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.24),
+    0 5px 12px rgba(0, 0, 0, 0.34);
   transition: box-shadow 0.2s ease;
 }
 
@@ -858,6 +858,7 @@ body.view-calculator .crop-3d-ground-shadow {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(1.09);
   display: block;
   pointer-events: none;
 }
@@ -2912,7 +2913,8 @@ body.theme-light .btn-cat-del {
               <span class="changelog-version-tag">最新版本</span>
             </div>
             <ul class="changelog-ul changelog-simple-ul">
-              <li>🏛️ <strong>全新 3D 立體背景與介面</strong>：背景全面翻新為漂浮在雲海上的玻璃溫室與立體金色星環，所有操作面板與按鈕也都升級成透光立體 3D 質感。</li>
+              <li>🏛️ <strong>全新 3D 立體背景與介面</strong>：背景全面翻新為漂浮在星海上的宏偉宇宙宮殿與立體星環，並可於設定隨時切換「使用舊版介面」。</li>
+              <li>🔥 <strong>新增「火燒雲」詞條與詞條區調整</strong>：於活動與下架詞條區新增「火燒雲」（藍色 5 倍，位於星環與幽幽南瓜之間），並將「隕石」移至活動與下架詞條區；自訂排序玩家也會自動補入新詞條。</li>
               <li>🍎 <strong>補齊 69 種果實圖示與最新數據</strong>：幫每一種果實都加上遊戲原圖更好找，並補上銀杏生長耗時、修正雪蓮價格與秋水仙耗時。</li>
               <li>🌓 <strong>深淺色主題與音效全面升級</strong>：深色是極光星空、淺色是藍天白雲，設定裡新增「畫質高低」可自由調整，按鍵音效也變得更清脆好聽。</li>
             </ul>
@@ -3053,7 +3055,11 @@ body.theme-light .btn-cat-del {
                 <br>• 所有主操作面板升級為透光玻璃結合 Three.js 實體金屬邊框與角落旋轉結晶，計算工作區採寬幅雙欄結構並整合 69 種官方果實 PNG 圖鑑。
                 <br>• 補齊銀杏生長耗時（<code>4318.1438s</code>），修正雪蓮係數（<code>56993.9613</code>）與秋水仙生長耗時（<code>705.882s</code>）。
               </li>
-              <li><strong>工作室級 Web Audio 殘響音效與畫質分級</strong>：新增立體聲捲積殘響合成音效，並於設定新增「極致 / 高 / 流暢」三檔畫質切換。</li>
+              <li><strong>新增「火燒雲」詞條與自訂排序自動補齊</strong>：
+                <br>• 於活動與下架詞條（<code>past</code>）新增「火燒雲」（藍色品質、倍率 5，排於「星環」與「幽幽南瓜」之間），並將「隕石」移至活動與下架詞條區（「金幣」之後），同時自全選(流)與全選(瓷)中移除隕石。
+                <br>• 讀取 <code>localStorage: farm_custom_mutations_v350</code> 時自動偵測新增詞條並依錨點規則補入，不破壞玩家既有排序。
+              </li>
+              <li><strong>工作室級 Web Audio 殘響音效與畫質分級</strong>：新增立體聲捲積殘響合成音效，並於設定新增「極致 / 高 / 流暢」三檔畫質切換與「使用舊版介面」選項。</li>
             </ul>
           </div>
           <div class="modal-section-card changelog-card changelog-post-release">
@@ -4417,10 +4423,14 @@ body.theme-light .btn-cat-del {
           float d = length(c);
           if (d > 0.5) discard;
           float soft = pow(1.0 - d * 2.0, 2.2);
-          vec3 darkTint = mix(uColorA, uColorB, vMix);
+          vec3 darkTint = vMix < 0.33
+            ? mix(uColorA, vec3(0.98, 0.78, 0.32), vMix * 3.0)
+            : (vMix < 0.66
+              ? mix(vec3(0.98, 0.78, 0.32), uColorB, (vMix - 0.33) * 3.0)
+              : mix(uColorB, vec3(0.92, 0.42, 0.88), (vMix - 0.66) * 3.0));
           vec3 lightTint = mix(vec3(0.88, 0.68, 0.25), vec3(0.15, 0.68, 0.78), vMix);
           vec3 col = mix(darkTint, lightTint, uLightMode);
-          float a = soft * vAlpha * mix(0.85, 0.42, uLightMode);
+          float a = soft * vAlpha * mix(0.92, 0.46, uLightMode);
           gl_FragColor = vec4(col, a);
         }
       `
@@ -4938,6 +4948,11 @@ body.theme-light .btn-cat-del {
     // 新版專屬宮殿聖輝光柱與超新星線程
     let palaceBeamMesh = null;
     let palaceBeamMat = null;
+    let palaceCrownGroup = null;
+    let palaceBaseHalo = null;
+    let newBurstSpeed = 0;
+    let newBurstDir = 1;
+    let cometOrbiters = [];
     let supernovaTimeline = null;
 
     // 滑鼠 / 行動裝置搖晃偵測 (共用能量池，依模式分別觸發專屬特效)
@@ -5374,9 +5389,62 @@ body.theme-light .btn-cat-del {
       finialBase.position.y = 20.1;
       const spire = new THREE.Mesh(new THREE.ConeGeometry(0.45, 5.2, 8), matGoldMetal);
       spire.position.y = 23.0;
-      const tipGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.75, 0), matAccentCrystal);
-      tipGem.position.y = 26.2;
+      const tipGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.85, 0), matAccentCrystal);
+      tipGem.position.y = 26.4;
       palaceGroup.add(finialBase, spire, tipGem);
+
+      // 5B. 皇家宮殿雄偉強化：外圍 8 座鎏金尖塔方尖碑 + 6 道飛扶壁金拱 + 塔頂浮空聖冠光環 + 浮島星陣光輪
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2 + Math.PI / 8;
+        const ox = Math.cos(a) * 14.3;
+        const oz = Math.sin(a) * 14.3;
+        const obelisk = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.46, 5.8, 8), matMarble);
+        obelisk.position.set(ox, 3.8, oz);
+        const obCap = new THREE.Mesh(new THREE.ConeGeometry(0.38, 1.8, 8), matGoldMetal);
+        obCap.position.set(ox, 7.6, oz);
+        const obGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.32, 0), matVeinGlow);
+        obGem.position.set(ox, 9.0, oz);
+        palaceGroup.add(obelisk, obCap, obGem);
+      }
+
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        const archPivot = new THREE.Group();
+        archPivot.rotation.y = a;
+        const arch = new THREE.Mesh(
+          new THREE.TorusGeometry(4.2, 0.16, 8, 28, Math.PI * 0.58),
+          matGoldMetal
+        );
+        arch.position.set(8.6, 6.2, 0);
+        arch.rotation.z = Math.PI * 0.18;
+        archPivot.add(arch);
+        palaceGroup.add(archPivot);
+      }
+
+      palaceCrownGroup = new THREE.Group();
+      palaceCrownGroup.position.y = 22.4;
+      const crownRing = new THREE.Mesh(new THREE.TorusGeometry(3.4, 0.14, 10, 48), matGoldMetal);
+      crownRing.rotation.x = Math.PI / 2;
+      palaceCrownGroup.add(crownRing);
+      const crownGlow = new THREE.Mesh(new THREE.TorusGeometry(2.7, 0.08, 8, 48), matVeinGlow);
+      crownGlow.rotation.x = Math.PI / 2;
+      palaceCrownGroup.add(crownGlow);
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        const cGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.28, 0), matAccentCrystal);
+        cGem.position.set(Math.cos(a) * 3.4, 0.35, Math.sin(a) * 3.4);
+        palaceCrownGroup.add(cGem);
+      }
+      palaceGroup.add(palaceCrownGroup);
+
+      palaceBaseHalo = new THREE.Group();
+      palaceBaseHalo.position.y = -2.0;
+      const baseRing1 = new THREE.Mesh(new THREE.TorusGeometry(19.6, 0.16, 8, 64), matGoldMetal);
+      baseRing1.rotation.x = Math.PI / 2;
+      const baseRing2 = new THREE.Mesh(new THREE.TorusGeometry(21.4, 0.10, 8, 64), matVeinGlow);
+      baseRing2.rotation.x = Math.PI / 2;
+      palaceBaseHalo.add(baseRing1, baseRing2);
+      palaceGroup.add(palaceBaseHalo);
 
       // 6. 中心宇宙神果
       fruitGroup = buildMythicCenterpieceFruit();
@@ -5495,13 +5563,15 @@ body.theme-light .btn-cat-del {
       const phases = new Float32Array(starCount);
 
       const coreColor = new THREE.Color("#fff3c4");
+      const roseColor = new THREE.Color("#ff5fa2");
       const midColor = new THREE.Color("#38e8ff");
       const outerColor = new THREE.Color("#c084fc");
+      const deepColor = new THREE.Color("#3b82f6");
       const tempCol = new THREE.Color();
 
       for (let i = 0; i < starCount; i++) {
         const arm = i % arms;
-        const rNorm = Math.pow(Math.random(), 1.35);
+        const rNorm = Math.pow(Math.random(), 1.3);
         const r = 4.0 + rNorm * maxRadius;
         const spin = rNorm * 5.2;
         const branchAngle = (arm / arms) * Math.PI * 2;
@@ -5512,10 +5582,14 @@ body.theme-light .btn-cat-del {
         positions[i * 3 + 1] = (Math.random() - 0.5) * (6.5 * (1.0 - rNorm * 0.55));
         positions[i * 3 + 2] = Math.sin(a) * r;
 
-        if (rNorm < 0.35) {
-          tempCol.lerpColors(coreColor, midColor, rNorm / 0.35);
+        if (rNorm < 0.22) {
+          tempCol.lerpColors(coreColor, roseColor, rNorm / 0.22);
+        } else if (rNorm < 0.50) {
+          tempCol.lerpColors(roseColor, midColor, (rNorm - 0.22) / 0.28);
+        } else if (rNorm < 0.78) {
+          tempCol.lerpColors(midColor, outerColor, (rNorm - 0.50) / 0.28);
         } else {
-          tempCol.lerpColors(midColor, outerColor, (rNorm - 0.35) / 0.65);
+          tempCol.lerpColors(outerColor, deepColor, (rNorm - 0.78) / 0.22);
         }
         colors[i * 3] = tempCol.r;
         colors[i * 3 + 1] = tempCol.g;
@@ -5569,10 +5643,35 @@ body.theme-light .btn-cat-del {
         planetGroup.add(g);
       };
 
-      // 3 顆不同遠近與色調的星際行星點綴深空
+      // 5 顆不同遠近與色調的星際行星點綴深空
       makePlanet(6.8, "#7c3aed", "#f472b6", "#f5c443", [-58, 24, -92], true);
       makePlanet(4.4, "#0ea5e9", "#34e2d8", "#93c5fd", [64, 22, -98], false);
       makePlanet(3.1, "#d97706", "#fef08a", "#fde047", [-36, -12, -74], false);
+      makePlanet(5.2, "#06b6d4", "#6366f1", "#38e8ff", [50, -14, -86], true);
+      makePlanet(3.6, "#ec4899", "#a855f7", "#fbcfe8", [18, 34, -108], true);
+
+      // 2 道遠空緩慢巡航的星輝彗星光尾
+      cometOrbiters = [];
+      const cometSpecs = [
+        { r: 58, y: 18, z: -64, speed: 0.22, phase: 0.4, color: 0x38e8ff },
+        { r: 48, y: -6, z: -56, speed: -0.18, phase: 3.1, color: 0xf5c443 }
+      ];
+      cometSpecs.forEach((cs) => {
+        const cg = new THREE.Group();
+        const head = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.62, 0),
+          new THREE.MeshBasicMaterial({ color: cs.color })
+        );
+        const tail = new THREE.Mesh(
+          new THREE.ConeGeometry(0.38, 7.5, 8),
+          new THREE.MeshBasicMaterial({ color: cs.color, transparent: true, opacity: 0.48 })
+        );
+        tail.rotation.z = Math.PI / 2;
+        tail.position.x = -3.8;
+        cg.add(head, tail);
+        planetGroup.add(cg);
+        cometOrbiters.push({ group: cg, ...cs });
+      });
 
       scene.add(planetGroup);
     }
@@ -6426,8 +6525,8 @@ body.theme-light .btn-cat-del {
       buildCosmicPlanets();
       buildInstancedShards();
       buildSupernovaSystem();
-      buildSpiralGalaxy(currentQuality === "ultra" ? 4200 : currentQuality === "high" ? 2800 : 1800);
-      buildStardust(currentQuality === "ultra" ? 1400 : currentQuality === "high" ? 900 : 480);
+      buildSpiralGalaxy(currentQuality === "ultra" ? 6400 : currentQuality === "high" ? 4600 : 3200);
+      buildStardust(currentQuality === "ultra" ? 2600 : currentQuality === "high" ? 1800 : 1100);
       buildLegacyVolumetricGalaxy(currentQuality === "ultra" ? 2800 : currentQuality === "high" ? 2200 : 1600);
 
       initUI3DFrames();
@@ -6451,27 +6550,27 @@ body.theme-light .btn-cat-del {
           legacyVelY -= my * 0.0012;
         }
 
-        // 偵測電腦滑鼠劇烈來回甩動蓄能 (調高門檻避免一般移動誤觸爆炸)
+        // 偵測電腦滑鼠快速來回甩動蓄能 (平衡靈敏度：一般滑動不誤觸，快速來回即可順利觸發)
         const now = performance.now();
-        const dtMouse = Math.max(10, now - lastMouseTime);
+        const dtMouse = Math.max(8, now - lastMouseTime);
         if (lastMouseX !== null) {
           const dx = e.clientX - lastMouseX;
           const dy = e.clientY - lastMouseY;
           const dist = Math.hypot(dx, dy);
           const speed = (dist / dtMouse) * 1000;
-          if (dist > 85 && speed > 3600) {
+          if (dist > 26 && speed > 1250) {
             const curDirX = Math.sign(dx);
             const curDirY = Math.sign(dy);
             const revX = lastDirX !== 0 && curDirX !== 0 && curDirX !== lastDirX;
             const revY = lastDirY !== 0 && curDirY !== 0 && curDirY !== lastDirY;
             if (revX || revY) {
-              mouseReversals = (now - lastReversalTime < 480) ? (mouseReversals + 1) : 1;
+              mouseReversals = (now - lastReversalTime < 520) ? (mouseReversals + 1) : 1;
               lastReversalTime = now;
-              if (mouseReversals >= 5) shakeEnergy += 18;
+              if (mouseReversals >= 3) shakeEnergy += 28;
             }
             lastDirX = curDirX;
             lastDirY = curDirY;
-          } else if (now - lastReversalTime > 600) {
+          } else if (now - lastReversalTime > 650) {
             mouseReversals = 0;
           }
         }
@@ -6558,7 +6657,7 @@ body.theme-light .btn-cat-del {
       const t = clock.elapsedTime;
       const nowMs = performance.now();
 
-      shakeEnergy *= 0.95;
+      shakeEnergy *= 0.96;
 
       skyMat.uniforms.uTime.value = t;
       skyMat.uniforms.uLightMode.value = animState.lightMode;
@@ -6614,14 +6713,14 @@ body.theme-light .btn-cat-del {
         let shakeBoost = 0;
         if (legacyExpState === "IDLE") {
           if (legacyReactorGroup) {
-            const jitterX = shakeEnergy > 32 ? (Math.random() - 0.5) * (shakeEnergy * 0.045) : 0;
-            const jitterY = shakeEnergy > 32 ? (Math.random() - 0.5) * (shakeEnergy * 0.045) : 0;
+            const jitterX = shakeEnergy > 24 ? (Math.random() - 0.5) * (shakeEnergy * 0.045) : 0;
+            const jitterY = shakeEnergy > 24 ? (Math.random() - 0.5) * (shakeEnergy * 0.045) : 0;
             legacyReactorGroup.position.x = legacySpringX + jitterX;
             legacyReactorGroup.position.y = Math.sin(t * 0.7) * 0.35 + legacySpringY + jitterY;
             legacyReactorGroup.rotation.z = -legacySpringX * 0.032;
-            if (shakeEnergy > 32) shakeBoost = shakeEnergy * 0.065;
+            if (shakeEnergy > 24) shakeBoost = shakeEnergy * 0.065;
           }
-          if (shakeEnergy > 120 && nowMs >= shakeCooldownUntil) {
+          if (shakeEnergy > 85 && nowMs >= shakeCooldownUntil) {
             shakeEnergy = 0;
             shakeCooldownUntil = nowMs + 2200;
             triggerLegacyExplosion(true);
@@ -6713,7 +6812,7 @@ body.theme-light .btn-cat-del {
         }
       } else {
         // 新版搖晃蓄能過載：僅觸發宮殿專屬蒼穹聖輝特效，絕不拆散宮殿或果實
-        if (shakeEnergy > 120 && nowMs >= shakeCooldownUntil) {
+        if (shakeEnergy > 85 && nowMs >= shakeCooldownUntil) {
           shakeEnergy = 0;
           shakeCooldownUntil = nowMs + 2200;
           triggerNewPalaceEffect(true);
@@ -6756,16 +6855,39 @@ body.theme-light .btn-cat-del {
           });
         }
 
-        if (galaxyPoints) {
-          galaxyPoints.rotation.y += dt * 0.018;
+        if (newBurstSpeed > 0) newBurstSpeed = Math.max(0, newBurstSpeed - dt * 0.85);
+
+        // 巡航星輝彗星軌道更新
+        for (let i = 0; i < cometOrbiters.length; i++) {
+          const c = cometOrbiters[i];
+          const a = t * c.speed + c.phase;
+          c.group.position.set(Math.cos(a) * c.r, c.y + Math.sin(a * 2.0) * 4.5, c.z + Math.sin(a) * 16.0);
+          c.group.rotation.y = -a + (c.speed > 0 ? Math.PI * 0.5 : -Math.PI * 0.5);
         }
 
+        if (galaxyPoints) {
+          galaxyPoints.rotation.y += dt * (0.018 + newBurstSpeed * 0.55) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
+        }
+
+        const burstSigned = newBurstSpeed * newBurstDir;
         const speedMult = 1.0 + animState.ringSpeedBoost * 5.0;
         if (palaceGroup) {
           palaceGroup.position.y = -3.5 + Math.sin(t * 0.5) * 0.45;
+          if (newBurstSpeed > 0.001) {
+            palaceGroup.rotation.y += dt * 0.48 * burstSigned;
+          } else {
+            palaceGroup.rotation.y *= 0.96;
+          }
+        }
+        if (palaceCrownGroup) {
+          palaceCrownGroup.rotation.y += dt * (0.35 + newBurstSpeed * 2.2) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
+          palaceCrownGroup.position.y = 22.4 + Math.sin(t * 1.2) * 0.25;
+        }
+        if (palaceBaseHalo) {
+          palaceBaseHalo.rotation.y -= dt * (0.22 + newBurstSpeed * 1.6) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
         }
         if (fruitGroup) {
-          fruitGroup.rotation.y += dt * (0.35 + animState.ringSpeedBoost * 1.6);
+          fruitGroup.rotation.y += dt * (0.35 + animState.ringSpeedBoost * 1.6) + dt * 1.8 * burstSigned;
           fruitGroup.position.y = 6.2 + Math.sin(t * 1.4) * 0.28;
           const s = (animState.weightScale + Math.sin(t * 2.0) * 0.02 + animState.pulseBoost * 0.12) * animState.fruitBurstScale;
           fruitGroup.scale.setScalar(s);
@@ -6774,10 +6896,10 @@ body.theme-light .btn-cat-del {
           fruitSeedsGroup.rotation.y -= dt * 0.9;
         }
 
-        if (ring1Group) { ring1Group.rotation.z += dt * 0.24 * speedMult; ring1Group.rotation.y += dt * 0.09 * speedMult; }
-        if (ring2Group) { ring2Group.rotation.z -= dt * 0.16 * speedMult; ring2Group.rotation.x += dt * 0.06 * speedMult; }
-        if (ring3Group) { ring3Group.rotation.z += dt * 0.05 * speedMult; }
-        if (ring4Group) { ring4Group.rotation.z -= dt * 0.07 * speedMult; }
+        if (ring1Group) { ring1Group.rotation.z += dt * (0.24 * speedMult + 1.45 * burstSigned); ring1Group.rotation.y += dt * (0.09 * speedMult + 0.55 * burstSigned); }
+        if (ring2Group) { ring2Group.rotation.z -= dt * (0.16 * speedMult - 1.25 * burstSigned); ring2Group.rotation.x += dt * 0.06 * speedMult; }
+        if (ring3Group) { ring3Group.rotation.z += dt * (0.05 * speedMult + 0.85 * burstSigned); }
+        if (ring4Group) { ring4Group.rotation.z -= dt * (0.07 * speedMult - 0.72 * burstSigned); }
 
         // 懸浮晶簇隔幀更新，並重用全域 _dummy 消除每幀配置 GC
         if (instancedShards && shardMeta.length > 0 && (frameCounter % 2 === 0)) {
@@ -6795,8 +6917,8 @@ body.theme-light .btn-cat-del {
         updateSupernovaParticles();
       }
 
-      // 主頁攝影機距離較遠 (z=40 vs 作物頁 z=34)，補償視差幅度讓主頁與進入作物後的背景晃動幅度一致
-      const pickerComp = (!legacyMode && currentView === "picker") ? 1.24 : 1.0;
+      // 主頁攝影機距離較遠 (z=40 vs 作物頁 z=34)，大幅補償視差幅度讓主頁與進入作物後的背景晃動同樣有感
+      const pickerComp = (!legacyMode && currentView === "picker") ? 1.85 : 1.0;
       const scaleX = (isGyroInput ? 3.0 : 3.4) * pickerComp;
       const scaleY = (isGyroInput ? 1.6 : 1.8) * pickerComp;
       const damp = isGyroInput ? 0.05 : 0.06;
@@ -6805,15 +6927,22 @@ body.theme-light .btn-cat-del {
       smoothPX += (targetPX - smoothPX) * damp;
       smoothPY += (targetPY - smoothPY) * damp;
 
-      // 新版背景遠景層視差 (星系、星球依景深反向位移，跟隨滑鼠 / 陀螺儀更有感)
+      // 新版背景全層視差 (星系、星球、宮殿與星塵依景深位移，主頁晃動幅度與作物頁一樣明顯)
       if (!legacyMode) {
         if (galaxyPoints) {
-          galaxyPoints.position.x = -smoothPX * 3.2;
-          galaxyPoints.position.y = 14 - smoothPY * 2.0;
+          galaxyPoints.position.x = -smoothPX * 3.6;
+          galaxyPoints.position.y = 14 - smoothPY * 2.2;
         }
         if (planetGroup) {
-          planetGroup.position.x = -smoothPX * 1.8;
-          planetGroup.position.y = -smoothPY * 1.2;
+          planetGroup.position.x = -smoothPX * 2.1;
+          planetGroup.position.y = -smoothPY * 1.4;
+        }
+        if (palaceGroup) {
+          palaceGroup.position.x = -smoothPX * 0.55;
+        }
+        if (stardustPoints) {
+          stardustPoints.position.x = -smoothPX * 1.2;
+          stardustPoints.position.y = -smoothPY * 0.8;
         }
       }
 
@@ -7031,17 +7160,33 @@ body.theme-light .btn-cat-del {
           global.gsap.to(legacyBlastRing.scale, { x: 4.5, y: 4.5, z: 4.5, duration: 0.9, ease: "power2.out" });
           global.gsap.to(legacyBlastRingMat.uniforms.uOpacity, { value: 0, duration: 0.9, ease: "power2.out", onComplete: () => { legacyBlastRing.visible = false; } });
         }
-      } else if (shockwaves.length > 0) {
-        const sw = shockwaves[0];
-        sw.mesh.position.set(0, 2.7, -24);
-        sw.mesh.visible = true;
-        sw.mat.uniforms.uColor.value.copy(crystalMat.uniforms.uPrimaryColor.value);
-        sw.mesh.scale.setScalar(0.8);
-        sw.mat.uniforms.uOpacity.value = 0.8;
-        global.gsap.killTweensOf(sw.mesh.scale);
-        global.gsap.killTweensOf(sw.mat.uniforms.uOpacity);
-        global.gsap.to(sw.mesh.scale, { x: 8.5, y: 8.5, z: 8.5, duration: 1.05, ease: "power2.out" });
-        global.gsap.to(sw.mat.uniforms.uOpacity, { value: 0, duration: 1.05, ease: "power2.out" });
+      } else {
+        // 新版點擊作物(+1)與退回清單(-1)：雙向星環、星系與宮殿旋轉衝刺 + 擴散/收束脈衝光環
+        newBurstSpeed = 1.0;
+        newBurstDir = dir;
+        global.gsap.killTweensOf(animState, "ringSpeedBoost");
+        animState.ringSpeedBoost = 0.65;
+        global.gsap.to(animState, { ringSpeedBoost: 0, duration: 1.05, ease: "power2.out" });
+
+        if (shockwaves.length > 0) {
+          const sw = shockwaves[0];
+          sw.mesh.position.set(0, 2.7, -24);
+          sw.mesh.visible = true;
+          sw.mat.uniforms.uColor.value.copy(crystalMat.uniforms.uPrimaryColor.value);
+          global.gsap.killTweensOf(sw.mesh.scale);
+          global.gsap.killTweensOf(sw.mat.uniforms.uOpacity);
+          if (dir > 0) {
+            sw.mesh.scale.setScalar(0.8);
+            sw.mat.uniforms.uOpacity.value = 0.85;
+            global.gsap.to(sw.mesh.scale, { x: 8.5, y: 8.5, z: 8.5, duration: 1.0, ease: "power2.out" });
+            global.gsap.to(sw.mat.uniforms.uOpacity, { value: 0, duration: 1.0, ease: "power2.out" });
+          } else {
+            sw.mesh.scale.setScalar(7.5);
+            sw.mat.uniforms.uOpacity.value = 0.78;
+            global.gsap.to(sw.mesh.scale, { x: 0.7, y: 0.7, z: 0.7, duration: 0.9, ease: "power2.out" });
+            global.gsap.to(sw.mat.uniforms.uOpacity, { value: 0, duration: 0.9, ease: "power2.out" });
+          }
+        }
       }
     }
 
@@ -7242,8 +7387,8 @@ body.theme-light .btn-cat-del {
       useBloom = !legacyMode && currentTheme === "dark" && tier !== "smooth" && Boolean(composer);
       if (composer) composer.setPixelRatio(dpr);
 
-      buildSpiralGalaxy(tier === "ultra" ? 4200 : tier === "high" ? 2800 : 1800);
-      buildStardust(tier === "ultra" ? 1400 : tier === "high" ? 900 : 480);
+      buildSpiralGalaxy(tier === "ultra" ? 6400 : tier === "high" ? 4600 : 3200);
+      buildStardust(tier === "ultra" ? 2600 : tier === "high" ? 1800 : 1100);
       buildLegacyStars(tier === "ultra" ? 2800 : tier === "high" ? 2200 : 1600);
       setLegacyMode(legacyMode);
       handleResize();
