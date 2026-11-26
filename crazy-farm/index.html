@@ -851,11 +851,39 @@ body.theme-light .specimen-q-灰色 {
   align-items: center;
   justify-content: center;
 }
+/* 手機與 iPad 平板：完整還原原本 3D 透視階層與逐卡陀螺儀傾斜（關閉會壓平 3D 的 content-visibility: auto） */
+html[data-device="mobile"] body:not(.legacy-ui) .crop-grid-3d,
+html[data-device="tablet"] body:not(.legacy-ui) .crop-grid-3d {
+  perspective: 1100px;
+  transform-style: preserve-3d;
+}
+html[data-device="mobile"] .crop-pedestal-3d,
+html[data-device="tablet"] .crop-pedestal-3d {
+  content-visibility: visible;
+  transform-style: preserve-3d;
+}
 html[data-device="mobile"] .crop-3d-stage,
 html[data-device="tablet"] .crop-3d-stage {
   perspective: 420px;
+  transform-style: preserve-3d;
   transform: rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
   transition: transform 0.08s linear;
+}
+html[data-device="mobile"] .crop-3d-token,
+html[data-device="tablet"] .crop-3d-token {
+  transform-style: preserve-3d;
+}
+html[data-device="mobile"] .crop-3d-depth-1,
+html[data-device="tablet"] .crop-3d-depth-1 {
+  transform: translate3d(1.2px, 1.8px, -2px);
+}
+html[data-device="mobile"] .crop-3d-depth-2,
+html[data-device="tablet"] .crop-3d-depth-2 {
+  transform: translate3d(2.2px, 3.4px, -4px);
+}
+html[data-device="mobile"] .crop-3d-face,
+html[data-device="tablet"] .crop-3d-face {
+  transform: translateZ(1px);
 }
 @media (max-width: 560px) {
   .crop-3d-stage {
