@@ -2,13 +2,45 @@
 <html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta id="appViewportMeta" name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script>
+      (function () {
+        try {
+          var ua = navigator.userAgent || "";
+          var isWinDesktop = /Windows NT/i.test(ua) && !/Windows Phone|IEMobile/i.test(ua);
+          var isMac = /Macintosh/i.test(ua);
+          var touchPts = navigator.maxTouchPoints || 0;
+          var isIPad = /iPad/i.test(ua) || (isMac && touchPts > 1);
+          var minScr = (screen && screen.width && screen.height) ? Math.min(screen.width, screen.height) : 1024;
+          var isCoarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+          var device = "desktop";
+          if (!isWinDesktop && !(isMac && !isIPad)) {
+            if (/iPhone|iPod|Windows Phone|IEMobile|BlackBerry|Opera Mini/i.test(ua) || (/Android/i.test(ua) && /Mobile/i.test(ua)) || minScr < 600) {
+              device = "mobile";
+            } else if (isIPad || /Android/i.test(ua) || (touchPts > 1 && isCoarse)) {
+              device = "tablet";
+            }
+          }
+          document.documentElement.dataset.device = device;
+          var vp = document.getElementById("appViewportMeta");
+          if (vp && device === "mobile") {
+            var wantDesktop = localStorage.getItem("farm_desktop_site_pref") === "true";
+            vp.setAttribute(
+              "content",
+              wantDesktop
+                ? "width=1024, viewport-fit=cover"
+                : "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+            );
+          }
+        } catch (e) {}
+      })();
+    </script>
     <title>瘋狂農場•果實計算器</title>
     <meta name="theme-color" content="#040914" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="description" content="全服細節最多最華麗的計算器" />
+    <meta name="description" content="全服細節最多最華麗的計算器2.0" />
 
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="apple-touch-icon" href="./favicon.svg" />
@@ -521,6 +553,41 @@ body.theme-light .filter-tab-pill.active {
 }
 
 /* 記憶與精準提示卡片 (實體清晰，字體不透) */
+.home-url-notice-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  margin-bottom: 14px;
+  border-radius: 14px;
+  background: rgba(12, 26, 48, 0.84);
+  border: 1px solid rgba(244, 197, 83, 0.48);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 8px 20px rgba(2, 6, 16, 0.34);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-main);
+}
+.home-url-notice-card strong {
+  color: var(--accent-gold);
+}
+body.theme-light .home-url-notice-card {
+  background: rgba(255, 251, 235, 0.72);
+  border-color: rgba(217, 119, 6, 0.44);
+  box-shadow: inset 0 1px 0 #fff, 0 8px 18px rgba(18, 52, 92, 0.12);
+}
+body.legacy-ui .home-url-notice-card {
+  border-radius: 0;
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+}
+@media (max-width: 680px) {
+  .home-url-notice-card {
+    padding: 8px 11px;
+    margin-bottom: 10px;
+    font-size: 11.5px;
+    border-radius: 12px;
+  }
+}
+
 .settings-memory-tip-card,
 .calc-memory-tip-card {
   display: flex;
@@ -1273,6 +1340,23 @@ body.theme-light .dropdown-menu-3d {
   gap: 7px;
   padding-right: 4px;
 }
+/* 電腦端切換作物清單一排 5 個；平板一排 4 個（橫向 5 個）；手機（含開電腦版網站）維持一排 3 個 */
+@media (min-width: 860px) {
+  html[data-device="desktop"] #dropdownCropsContainer {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+html[data-device="tablet"] #dropdownCropsContainer {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (min-width: 1000px) and (orientation: landscape) {
+  html[data-device="tablet"] #dropdownCropsContainer {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+html[data-device="mobile"] #dropdownCropsContainer {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 
 .dropdown-item-btn {
   display: flex;
@@ -1855,6 +1939,48 @@ body.theme-light .cyber-toggle-pill {
   grid-template-columns: repeat(6, 1fr);
   gap: 9px;
 }
+/* 三大詞條區欄數自適應：
+ * 電腦端：基礎／天氣／活動皆為 7 欄（基礎含特殊詞條如笑日葵、薯片時自動 8 欄）
+ * 手機端（含開電腦版網站）：基礎與天氣維持 5 欄（天氣 5×5）、活動維持 6 欄
+ * 平板端：直向天氣 5 欄、橫向 6 欄 */
+.chips-grid-weather {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+html[data-device="desktop"] .chips-grid-base,
+html[data-device="desktop"] .chips-grid-weather,
+html[data-device="desktop"] .chips-grid-past {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+html[data-device="desktop"] .chips-grid-base.has-special {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+html[data-device="mobile"] .chips-grid-base,
+html[data-device="mobile"] .chips-grid-weather {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+html[data-device="mobile"] .chips-grid-past {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+@media (orientation: portrait) {
+  html[data-device="tablet"] .chips-grid-weather {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+html[data-device="desktop"] #settingDesktopSiteRow {
+  display: none !important;
+}
+/* 平板專屬觸控舒適度與舞台比例適配 */
+html[data-device="tablet"] .app-stage {
+  width: min(1040px, calc(100% - 28px));
+}
+html[data-device="tablet"] .chip-3d {
+  min-height: 44px;
+}
+@media (max-width: 900px) and (orientation: portrait) {
+  html[data-device="tablet"] .hero-workstation-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 .chip-3d {
   position: relative;
@@ -1903,11 +2029,11 @@ body.theme-light .cyber-toggle-pill {
     font-size: 12px;
     margin-bottom: 7px;
   }
-  .chips-grid-5 {
+  .chips-grid-5,
+  .chips-grid-5.chips-grid-weather {
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 5px;
   }
-  .chips-grid-5.chips-grid-weather,
   .chips-grid-6 {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 4px;
@@ -2822,6 +2948,22 @@ body.theme-light .btn-cat-del {
   transform: translate(-50%, -50%) scale(1.06);
 }
 
+/* 首頁三個大外框（頂欄、作物列表外框、頁尾聲明）全透明僅保留外框線，完全不遮擋 3D 背景；進入作物後照舊 */
+body:not(.view-calculator) .cyber-header-3d,
+body:not(.view-calculator) #pickerView .spatial-panel,
+body:not(.view-calculator) .cyber-footer-3d,
+body.theme-light:not(.view-calculator) .cyber-header-3d,
+body.theme-light:not(.view-calculator) #pickerView .spatial-panel,
+body.theme-light:not(.view-calculator) .cyber-footer-3d,
+body.legacy-ui:not(.view-calculator) .cyber-header-3d,
+body.legacy-ui:not(.view-calculator) #pickerView .spatial-panel,
+body.legacy-ui:not(.view-calculator) .cyber-footer-3d,
+body.legacy-ui.theme-light:not(.view-calculator) .cyber-header-3d,
+body.legacy-ui.theme-light:not(.view-calculator) #pickerView .spatial-panel,
+body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
+  background: transparent !important;
+}
+
 </style>
 
     <!-- Three.js r147 + PostProcessing + GSAP (Classic script tags: 100% file:// compatible) -->
@@ -2874,6 +3016,12 @@ body.theme-light .btn-cat-del {
       <!-- 視圖 1：作物清單首頁                                -->
       <!-- ================================================== -->
       <section id="pickerView" class="picker-stage">
+        <div id="homeUrlNoticeCard" class="home-url-notice-card">
+          <span class="home-url-notice-text">
+            📢 <strong>網址定版公告</strong>：因先前更換網址可能導致原先記憶重置，<strong>往後不會再更改網址</strong>，所有按鈕與設定只需重新調整一次即可自動記憶保存！（可於設定內「隱藏首頁提示」關閉）
+          </span>
+        </div>
+
         <div class="spatial-panel picker-vault-panel" data-ui3d="panel">
           <div class="filter-deck">
             <div class="search-bar-3d">
@@ -2892,7 +3040,7 @@ body.theme-light .btn-cat-del {
 
             <div id="settingsMemoryTipCard" class="settings-memory-tip-card">
               <span class="settings-memory-tip-text">
-                💡 本計算器之可自訂功能較多，所有皆只需設定一次便會自動記憶，之後進入網頁便會自動還原。<span style="white-space: nowrap;">一般情況使用<strong class="guide-highlight-preset" style="white-space: nowrap; display: inline;">預設設定</strong>即可</span>。各項說明請見功能說明。(可於設定內隱藏此提示)
+                💡 本計算器之可自訂功能較多，所有皆只需設定一次便會自動記憶，之後進入網頁便會自動還原。<span style="white-space: nowrap;">一般情況使用<strong class="guide-highlight-preset" style="white-space: nowrap; display: inline;">預設設定</strong>即可</span>。各項說明請見功能說明。
               </span>
               <button id="tipGuideBtn" class="settings-memory-tip-btn" type="button">功能說明</button>
             </div>
@@ -3814,6 +3962,15 @@ body.theme-light .btn-cat-del {
             </label>
           </div>
 
+          <!-- 0.5 電腦版網站 (預設關閉，僅於非電腦裝置顯示) -->
+          <div id="settingDesktopSiteRow" class="settings-clean-row">
+            <span class="settings-clean-label">🖥️ 電腦版網站 <span class="setting-hint-note">(手機以桌面比例顯示)</span></span>
+            <label class="switch-unit" style="margin: 0; cursor: pointer;">
+              <input id="settingDesktopSiteToggle" type="checkbox" />
+              <div class="astra-toggle-switch"></div>
+            </label>
+          </div>
+
           <!-- 1. 主題切換 -->
           <div class="settings-clean-row">
             <span class="settings-clean-label">🎨 介面主題</span>
@@ -3833,22 +3990,31 @@ body.theme-light .btn-cat-del {
             </div>
           </div>
 
-          <!-- 2. 操作音效 與 背景互動 (同欄位排版，省空間，刪除「允許」) -->
+          <!-- 2. 操作音效 與 詞條音效 (分開控制，同欄位排版) -->
           <div class="settings-clean-row settings-dual-row" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; justify-content: space-between; flex: 1 1 180px; gap: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex: 1 1 170px; gap: 8px;">
               <span class="settings-clean-label">🔊 操作音效</span>
               <label class="switch-unit" style="margin: 0; cursor: pointer;">
                 <input id="settingSoundToggle" type="checkbox" checked />
                 <div class="astra-toggle-switch"></div>
               </label>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; flex: 1 1 180px; gap: 8px;">
-              <span id="settingGyroLabel" class="settings-clean-label">滑鼠互動</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; flex: 1 1 170px; gap: 8px;">
+              <span class="settings-clean-label">🎵 詞條音效</span>
               <label class="switch-unit" style="margin: 0; cursor: pointer;">
-                <input id="settingGyroToggle" type="checkbox" />
+                <input id="settingMutationSoundToggle" type="checkbox" checked />
                 <div class="astra-toggle-switch"></div>
               </label>
             </div>
+          </div>
+
+          <!-- 2.5 背景互動 -->
+          <div class="settings-clean-row">
+            <span id="settingGyroLabel" class="settings-clean-label">滑鼠互動</span>
+            <label class="switch-unit" style="margin: 0; cursor: pointer;">
+              <input id="settingGyroToggle" type="checkbox" />
+              <div class="astra-toggle-switch"></div>
+            </label>
           </div>
 
           <!-- 3. 隱藏提示設定 (首頁與計算提示合併至同一欄位，省空間) -->
@@ -3984,11 +4150,11 @@ body.theme-light .btn-cat-del {
                 </tr>
                 <tr>
                   <td><span class="guide-badge-name">隱藏首頁提示</span></td>
-                  <td>開啟後將隱藏首頁品階標籤與作物之間的「記憶與操作提示卡片」，並在設定中提供開關說明按鈕。</td>
+                  <td>開啟後將隱藏首頁的「網址定版公告」與「記憶與操作提示卡片」，預設關閉並自動記憶；功能說明可隨時於設定內開啟。</td>
                 </tr>
                 <tr>
                   <td><span class="guide-badge-name">隱藏計算提示</span></td>
-                  <td>開啟後將隱藏計算器橫幅下方的「精準計算提示卡片」，提供更精簡專注的試算視圖。</td>
+                  <td>開啟後將隱藏計算器橫幅下方的「精準計算提示卡片」，預設關閉並自動記憶，提供更精簡專注的試算視圖。</td>
                 </tr>
                 <tr>
                   <td><span class="guide-badge-name">使用舊版介面</span></td>
@@ -4032,7 +4198,7 @@ body.theme-light .btn-cat-del {
 (function (global) {
   "use strict";
 
-  global.GAME_DATA = {"versions":{"crops_version":143,"mutations_version":37},"crops":[{"name":"灰壤豆","quality":"灰色","maxWeight":3.4,"growthSpeed":180,"specialMutation":null,"priceCoefficient":1375.9391,"sortOrder":0},{"name":"土豆","quality":"灰色","maxWeight":11.9,"growthSpeed":28.5,"specialMutation":"薯片","priceCoefficient":26.2837,"sortOrder":1},{"name":"香菇","quality":"灰色","maxWeight":3.4,"growthSpeed":133,"specialMutation":null,"priceCoefficient":688.7738,"sortOrder":2},{"name":"番茄","quality":"灰色","maxWeight":10.2,"growthSpeed":33.33,"specialMutation":null,"priceCoefficient":66.2818,"sortOrder":3},{"name":"波斯菊","quality":"灰色","maxWeight":34,"growthSpeed":17,"specialMutation":null,"priceCoefficient":43.5454,"sortOrder":4},{"name":"月光草","quality":"灰色","maxWeight":3.4,"growthSpeed":111,"specialMutation":null,"priceCoefficient":345.1004,"sortOrder":5},{"name":"月番茄","quality":"绿色","maxWeight":10.2,"growthSpeed":111,"specialMutation":null,"priceCoefficient":663.0498,"sortOrder":6},{"name":"大豆","quality":"绿色","maxWeight":3.4,"growthSpeed":275,"specialMutation":null,"priceCoefficient":2583.0373,"sortOrder":7},{"name":"月灯草","quality":"绿色","maxWeight":5.1,"growthSpeed":205,"specialMutation":null,"priceCoefficient":1496.9466,"sortOrder":8},{"name":"黄瓜","quality":"绿色","maxWeight":13.6,"growthSpeed":50,"specialMutation":"黄瓜蛇","priceCoefficient":215.3072,"sortOrder":9},{"name":"竹子","quality":"绿色","maxWeight":136,"growthSpeed":7.5,"specialMutation":null,"priceCoefficient":12.2478,"sortOrder":10},{"name":"西瓜","quality":"蓝色","maxWeight":170,"growthSpeed":6,"specialMutation":"方形","priceCoefficient":10.7111,"sortOrder":11},{"name":"梨","quality":"蓝色","maxWeight":13.6,"growthSpeed":75,"specialMutation":null,"priceCoefficient":483.8679,"sortOrder":12},{"name":"橘子","quality":"蓝色","maxWeight":13.6,"growthSpeed":75,"specialMutation":null,"priceCoefficient":538.0993,"sortOrder":13},{"name":"蓝莓","quality":"蓝色","maxWeight":40.8,"growthSpeed":27.99,"specialMutation":null,"priceCoefficient":113.8638,"sortOrder":14},{"name":"玉米","quality":"蓝色","maxWeight":40.8,"growthSpeed":27.78,"specialMutation":null,"priceCoefficient":103.5146,"sortOrder":15},{"name":"白菜","quality":"蓝色","maxWeight":10.2,"growthSpeed":80,"specialMutation":null,"priceCoefficient":579.6116,"sortOrder":16},{"name":"花生","quality":"蓝色","maxWeight":5.1,"growthSpeed":207.11,"specialMutation":null,"priceCoefficient":2813.584,"sortOrder":17},{"name":"牵牛花","quality":"蓝色","maxWeight":5.1,"growthSpeed":200,"specialMutation":null,"priceCoefficient":2113.5728,"sortOrder":18},{"name":"棉花","quality":"蓝色","maxWeight":5.1,"growthSpeed":200,"specialMutation":null,"priceCoefficient":2574.6375,"sortOrder":19},{"name":"银辉苔","quality":"蓝色","maxWeight":5.1,"growthSpeed":280,"specialMutation":null,"priceCoefficient":3040.3725,"sortOrder":20},{"name":"月环树","quality":"蓝色","maxWeight":20.4,"growthSpeed":58,"specialMutation":null,"priceCoefficient":322.1718,"sortOrder":21},{"name":"苹果","quality":"紫色","maxWeight":37.4,"growthSpeed":40.5,"specialMutation":"糖葫芦","priceCoefficient":188.799,"sortOrder":22},{"name":"石榴","quality":"紫色","maxWeight":20.4,"growthSpeed":83.5,"specialMutation":null,"priceCoefficient":526.8633,"sortOrder":23},{"name":"月莓","quality":"紫色","maxWeight":8.5,"growthSpeed":375,"specialMutation":null,"priceCoefficient":3925.2664,"sortOrder":24},{"name":"星叶菜","quality":"紫色","maxWeight":10.2,"growthSpeed":416,"specialMutation":null,"priceCoefficient":3971.3932,"sortOrder":25},{"name":"香蕉","quality":"紫色","maxWeight":10.2,"growthSpeed":280,"specialMutation":"香蕉猴","priceCoefficient":2486.5362,"sortOrder":26},{"name":"车厘子","quality":"紫色","maxWeight":10.2,"growthSpeed":166,"specialMutation":null,"priceCoefficient":1655.8519,"sortOrder":27},{"name":"柿子","quality":"紫色","maxWeight":37.4,"growthSpeed":45.51,"specialMutation":null,"priceCoefficient":235.9062,"sortOrder":28},{"name":"椰子","quality":"紫色","maxWeight":40.8,"growthSpeed":32.5,"specialMutation":null,"priceCoefficient":144.923,"sortOrder":29},{"name":"南瓜","quality":"紫色","maxWeight":204,"growthSpeed":6.5,"specialMutation":"万圣夜","priceCoefficient":12.9627,"sortOrder":30},{"name":"龙眼","quality":"紫色","maxWeight":8.5,"growthSpeed":438.78,"specialMutation":null,"priceCoefficient":4343.6874,"sortOrder":31},{"name":"草莓","quality":"金色","maxWeight":8.5,"growthSpeed":888,"specialMutation":"连体","priceCoefficient":8727.9755,"sortOrder":32},{"name":"荔枝","quality":"金色","maxWeight":23.8,"growthSpeed":135,"specialMutation":null,"priceCoefficient":790.0566,"sortOrder":33},{"name":"菠菜","quality":"金色","maxWeight":20.4,"growthSpeed":495.76,"specialMutation":null,"priceCoefficient":3861.3768,"sortOrder":34},{"name":"柚子","quality":"金色","maxWeight":61.2,"growthSpeed":67.34,"specialMutation":null,"priceCoefficient":225.3807,"sortOrder":35},{"name":"液光藤","quality":"金色","maxWeight":20.4,"growthSpeed":520,"specialMutation":null,"priceCoefficient":3516.6614,"sortOrder":36},{"name":"月核树","quality":"金色","maxWeight":17,"growthSpeed":460,"specialMutation":null,"priceCoefficient":3389.4578,"sortOrder":37},{"name":"猕猴桃","quality":"金色","maxWeight":13.6,"growthSpeed":278,"specialMutation":null,"priceCoefficient":2151.6753,"sortOrder":38},{"name":"榴莲","quality":"金色","maxWeight":61.2,"growthSpeed":55.55,"specialMutation":null,"priceCoefficient":202.8554,"sortOrder":39},{"name":"葡萄","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":24839.9745,"sortOrder":40},{"name":"蟠桃","quality":"至臻","maxWeight":20.4,"growthSpeed":1333.33,"specialMutation":null,"priceCoefficient":8783.9561,"sortOrder":41},{"name":"星空玫瑰","quality":"至臻","maxWeight":10.2,"growthSpeed":2966.6,"specialMutation":null,"priceCoefficient":33129.1179,"sortOrder":42},{"name":"月影梅","quality":"至臻","maxWeight":3.4,"growthSpeed":4022.5,"specialMutation":null,"priceCoefficient":77401.7981,"sortOrder":43},{"name":"大王菊","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":24848.7857,"sortOrder":44},{"name":"惊奇菇","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":49708.0001,"sortOrder":45},{"name":"月兔","quality":"至臻","maxWeight":23.8,"growthSpeed":1523,"specialMutation":null,"priceCoefficient":11151.968,"sortOrder":46},{"name":"魔鬼朝天椒","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":33110.323,"sortOrder":47},{"name":"月蟾蜍","quality":"至臻","maxWeight":34,"growthSpeed":990,"specialMutation":null,"priceCoefficient":9797.3968,"sortOrder":48},{"name":"芦荟","quality":"至臻","maxWeight":10.2,"growthSpeed":2169.8,"specialMutation":null,"priceCoefficient":54680.2945,"sortOrder":49},{"name":"向日葵","quality":"至臻","maxWeight":51,"growthSpeed":80,"specialMutation":"笑日葵","priceCoefficient":370.3857,"sortOrder":50},{"name":"仙人掌象","quality":"至臻","maxWeight":34,"growthSpeed":720,"specialMutation":null,"priceCoefficient":9524.9248,"sortOrder":51},{"name":"红包树","quality":"至臻","maxWeight":5.1,"growthSpeed":5125,"specialMutation":null,"priceCoefficient":83180.1399,"sortOrder":52},{"name":"火龙狗","quality":"至臻","maxWeight":34,"growthSpeed":1084.43,"specialMutation":null,"priceCoefficient":10889.6528,"sortOrder":53},{"name":"松果","quality":"至臻","maxWeight":17,"growthSpeed":570,"specialMutation":null,"priceCoefficient":4618.5543,"sortOrder":54},{"name":"幻月花","quality":"至臻","maxWeight":23.8,"growthSpeed":1142.5,"specialMutation":null,"priceCoefficient":8364.9561,"sortOrder":55},{"name":"彼岸花","quality":"至臻","maxWeight":10.2,"growthSpeed":2908.5,"specialMutation":null,"priceCoefficient":49674.0134,"sortOrder":56},{"name":"马蹄莲","quality":"至臻","maxWeight":17,"growthSpeed":575,"specialMutation":null,"priceCoefficient":5081.0896,"sortOrder":57},{"name":"铃兰幽幽","quality":"至臻","maxWeight":23.8,"growthSpeed":1400,"specialMutation":null,"priceCoefficient":12086.5815,"sortOrder":58},{"name":"听歌的柿黛拉","quality":"金色","maxWeight":42.5,"growthSpeed":88,"specialMutation":null,"priceCoefficient":775.952,"sortOrder":59},{"name":"跳舞的柿黛拉","quality":"至臻","maxWeight":45.2,"growthSpeed":800,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":60},{"name":"秋水仙","quality":"至臻","maxWeight":34,"growthSpeed":705.882,"specialMutation":null,"priceCoefficient":10349.5256,"sortOrder":61},{"name":"银杏","quality":"至臻","maxWeight":5.1,"growthSpeed":4318.1438,"specialMutation":null,"priceCoefficient":93000,"sortOrder":62,"isNew":true,"newOrder":1},{"name":"沉静的疯象南瓜","quality":"至臻","maxWeight":45.2,"growthSpeed":800,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":59.5,"isNew":true,"newOrder":2},{"name":"雪莲","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":56993.9613,"sortOrder":64,"isNew":true,"newOrder":3},{"name":"藏红花","quality":"金色","maxWeight":20.4,"growthSpeed":571.77,"specialMutation":null,"priceCoefficient":4274,"sortOrder":65,"isNew":true,"newOrder":1},{"name":"灵芝","quality":"金色","maxWeight":61.2,"growthSpeed":0,"specialMutation":null,"priceCoefficient":303.7,"sortOrder":66,"isNew":true,"newOrder":2},{"name":"迷路的疯象南瓜","quality":"金色","maxWeight":42.5,"growthSpeed":0,"specialMutation":null,"priceCoefficient":940.31,"sortOrder":67,"isNew":true,"newOrder":3},{"name":"芒果","quality":"紫色","maxWeight":8.5,"growthSpeed":0,"specialMutation":null,"priceCoefficient":4946,"sortOrder":68,"isNew":true,"newOrder":1}],"mutations":[{"name":"霓虹","color":"彩色","groupKey":"rare","isActive":true,"sortOrder":0,"multiplier":18,"shareBitIndex":30},{"name":"薯片","color":"紫色","groupKey":"special","isActive":true,"sortOrder":0,"multiplier":1.5,"shareBitIndex":5},{"name":"星环","color":"紫色","groupKey":"past","isActive":true,"sortOrder":0,"multiplier":10,"shareBitIndex":15},{"name":"橙钻","color":"金色","groupKey":"common","isActive":true,"sortOrder":1,"multiplier":18,"shareBitIndex":43},{"name":"幻彩","color":"金色","groupKey":"color","isActive":true,"sortOrder":0,"multiplier":3,"shareBitIndex":42},{"name":"亮晶晶","color":"紫色","groupKey":"intermediate","isActive":true,"sortOrder":4,"multiplier":10,"shareBitIndex":14},{"name":"星空","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":0,"multiplier":40,"shareBitIndex":3},{"name":"流火","color":"金色","groupKey":"rare","isActive":true,"sortOrder":2,"multiplier":15,"shareBitIndex":23},{"name":"方形","color":"紫色","groupKey":"special","isActive":true,"sortOrder":1,"multiplier":1.5,"shareBitIndex":6},{"name":"流光","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":1,"multiplier":30,"shareBitIndex":4},{"name":"异彩","color":"蓝色","groupKey":"color","isActive":true,"sortOrder":1,"multiplier":1.5,"shareBitIndex":44},{"name":"瓷化","color":"紫色","groupKey":"common","isActive":true,"sortOrder":5,"multiplier":8,"shareBitIndex":13},{"name":"琥珀","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":12,"multiplier":4.5,"shareBitIndex":45},{"name":"水晶","color":"金色","groupKey":"quality","isActive":true,"sortOrder":2,"multiplier":20,"shareBitIndex":2},{"name":"故障","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5,"shareBitIndex":41},{"name":"糖葫芦","color":"紫色","groupKey":"special","isActive":true,"sortOrder":2,"multiplier":1.5,"shareBitIndex":7},{"name":"彩尘","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5,"shareBitIndex":46},{"name":"太阳耀斑","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":8,"multiplier":5,"shareBitIndex":34},{"name":"日蚀","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":3,"multiplier":10,"shareBitIndex":24},{"name":"连体","color":"紫色","groupKey":"special","isActive":true,"sortOrder":3,"multiplier":1.5,"shareBitIndex":8},{"name":"金","color":"蓝色","groupKey":"quality","isActive":true,"sortOrder":3,"multiplier":10,"shareBitIndex":1},{"name":"哈基咪","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":3,"multiplier":5,"shareBitIndex":40},{"name":"冰冻","color":"绿色","groupKey":"common","isActive":true,"sortOrder":14,"multiplier":4,"shareBitIndex":17},{"name":"暗雾","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":6,"shareBitIndex":25},{"name":"陶化","color":"绿色","groupKey":"intermediate","isActive":true,"sortOrder":13,"multiplier":4,"shareBitIndex":38},{"name":"惊魂夜","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":4,"multiplier":5,"shareBitIndex":33},{"name":"落雷","color":"绿色","groupKey":"common","isActive":true,"sortOrder":15,"multiplier":3,"shareBitIndex":16},{"name":"银","color":"绿色","groupKey":"quality","isActive":true,"sortOrder":4,"multiplier":3,"shareBitIndex":0},{"name":"彩虹","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":11,"multiplier":5,"shareBitIndex":28},{"name":"结霜","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":20,"multiplier":2,"shareBitIndex":37},{"name":"黄瓜蛇","color":"金色","groupKey":"special","isActive":true,"sortOrder":4,"multiplier":2,"shareBitIndex":9},{"name":"沙尘","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":18,"multiplier":2,"shareBitIndex":35},{"name":"极光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":9,"multiplier":5,"shareBitIndex":32},{"name":"金币","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":5,"multiplier":5,"shareBitIndex":39},{"name":"万圣夜","color":"金色","groupKey":"special","isActive":true,"sortOrder":5,"multiplier":2,"shareBitIndex":10},{"name":"潮湿","color":"灰色","groupKey":"common","isActive":true,"sortOrder":23,"multiplier":1,"shareBitIndex":20},{"name":"血月","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":6,"multiplier":5,"shareBitIndex":27},{"name":"香蕉猴","color":"金色","groupKey":"special","isActive":true,"sortOrder":6,"multiplier":2,"shareBitIndex":11},{"name":"覆雪","color":"灰色","groupKey":"common","isActive":true,"sortOrder":22,"multiplier":2,"shareBitIndex":19},{"name":"生机","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":17,"multiplier":2,"shareBitIndex":22},{"name":"荧光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":10,"multiplier":5,"shareBitIndex":29},{"name":"迷雾","color":"灰色","groupKey":"common","isActive":true,"sortOrder":21,"multiplier":2,"shareBitIndex":21},{"name":"笑日葵","color":"彩色","groupKey":"special","isActive":true,"sortOrder":7,"multiplier":10,"shareBitIndex":12},{"name":"幽魂","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":7,"multiplier":5,"shareBitIndex":31},{"name":"灼热","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":19,"multiplier":2,"shareBitIndex":36},{"name":"颤栗","color":"灰色","groupKey":"common","isActive":true,"sortOrder":24,"multiplier":1,"shareBitIndex":18},{"name":"陨石","color":"绿色","groupKey":"past","isActive":true,"sortOrder":10,"multiplier":3,"shareBitIndex":26},{"name":"花雨","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":7,"shareBitIndex":47,"isNew":true},{"name":"幽幽南瓜","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":1,"multiplier":5,"shareBitIndex":48},{"name":"火烧云","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":1,"multiplier":5,"shareBitIndex":49,"isNew":true}]};
+  global.GAME_DATA = {"versions":{"crops_version":143,"mutations_version":37},"crops":[{"name":"灰壤豆","quality":"灰色","maxWeight":3.4,"growthSpeed":180,"specialMutation":null,"priceCoefficient":1375.9391,"sortOrder":0},{"name":"土豆","quality":"灰色","maxWeight":11.9,"growthSpeed":28.5,"specialMutation":"薯片","priceCoefficient":26.2837,"sortOrder":1},{"name":"香菇","quality":"灰色","maxWeight":3.4,"growthSpeed":133,"specialMutation":null,"priceCoefficient":688.7738,"sortOrder":2},{"name":"番茄","quality":"灰色","maxWeight":10.2,"growthSpeed":33.33,"specialMutation":null,"priceCoefficient":66.2818,"sortOrder":3},{"name":"波斯菊","quality":"灰色","maxWeight":34,"growthSpeed":17,"specialMutation":null,"priceCoefficient":43.5454,"sortOrder":4},{"name":"月光草","quality":"灰色","maxWeight":3.4,"growthSpeed":111,"specialMutation":null,"priceCoefficient":345.1004,"sortOrder":5},{"name":"月番茄","quality":"绿色","maxWeight":10.2,"growthSpeed":111,"specialMutation":null,"priceCoefficient":663.0498,"sortOrder":6},{"name":"大豆","quality":"绿色","maxWeight":3.4,"growthSpeed":275,"specialMutation":null,"priceCoefficient":2583.0373,"sortOrder":7},{"name":"月灯草","quality":"绿色","maxWeight":5.1,"growthSpeed":205,"specialMutation":null,"priceCoefficient":1496.9466,"sortOrder":8},{"name":"黄瓜","quality":"绿色","maxWeight":13.6,"growthSpeed":50,"specialMutation":"黄瓜蛇","priceCoefficient":215.3072,"sortOrder":9},{"name":"竹子","quality":"绿色","maxWeight":136,"growthSpeed":7.5,"specialMutation":null,"priceCoefficient":12.2478,"sortOrder":10},{"name":"西瓜","quality":"蓝色","maxWeight":170,"growthSpeed":6,"specialMutation":"方形","priceCoefficient":10.7111,"sortOrder":11},{"name":"梨","quality":"蓝色","maxWeight":13.6,"growthSpeed":75,"specialMutation":null,"priceCoefficient":483.8679,"sortOrder":12},{"name":"橘子","quality":"蓝色","maxWeight":13.6,"growthSpeed":75,"specialMutation":null,"priceCoefficient":538.0993,"sortOrder":13},{"name":"蓝莓","quality":"蓝色","maxWeight":40.8,"growthSpeed":27.99,"specialMutation":null,"priceCoefficient":113.8638,"sortOrder":14},{"name":"玉米","quality":"蓝色","maxWeight":40.8,"growthSpeed":27.78,"specialMutation":null,"priceCoefficient":103.5146,"sortOrder":15},{"name":"白菜","quality":"蓝色","maxWeight":10.2,"growthSpeed":80,"specialMutation":null,"priceCoefficient":579.6116,"sortOrder":16},{"name":"花生","quality":"蓝色","maxWeight":5.1,"growthSpeed":207.11,"specialMutation":null,"priceCoefficient":2813.584,"sortOrder":17},{"name":"牵牛花","quality":"蓝色","maxWeight":5.1,"growthSpeed":200,"specialMutation":null,"priceCoefficient":2113.5728,"sortOrder":18},{"name":"棉花","quality":"蓝色","maxWeight":5.1,"growthSpeed":200,"specialMutation":null,"priceCoefficient":2574.6375,"sortOrder":19},{"name":"银辉苔","quality":"蓝色","maxWeight":5.1,"growthSpeed":280,"specialMutation":null,"priceCoefficient":3040.3725,"sortOrder":20},{"name":"月环树","quality":"蓝色","maxWeight":20.4,"growthSpeed":58,"specialMutation":null,"priceCoefficient":322.1718,"sortOrder":21},{"name":"苹果","quality":"紫色","maxWeight":37.4,"growthSpeed":40.5,"specialMutation":"糖葫芦","priceCoefficient":188.799,"sortOrder":22},{"name":"石榴","quality":"紫色","maxWeight":20.4,"growthSpeed":83.5,"specialMutation":null,"priceCoefficient":526.8633,"sortOrder":23},{"name":"月莓","quality":"紫色","maxWeight":8.5,"growthSpeed":375,"specialMutation":null,"priceCoefficient":3925.2664,"sortOrder":24},{"name":"星叶菜","quality":"紫色","maxWeight":10.2,"growthSpeed":416,"specialMutation":null,"priceCoefficient":3971.3932,"sortOrder":25},{"name":"香蕉","quality":"紫色","maxWeight":10.2,"growthSpeed":280,"specialMutation":"香蕉猴","priceCoefficient":2486.5362,"sortOrder":26},{"name":"车厘子","quality":"紫色","maxWeight":10.2,"growthSpeed":166,"specialMutation":null,"priceCoefficient":1655.8519,"sortOrder":27},{"name":"柿子","quality":"紫色","maxWeight":37.4,"growthSpeed":45.51,"specialMutation":null,"priceCoefficient":235.9062,"sortOrder":28},{"name":"椰子","quality":"紫色","maxWeight":40.8,"growthSpeed":32.5,"specialMutation":null,"priceCoefficient":144.923,"sortOrder":29},{"name":"南瓜","quality":"紫色","maxWeight":204,"growthSpeed":6.5,"specialMutation":"万圣夜","priceCoefficient":12.9627,"sortOrder":30},{"name":"龙眼","quality":"紫色","maxWeight":8.5,"growthSpeed":438.78,"specialMutation":null,"priceCoefficient":4343.6874,"sortOrder":31},{"name":"草莓","quality":"金色","maxWeight":8.5,"growthSpeed":888,"specialMutation":"连体","priceCoefficient":8727.9755,"sortOrder":32},{"name":"荔枝","quality":"金色","maxWeight":23.8,"growthSpeed":135,"specialMutation":null,"priceCoefficient":790.0566,"sortOrder":33},{"name":"菠菜","quality":"金色","maxWeight":20.4,"growthSpeed":495.76,"specialMutation":null,"priceCoefficient":3861.3768,"sortOrder":34},{"name":"柚子","quality":"金色","maxWeight":61.2,"growthSpeed":67.34,"specialMutation":null,"priceCoefficient":225.3807,"sortOrder":35},{"name":"液光藤","quality":"金色","maxWeight":20.4,"growthSpeed":520,"specialMutation":null,"priceCoefficient":3516.6614,"sortOrder":36},{"name":"月核树","quality":"金色","maxWeight":17,"growthSpeed":460,"specialMutation":null,"priceCoefficient":3389.4578,"sortOrder":37},{"name":"猕猴桃","quality":"金色","maxWeight":13.6,"growthSpeed":278,"specialMutation":null,"priceCoefficient":2151.6753,"sortOrder":38},{"name":"榴莲","quality":"金色","maxWeight":61.2,"growthSpeed":55.55,"specialMutation":null,"priceCoefficient":202.8554,"sortOrder":39},{"name":"葡萄","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":24839.9745,"sortOrder":40},{"name":"蟠桃","quality":"至臻","maxWeight":20.4,"growthSpeed":1333.33,"specialMutation":null,"priceCoefficient":8783.9561,"sortOrder":41},{"name":"星空玫瑰","quality":"至臻","maxWeight":10.2,"growthSpeed":2966.6,"specialMutation":null,"priceCoefficient":33129.1179,"sortOrder":42},{"name":"月影梅","quality":"至臻","maxWeight":3.4,"growthSpeed":4022.5,"specialMutation":null,"priceCoefficient":77401.7981,"sortOrder":43},{"name":"大王菊","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":24848.7857,"sortOrder":44},{"name":"惊奇菇","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":49708.0001,"sortOrder":45},{"name":"月兔","quality":"至臻","maxWeight":23.8,"growthSpeed":1523,"specialMutation":null,"priceCoefficient":11151.968,"sortOrder":46},{"name":"魔鬼朝天椒","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":33110.323,"sortOrder":47},{"name":"月蟾蜍","quality":"至臻","maxWeight":34,"growthSpeed":990,"specialMutation":null,"priceCoefficient":9797.3968,"sortOrder":48},{"name":"芦荟","quality":"至臻","maxWeight":10.2,"growthSpeed":2169.8,"specialMutation":null,"priceCoefficient":54680.2945,"sortOrder":49},{"name":"向日葵","quality":"至臻","maxWeight":51,"growthSpeed":80,"specialMutation":"笑日葵","priceCoefficient":370.3857,"sortOrder":50},{"name":"仙人掌象","quality":"至臻","maxWeight":34,"growthSpeed":720,"specialMutation":null,"priceCoefficient":9524.9248,"sortOrder":51},{"name":"红包树","quality":"至臻","maxWeight":5.1,"growthSpeed":5125,"specialMutation":null,"priceCoefficient":83180.1399,"sortOrder":52},{"name":"火龙狗","quality":"至臻","maxWeight":34,"growthSpeed":1084.43,"specialMutation":null,"priceCoefficient":10889.6528,"sortOrder":53},{"name":"松果","quality":"至臻","maxWeight":17,"growthSpeed":570,"specialMutation":null,"priceCoefficient":4618.5543,"sortOrder":54},{"name":"幻月花","quality":"至臻","maxWeight":23.8,"growthSpeed":1142.5,"specialMutation":null,"priceCoefficient":8364.9561,"sortOrder":55},{"name":"彼岸花","quality":"至臻","maxWeight":10.2,"growthSpeed":2908.5,"specialMutation":null,"priceCoefficient":49674.0134,"sortOrder":56},{"name":"马蹄莲","quality":"至臻","maxWeight":17,"growthSpeed":575,"specialMutation":null,"priceCoefficient":5081.0896,"sortOrder":57},{"name":"铃兰幽幽","quality":"至臻","maxWeight":23.8,"growthSpeed":1400,"specialMutation":null,"priceCoefficient":12086.5815,"sortOrder":58},{"name":"听歌的柿黛拉","quality":"金色","maxWeight":42.5,"growthSpeed":88,"specialMutation":null,"priceCoefficient":775.952,"sortOrder":59},{"name":"跳舞的柿黛拉","quality":"至臻","maxWeight":45.2,"growthSpeed":800,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":60},{"name":"秋水仙","quality":"至臻","maxWeight":34,"growthSpeed":705.882,"specialMutation":null,"priceCoefficient":10349.5256,"sortOrder":61},{"name":"银杏","quality":"至臻","maxWeight":5.1,"growthSpeed":4318.1438,"specialMutation":null,"priceCoefficient":93000,"sortOrder":62,"isNew":true,"newOrder":1},{"name":"沉静的疯象南瓜","quality":"至臻","maxWeight":45.2,"growthSpeed":800,"specialMutation":null,"priceCoefficient":8787.9847,"sortOrder":59.5,"isNew":true,"newOrder":2},{"name":"雪莲","quality":"至臻","maxWeight":10.2,"growthSpeed":2400,"specialMutation":null,"priceCoefficient":56993.9613,"sortOrder":64,"isNew":true,"newOrder":3},{"name":"藏红花","quality":"金色","maxWeight":20.4,"growthSpeed":571.77,"specialMutation":null,"priceCoefficient":4274,"sortOrder":65,"isNew":true,"newOrder":1},{"name":"灵芝","quality":"金色","maxWeight":61.2,"growthSpeed":0,"specialMutation":null,"priceCoefficient":303.7,"sortOrder":66,"isNew":true,"newOrder":2},{"name":"迷路的疯象南瓜","quality":"金色","maxWeight":42.5,"growthSpeed":0,"specialMutation":null,"priceCoefficient":940.31,"sortOrder":67,"isNew":true,"newOrder":3},{"name":"芒果","quality":"紫色","maxWeight":8.5,"growthSpeed":0,"specialMutation":null,"priceCoefficient":4946,"sortOrder":68,"isNew":true,"newOrder":1}],"mutations":[{"name":"霓虹","color":"彩色","groupKey":"rare","isActive":true,"sortOrder":0,"multiplier":18,"shareBitIndex":30},{"name":"薯片","color":"紫色","groupKey":"special","isActive":true,"sortOrder":0,"multiplier":1.5,"shareBitIndex":5},{"name":"星环","color":"紫色","groupKey":"past","isActive":true,"sortOrder":0,"multiplier":10,"shareBitIndex":15},{"name":"橙钻","color":"金色","groupKey":"common","isActive":true,"sortOrder":1,"multiplier":18,"shareBitIndex":43},{"name":"幻彩","color":"金色","groupKey":"color","isActive":true,"sortOrder":0,"multiplier":3,"shareBitIndex":42},{"name":"亮晶晶","color":"紫色","groupKey":"intermediate","isActive":true,"sortOrder":4,"multiplier":10,"shareBitIndex":14},{"name":"星空","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":0,"multiplier":40,"shareBitIndex":3},{"name":"流火","color":"金色","groupKey":"rare","isActive":true,"sortOrder":2,"multiplier":15,"shareBitIndex":23},{"name":"方形","color":"紫色","groupKey":"special","isActive":true,"sortOrder":1,"multiplier":1.5,"shareBitIndex":6},{"name":"流光","color":"彩色","groupKey":"quality","isActive":true,"sortOrder":1,"multiplier":30,"shareBitIndex":4},{"name":"异彩","color":"蓝色","groupKey":"color","isActive":true,"sortOrder":1,"multiplier":1.5,"shareBitIndex":44},{"name":"瓷化","color":"紫色","groupKey":"common","isActive":true,"sortOrder":5,"multiplier":8,"shareBitIndex":13},{"name":"琥珀","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":12,"multiplier":4.5,"shareBitIndex":45},{"name":"水晶","color":"金色","groupKey":"quality","isActive":true,"sortOrder":2,"multiplier":20,"shareBitIndex":2},{"name":"故障","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5,"shareBitIndex":41},{"name":"糖葫芦","color":"紫色","groupKey":"special","isActive":true,"sortOrder":2,"multiplier":1.5,"shareBitIndex":7},{"name":"彩尘","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":2,"multiplier":5,"shareBitIndex":46},{"name":"太阳耀斑","color":"蓝色","groupKey":"intermediate","isActive":true,"sortOrder":8,"multiplier":5,"shareBitIndex":34},{"name":"日蚀","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":3,"multiplier":10,"shareBitIndex":24},{"name":"连体","color":"紫色","groupKey":"special","isActive":true,"sortOrder":3,"multiplier":1.5,"shareBitIndex":8},{"name":"金","color":"蓝色","groupKey":"quality","isActive":true,"sortOrder":3,"multiplier":10,"shareBitIndex":1},{"name":"哈基咪","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":3,"multiplier":5,"shareBitIndex":40},{"name":"冰冻","color":"绿色","groupKey":"common","isActive":true,"sortOrder":14,"multiplier":4,"shareBitIndex":17},{"name":"暗雾","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":6,"shareBitIndex":25},{"name":"陶化","color":"绿色","groupKey":"intermediate","isActive":true,"sortOrder":13,"multiplier":4,"shareBitIndex":38},{"name":"惊魂夜","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":4,"multiplier":5,"shareBitIndex":33},{"name":"落雷","color":"绿色","groupKey":"common","isActive":true,"sortOrder":15,"multiplier":3,"shareBitIndex":16},{"name":"银","color":"绿色","groupKey":"quality","isActive":true,"sortOrder":4,"multiplier":3,"shareBitIndex":0},{"name":"彩虹","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":11,"multiplier":5,"shareBitIndex":28},{"name":"结霜","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":20,"multiplier":2,"shareBitIndex":37},{"name":"黄瓜蛇","color":"金色","groupKey":"special","isActive":true,"sortOrder":4,"multiplier":2,"shareBitIndex":9},{"name":"沙尘","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":18,"multiplier":2,"shareBitIndex":35},{"name":"极光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":9,"multiplier":5,"shareBitIndex":32},{"name":"金币","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":5,"multiplier":5,"shareBitIndex":39},{"name":"万圣夜","color":"金色","groupKey":"special","isActive":true,"sortOrder":5,"multiplier":2,"shareBitIndex":10},{"name":"潮湿","color":"灰色","groupKey":"common","isActive":true,"sortOrder":23,"multiplier":1,"shareBitIndex":20},{"name":"血月","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":6,"multiplier":5,"shareBitIndex":27},{"name":"香蕉猴","color":"金色","groupKey":"special","isActive":true,"sortOrder":6,"multiplier":2,"shareBitIndex":11},{"name":"覆雪","color":"灰色","groupKey":"common","isActive":true,"sortOrder":22,"multiplier":2,"shareBitIndex":19},{"name":"生机","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":17,"multiplier":2,"shareBitIndex":22},{"name":"荧光","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":10,"multiplier":5,"shareBitIndex":29},{"name":"迷雾","color":"灰色","groupKey":"common","isActive":true,"sortOrder":21,"multiplier":2,"shareBitIndex":21},{"name":"笑日葵","color":"彩色","groupKey":"special","isActive":true,"sortOrder":7,"multiplier":10,"shareBitIndex":12},{"name":"幽魂","color":"蓝色","groupKey":"rare","isActive":true,"sortOrder":10,"multiplier":5,"shareBitIndex":31},{"name":"灼热","color":"灰色","groupKey":"intermediate","isActive":true,"sortOrder":19,"multiplier":2,"shareBitIndex":36},{"name":"颤栗","color":"灰色","groupKey":"common","isActive":true,"sortOrder":24,"multiplier":1,"shareBitIndex":18},{"name":"陨石","color":"绿色","groupKey":"past","isActive":true,"sortOrder":10,"multiplier":3,"shareBitIndex":26},{"name":"花雨","color":"紫色","groupKey":"rare","isActive":true,"sortOrder":6,"multiplier":7,"shareBitIndex":47,"isNew":true},{"name":"幽幽南瓜","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":1,"multiplier":5,"shareBitIndex":48},{"name":"火烧云","color":"蓝色","groupKey":"past","isActive":true,"sortOrder":1,"multiplier":5,"shareBitIndex":49,"isNew":true}]};
 
   const displayNames = {
         至臻: "至臻", 彩色: "至臻",
@@ -4187,6 +4353,7 @@ body.theme-light .btn-cat-del {
     TOOL_STATE: { liuxingzhang: true, huanxingji: true },
     STORAGE_KEYS: {
       SOUND: "farm_sound_pref",
+      MUTATION_SOUND: "farm_mutation_sound_pref",
       COMPARE: "farm_compare_pref",
       SORT_MODE: "farm_sort_mode_pref",
       SORT_DIR: "farm_sort_dir_pref",
@@ -4201,7 +4368,8 @@ body.theme-light .btn-cat-del {
       HIDE_CALC_TIP: "farm_hide_calc_tip_pref",
       CUSTOM_MUTATIONS: "farm_custom_mutations_v350",
       GRAPHICS: "farm_graphics_pref",
-      LEGACY_UI: "farm_legacy_ui_pref"
+      LEGACY_UI: "farm_legacy_ui_pref",
+      DESKTOP_SITE: "farm_desktop_site_pref"
     },
     RECIPES: [
       { ingredients: ["生机", "潮湿"], result: "琥珀" },
@@ -4228,10 +4396,10 @@ body.theme-light .btn-cat-del {
       "魔鬼朝天椒"
     ]),
     FLOW_WEATHER_MUTATIONS: [
-      "流火", "霓虹", "橙钻", "花雨", "日蚀", "冰冻", "暗雾", "陶化", "落雷", "彩虹", "极光", "覆雪", "荧光", "迷雾", "颤栗", "潮湿"
+      "流火", "霓虹", "橙钻", "花雨", "日蚀", "冰冻", "暗雾", "陶化", "落雷", "彩虹", "极光", "幽魂", "覆雪", "荧光", "迷雾", "颤栗", "潮湿"
     ],
     PORCELAIN_WEATHER_MUTATIONS: [
-      "瓷化", "霓虹", "橙钻", "太阳耀斑", "花雨", "日蚀", "冰冻", "暗雾", "落雷", "彩虹", "极光", "覆雪", "荧光", "迷雾", "颤栗", "潮湿"
+      "瓷化", "霓虹", "橙钻", "太阳耀斑", "花雨", "日蚀", "冰冻", "暗雾", "落雷", "彩虹", "极光", "幽魂", "覆雪", "荧光", "迷雾", "颤栗", "潮湿"
     ],
     displayNames,
     characterMap,
@@ -4344,8 +4512,13 @@ body.theme-light .btn-cat-del {
               float d1 = length(gv1 - off1 * 0.65);
               float tw1 = 0.60 + 0.40 * sin(uTime * (1.8 + rnd1 * 3.2) + rnd1 * 40.0);
               float s1 = smoothstep(0.09, 0.0, d1) * tw1;
-              vec3 st1 = mix(vec3(0.75, 0.92, 1.0), vec3(1.0, 0.88, 0.66), fract(rnd1 * 19.3));
-              darkSky += st1 * s1 * 0.85;
+              float hue = fract(rnd1 * 19.3);
+              vec3 st1 = hue < 0.2 ? vec3(1.0, 0.32, 0.68)
+                       : hue < 0.4 ? vec3(0.22, 0.88, 1.0)
+                       : hue < 0.6 ? vec3(1.0, 0.80, 0.24)
+                       : hue < 0.8 ? vec3(0.28, 0.96, 0.62)
+                       : vec3(0.72, 0.44, 1.0);
+              darkSky += st1 * s1 * 0.92;
             }
           }
 
@@ -4417,11 +4590,10 @@ body.theme-light .btn-cat-del {
           vec2 c = gl_PointCoord - 0.5;
           float d = length(c);
           if (d > 0.5) discard;
-          float core = pow(1.0 - d * 2.0, 2.4);
-          float halo = pow(1.0 - d * 2.0, 1.2) * 0.45;
-          vec3 lightTint = mix(vec3(0.96, 0.85, 0.58), vec3(0.45, 0.78, 0.98), vColor.b);
-          vec3 col = mix(vColor * (1.25 + uPulseBoost * 0.6), lightTint, uLightMode);
-          float alpha = (core + halo) * vTwinkle * mix(0.92, 0.34, uLightMode);
+          float core = pow(max(0.0, 1.0 - d * 2.0), 2.3);
+          float halo = pow(max(0.0, 1.0 - d * 2.0), 1.2) * 0.52;
+          vec3 col = mix(vColor * (0.98 + uPulseBoost * 0.28), vColor * 0.72, uLightMode);
+          float alpha = clamp(core * 0.95 + halo, 0.0, 1.0) * vTwinkle * mix(0.92, 0.78, uLightMode);
           gl_FragColor = vec4(col, alpha);
         }
       `
@@ -4695,12 +4867,13 @@ body.theme-light .btn-cat-del {
         void main() {
           vColor = aColor;
           vec3 pos = position;
-          pos.y += mod(uTime * (0.32 + aMix * 0.36) + aPhase * 8.0, 56.0) - 28.0;
-          pos.x += sin(uTime * 0.35 + aPhase * 6.283) * 0.8;
+          pos.x += sin(uTime * (0.34 + aMix * 0.24) + aPhase * 6.283) * 1.1;
+          pos.y += cos(uTime * (0.30 + aMix * 0.20) + aPhase * 6.283) * 1.1;
+          pos.z += sin(uTime * 0.24 + aPhase * 9.42) * 0.9;
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          float twinkle = 0.50 + 0.50 * sin(uTime * (1.2 + aMix) + aPhase * 12.56);
-          vAlpha = twinkle * smoothstep(-180.0, -25.0, mvPosition.z);
-          gl_PointSize = clamp(aSize * uPixelRatio * (115.0 / max(-mvPosition.z, 10.0)), 1.5, 20.0);
+          float twinkle = 0.52 + 0.48 * sin(uTime * (1.2 + aMix) + aPhase * 12.56);
+          vAlpha = twinkle * smoothstep(-240.0, -28.0, mvPosition.z);
+          gl_PointSize = clamp(aSize * uPixelRatio * (135.0 / max(-mvPosition.z, 10.0)), 2.0, 20.0);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -4714,10 +4887,10 @@ body.theme-light .btn-cat-del {
           vec2 c = gl_PointCoord - 0.5;
           float d = length(c);
           if (d > 0.5) discard;
-          float core = pow(max(0.0, 1.0 - d * 2.0), 2.4);
-          float halo = pow(max(0.0, 1.0 - d * 2.0), 1.2) * 0.55;
-          vec3 col = mix(vColor * 1.35, vColor * 0.82, uLightMode);
-          float a = clamp(core + halo, 0.0, 1.0) * vAlpha * mix(0.88, 0.44, uLightMode);
+          float core = pow(max(0.0, 1.0 - d * 2.0), 2.2);
+          float halo = pow(max(0.0, 1.0 - d * 2.0), 1.2) * 0.65;
+          vec3 col = mix(vColor * 0.96, vColor * 0.72, uLightMode);
+          float a = clamp(core * 0.95 + halo, 0.0, 1.0) * vAlpha * mix(0.94, 0.86, uLightMode);
           gl_FragColor = vec4(col, a);
         }
       `
@@ -4839,7 +5012,7 @@ body.theme-light .btn-cat-del {
       `
     },
 
-    /* 12. 舊版星系專屬：4 芒星綻放深空星場 (Sparkle Deep-Space Starfield) */
+    /* 12. 舊版星系專屬：細緻柔光彩色星塵場 (對齊新版精緻光斑粒子質感，不粗糙不糊成大片) */
     sparkleStar: {
       vertexShader: /* glsl */ `
         attribute float aSize;
@@ -4850,13 +5023,14 @@ body.theme-light .btn-cat-del {
         uniform float uPixelRatio;
         varying vec3 vColor;
         varying float vTwinkle;
-        varying float vSparkle;
         void main() {
           vColor = aColor;
-          vSparkle = aSparkle;
-          vTwinkle = 0.62 + 0.38 * sin(uTime * (1.6 + aPhase * 2.2) + aPhase * 15.7);
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = clamp(aSize * uPixelRatio * (150.0 / max(-mvPosition.z, 12.0)), 1.5, 28.0);
+          vec3 pos = position;
+          pos.x += sin(uTime * (0.34 + aSparkle * 0.22) + aPhase * 6.283) * 0.65;
+          pos.y += cos(uTime * (0.30 + aSparkle * 0.18) + aPhase * 6.283) * 0.65;
+          vTwinkle = 0.54 + 0.46 * sin(uTime * (1.3 + aSparkle * 1.1) + aPhase * 12.56);
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          gl_PointSize = clamp(aSize * uPixelRatio * (135.0 / max(-mvPosition.z, 10.0)), 1.7, 17.5);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -4865,22 +5039,15 @@ body.theme-light .btn-cat-del {
         uniform float uPulseBoost;
         varying vec3 vColor;
         varying float vTwinkle;
-        varying float vSparkle;
         void main() {
           vec2 c = gl_PointCoord - 0.5;
           float d = length(c);
           if (d > 0.5) discard;
 
-          float core = pow(max(0.0, 1.0 - d * 2.0), 2.4);
-          float halo = pow(max(0.0, 1.0 - d * 2.0), 1.15) * 0.56;
-          float rays = 0.0;
-          if (vSparkle > 0.82) {
-            float rx = exp(-abs(c.y) * 26.0) * exp(-abs(c.x) * 4.5);
-            float ry = exp(-abs(c.x) * 26.0) * exp(-abs(c.y) * 4.5);
-            rays = (rx + ry) * 0.95;
-          }
-          vec3 col = mix(vColor * (1.42 + uPulseBoost * 0.5), vColor * 0.85, uLightMode);
-          float alpha = clamp(core + halo + rays, 0.0, 1.0) * vTwinkle * mix(0.95, 0.38, uLightMode);
+          float core = pow(max(0.0, 1.0 - d * 2.0), 2.3);
+          float halo = pow(max(0.0, 1.0 - d * 2.0), 1.2) * 0.56;
+          vec3 col = mix(vColor * (0.98 + uPulseBoost * 0.25), vColor * 0.72, uLightMode);
+          float alpha = clamp(core * 0.95 + halo, 0.0, 1.0) * vTwinkle * mix(0.94, 0.84, uLightMode);
           gl_FragColor = vec4(col, alpha);
         }
       `
@@ -4933,54 +5100,56 @@ body.theme-light .btn-cat-del {
           float r = length(p);
           if (r > 0.99) discard;
 
-          float twist = 3.6 * log(r + 0.08) - uTime * 0.06;
+          float twist = 3.6 * log(r + 0.08);
           float cs = cos(twist);
           float sn = sin(twist);
           vec2 tp = vec2(p.x * cs - p.y * sn, p.x * sn + p.y * cs);
 
-          float cA = fbm2Fast(tp * 3.4 + vec2(uTime * 0.014, 1.3));
-          float cB = fbm2Fast(tp * 7.2 - vec2(uTime * 0.02, -2.1));
+          float cA = fbm2Fast(tp * 3.4 + vec2(1.3, 0.7));
+          float cB = fbm2Fast(tp * 7.2 - vec2(uTime * 0.012, -2.1));
 
           float ang = atan(p.y, p.x);
-          float phase = ang + twist + (cA - 0.5) * 1.8;
-          float armMain = pow(0.5 + 0.5 * cos(phase * 3.0), 2.2);
-          float armSub  = pow(0.5 + 0.5 * cos(phase * 6.0 + 0.9), 2.8) * 0.55;
+          float phase = ang + twist + (cA - 0.5) * 1.65;
+          float armMain = pow(0.5 + 0.5 * cos(phase * 3.0), 2.6);
+          float armSub  = pow(0.5 + 0.5 * cos(phase * 6.0 + 0.9), 3.2) * 0.52;
           float arms = clamp(armMain + armSub, 0.0, 1.0);
 
-          float nebula = (0.22 + arms * 0.96) * smoothstep(0.16, 0.84, cA * 0.62 + cB * 0.38);
-          float outerRingBoost = smoothstep(0.14, 0.42, r) * smoothstep(0.98, 0.52, r);
-          float coreHot = exp(-r * 11.0);
-          float coreWarm = exp(-r * 4.5);
-          float outerHaze = smoothstep(0.98, 0.22, r) * exp(-r * 0.85);
+          float palaceClear = smoothstep(0.14, 0.34, r);
+          float nebula = (0.14 + arms * 1.12) * smoothstep(0.18, 0.84, cA * 0.62 + cB * 0.38) * (0.24 + 0.76 * palaceClear);
+          float outerRingBoost = smoothstep(0.20, 0.44, r) * smoothstep(0.98, 0.50, r);
+          float coreHot = exp(-r * 13.0);
+          float coreWarm = exp(-r * 5.2);
+          float outerHaze = smoothstep(0.98, 0.26, r) * exp(-r * 0.85) * (0.30 + 0.70 * palaceClear);
 
-          // 絢麗 6 色宇宙漸層 (重點呈現於宮殿外圍的大片旋臂星雲，中心柔暗不刺眼)
-          vec3 colCore = vec3(0.68, 0.60, 0.48);
-          vec3 colCoral = vec3(0.86, 0.38, 0.20);
-          vec3 colMagenta = vec3(0.82, 0.20, 0.58);
-          vec3 colViolet = vec3(0.46, 0.20, 0.84);
-          vec3 colCyan = vec3(0.08, 0.70, 0.84);
-          vec3 colEmerald = vec3(0.12, 0.78, 0.54);
+          // 絢麗 6 色宇宙漸層 (重點呈現於宮殿外圍的大片旋臂星雲，中心柔暗不遮宮殿，旋臂對比鮮明讓自轉一目了然)
+          vec3 colCore = vec3(0.56, 0.48, 0.38);
+          vec3 colCoral = vec3(0.92, 0.40, 0.22);
+          vec3 colMagenta = vec3(0.88, 0.22, 0.62);
+          vec3 colViolet = vec3(0.50, 0.22, 0.90);
+          vec3 colCyan = vec3(0.08, 0.76, 0.90);
+          vec3 colEmerald = vec3(0.12, 0.84, 0.58);
 
-          vec3 armCol = mix(colCoral, colMagenta, smoothstep(0.10, 0.30, r));
-          armCol = mix(armCol, colViolet, smoothstep(0.28, 0.50, r));
-          armCol = mix(armCol, colCyan, smoothstep(0.46, 0.74, r));
-          armCol = mix(armCol, colEmerald, smoothstep(0.70, 0.94, r));
-          armCol = mix(armCol, colCyan, smoothstep(0.60, 0.90, cA) * 0.35);
+          vec3 armCol = mix(colCoral, colMagenta, smoothstep(0.14, 0.34, r));
+          armCol = mix(armCol, colViolet, smoothstep(0.32, 0.52, r));
+          armCol = mix(armCol, colCyan, smoothstep(0.50, 0.74, r));
+          armCol = mix(armCol, colEmerald, smoothstep(0.72, 0.94, r));
+          armCol = mix(armCol, colCyan, smoothstep(0.58, 0.88, cA) * 0.38);
+          armCol = mix(armCol, colMagenta, smoothstep(0.62, 0.90, cB) * smoothstep(0.85, 0.35, r) * 0.32);
 
-          vec3 darkCol = armCol * (nebula * (0.48 + outerRingBoost * 0.62) + outerHaze * 0.22)
-                       + colCoral * coreWarm * 0.16
-                       + colCore * coreHot * (0.22 + uPulseBoost * 0.16);
-          darkCol = min(darkCol, vec3(0.74));
+          vec3 darkCol = armCol * (nebula * (0.48 + outerRingBoost * 0.68) + outerHaze * 0.20)
+                       + colCoral * coreWarm * 0.12
+                       + colCore * coreHot * (0.14 + uPulseBoost * 0.14);
+          darkCol = min(darkCol, vec3(0.78));
 
           vec3 lightArm = mix(vec3(0.92, 0.42, 0.68), vec3(0.46, 0.38, 0.92), smoothstep(0.15, 0.50, r));
           lightArm = mix(lightArm, vec3(0.12, 0.66, 0.84), smoothstep(0.48, 0.88, r));
-          vec3 lightCol = lightArm * (nebula * (0.40 + outerRingBoost * 0.38) + outerHaze * 0.18)
-                        + vec3(0.92, 0.76, 0.52) * coreWarm * 0.18;
+          vec3 lightCol = lightArm * (nebula * (0.40 + outerRingBoost * 0.42) + outerHaze * 0.16)
+                        + vec3(0.92, 0.76, 0.52) * coreWarm * 0.12;
 
           vec3 finalCol = mix(darkCol, lightCol, uLightMode);
           float edgeFade = smoothstep(0.99, 0.42, r);
-          float alpha = clamp((nebula * (0.42 + outerRingBoost * 0.48) + coreWarm * 0.22 + coreHot * 0.34 + outerHaze * 0.22), 0.0, 1.0)
-                      * edgeFade * mix(0.84, 0.44, uLightMode);
+          float alpha = clamp((nebula * (0.46 + outerRingBoost * 0.50) + coreWarm * 0.14 + coreHot * 0.22 + outerHaze * 0.20), 0.0, 1.0)
+                      * edgeFade * mix(0.86, 0.46, uLightMode);
           gl_FragColor = vec4(finalCol, alpha);
         }
       `
@@ -5053,7 +5222,13 @@ body.theme-light .btn-cat-del {
   // 五聲音階頻率輪轉，讓快速點選詞條聽起來像悅耳的水晶琴韻，不會單調刺耳
   const CRYSTAL_SCALE = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5];
 
-  function isSoundAllowed() {
+  function isSoundAllowed(channel = "ui") {
+    if (channel === "mutation") {
+      if (typeof global.getMutationSoundEnabled === "function") {
+        return global.getMutationSoundEnabled();
+      }
+      return true;
+    }
     if (typeof global.getSoundEnabled === "function") {
       return global.getSoundEnabled();
     }
@@ -5129,9 +5304,10 @@ body.theme-light .btn-cat-del {
     gain = 0.12,
     attack = 0.004,
     endFreq = null,
-    delay = 0
+    delay = 0,
+    channel = "ui"
   } = {}) {
-    if (!isSoundAllowed()) return;
+    if (!isSoundAllowed(channel)) return;
     const c = ensureAudioGraph();
     if (!c || !masterGain) return;
     if (c.state === "suspended") {
@@ -5172,18 +5348,18 @@ body.theme-light .btn-cat-del {
     },
 
     /* 詞條選取：清脆水晶和弦共鳴（五聲音階自動輪替） */
-    activate() {
+    activate(channel = "ui") {
       const root = CRYSTAL_SCALE[noteStep % CRYSTAL_SCALE.length];
       noteStep = (noteStep + 1) % CRYSTAL_SCALE.length;
-      playTone(root, { type: "sine", duration: 0.14, gain: 0.11 });
-      playTone(root * 1.5, { type: "triangle", duration: 0.16, gain: 0.05, delay: 0.018 });
-      playTone(root * 2.756, { type: "sine", duration: 0.09, gain: 0.022, delay: 0.01 });
+      playTone(root, { type: "sine", duration: 0.14, gain: 0.11, channel });
+      playTone(root * 1.5, { type: "triangle", duration: 0.16, gain: 0.05, delay: 0.018, channel });
+      playTone(root * 2.756, { type: "sine", duration: 0.09, gain: 0.022, delay: 0.01, channel });
     },
 
     /* 取消／清空：溫潤低頻玻璃收斂 */
-    cancel() {
-      playTone(392, { type: "triangle", duration: 0.11, gain: 0.085, endFreq: 246.94 });
-      playTone(587.33, { type: "sine", duration: 0.07, gain: 0.03, endFreq: 329.63 });
+    cancel(channel = "ui") {
+      playTone(392, { type: "triangle", duration: 0.11, gain: 0.085, endFreq: 246.94, channel });
+      playTone(587.33, { type: "sine", duration: 0.07, gain: 0.03, endFreq: 329.63, channel });
     },
 
     /* 選擇作物進入工作區：星穹雙層琶音 */
@@ -5485,6 +5661,7 @@ body.theme-light .btn-cat-del {
     let matGlassDome = null;
     let matVeinGlow = null;
     let matAccentCrystal = null;
+    let matShardCrystal = null;
 
     // 光源
     let hemiLight = null;
@@ -6025,51 +6202,56 @@ body.theme-light .btn-cat-del {
      * ------------------------------------------------------------------ */
     function buildSpiralGalaxy(starCount) {
       if (galaxyPoints) {
-        scene.remove(galaxyPoints);
+        if (galaxyPoints.parent) galaxyPoints.parent.remove(galaxyPoints);
         galaxyPoints.geometry.dispose();
       }
-      const arms = 4;
-      const maxRadius = 175;
+      const arms = 3;
+      const discRadius = 198;
       const geo = new THREE.BufferGeometry();
       const positions = new Float32Array(starCount * 3);
       const colors = new Float32Array(starCount * 3);
       const sizes = new Float32Array(starCount);
       const phases = new Float32Array(starCount);
 
-      const coreColor = new THREE.Color("#fff3c4");
-      const roseColor = new THREE.Color("#ff5fa2");
-      const midColor = new THREE.Color("#38e8ff");
-      const outerColor = new THREE.Color("#c084fc");
-      const deepColor = new THREE.Color("#3b82f6");
+      const coralColor = new THREE.Color("#ff7b3b");
+      const roseColor = new THREE.Color("#ff3d9a");
+      const violetColor = new THREE.Color("#a855f7");
+      const cyanColor = new THREE.Color("#00e5ff");
+      const emeraldColor = new THREE.Color("#1de9b6");
+      const goldColor = new THREE.Color("#ffd000");
       const tempCol = new THREE.Color();
 
       for (let i = 0; i < starCount; i++) {
         const arm = i % arms;
-        const rNorm = Math.pow(Math.random(), 1.3);
-        const r = 4.0 + rNorm * maxRadius;
-        const spin = rNorm * 5.2;
+        // 避開宮殿正中央區域 (rNorm >= 0.30)，星點主要環繞在宮殿外圍的 3 條宏偉星系旋臂上
+        const rNorm = 0.30 + Math.pow(Math.random(), 0.92) * 0.68;
+        const r = rNorm * discRadius;
         const branchAngle = (arm / arms) * Math.PI * 2;
-        const scatter = (Math.random() - 0.5) * (0.55 + rNorm * 0.85);
-        const a = branchAngle + spin + scatter;
+        const isSubArm = (i % 5 === 0);
+        const scatter = (Math.random() - 0.5) * (isSubArm ? 1.15 : (0.42 + rNorm * 0.45));
+        const a = branchAngle - 3.6 * Math.log(rNorm + 0.08) + (isSubArm ? Math.PI / arms : 0) + scatter;
 
         positions[i * 3]     = Math.cos(a) * r;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * (6.5 * (1.0 - rNorm * 0.55));
-        positions[i * 3 + 2] = Math.sin(a) * r;
+        positions[i * 3 + 1] = Math.sin(a) * r;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * (10.0 * (1.15 - rNorm * 0.55));
 
-        if (rNorm < 0.22) {
-          tempCol.lerpColors(coreColor, roseColor, rNorm / 0.22);
-        } else if (rNorm < 0.50) {
-          tempCol.lerpColors(roseColor, midColor, (rNorm - 0.22) / 0.28);
-        } else if (rNorm < 0.78) {
-          tempCol.lerpColors(midColor, outerColor, (rNorm - 0.50) / 0.28);
+        const tCol = (rNorm - 0.30) / 0.68;
+        if (tCol < 0.25) {
+          tempCol.lerpColors(coralColor, roseColor, tCol / 0.25);
+        } else if (tCol < 0.52) {
+          tempCol.lerpColors(roseColor, violetColor, (tCol - 0.25) / 0.27);
+        } else if (tCol < 0.78) {
+          tempCol.lerpColors(violetColor, cyanColor, (tCol - 0.52) / 0.26);
         } else {
-          tempCol.lerpColors(outerColor, deepColor, (rNorm - 0.78) / 0.22);
+          tempCol.lerpColors(cyanColor, emeraldColor, (tCol - 0.78) / 0.22);
         }
+        if (Math.random() > 0.86) tempCol.lerp(goldColor, 0.55);
+
         colors[i * 3] = tempCol.r;
         colors[i * 3 + 1] = tempCol.g;
         colors[i * 3 + 2] = tempCol.b;
 
-        sizes[i] = (1.0 - rNorm * 0.5) * (1.8 + Math.random() * 3.4);
+        sizes[i] = (0.85 + Math.random() * 0.45) * (1.8 + Math.random() * 3.0);
         phases[i] = Math.random();
       }
 
@@ -6079,9 +6261,15 @@ body.theme-light .btn-cat-del {
       geo.setAttribute("aPhase", new THREE.BufferAttribute(phases, 1));
 
       galaxyPoints = new THREE.Points(geo, galaxyMat);
-      galaxyPoints.position.set(0, 14, -78);
-      galaxyPoints.rotation.set(0.72, 0.12, -0.32);
-      scene.add(galaxyPoints);
+      if (newGrandGalaxyGroup) {
+        galaxyPoints.position.set(0, 0, 2.0);
+        galaxyPoints.rotation.set(0, 0, 0);
+        newGrandGalaxyGroup.add(galaxyPoints);
+      } else {
+        galaxyPoints.position.set(0, 10, -116);
+        galaxyPoints.rotation.set(-0.78, 0.14, -0.24);
+        scene.add(galaxyPoints);
+      }
     }
 
     function buildCosmicPlanets() {
@@ -6154,9 +6342,20 @@ body.theme-light .btn-cat-del {
       const count = 80;
       const geo = new THREE.OctahedronGeometry(0.55, 0);
       geo.scale(0.75, 1.75, 0.75);
-      instancedShards = new THREE.InstancedMesh(geo, matAccentCrystal, count);
+      instancedShards = new THREE.InstancedMesh(geo, matShardCrystal, count);
       const dummy = new THREE.Object3D();
       shardMeta = [];
+
+      // 菱形晶簇專屬宮殿皇家寶石配色 (維持原先分佈不變)
+      const palaceShardPalette = [
+        new THREE.Color("#f4c553"), // 皇家鎏金
+        new THREE.Color("#ffd97d"), // 香檳暖金
+        new THREE.Color("#34e2d8"), // 星穹翠青
+        new THREE.Color("#5eead4"), // 玉穹淺碧
+        new THREE.Color("#60a5fa"), // 皇室矢車菊藍
+        new THREE.Color("#a78bfa"), // 紫微星紫
+        new THREE.Color("#f0abfc")  // 霞光淡紫粉
+      ];
 
       for (let i = 0; i < count; i++) {
         const side = i % 2 === 0 ? -1 : 1;
@@ -6171,8 +6370,10 @@ body.theme-light .btn-cat-del {
         dummy.scale.setScalar(s);
         dummy.updateMatrix();
         instancedShards.setMatrixAt(i, dummy.matrix);
+        instancedShards.setColorAt(i, palaceShardPalette[i % palaceShardPalette.length]);
       }
       instancedShards.instanceMatrix.needsUpdate = true;
+      if (instancedShards.instanceColor) instancedShards.instanceColor.needsUpdate = true;
       scene.add(instancedShards);
     }
 
@@ -6189,36 +6390,46 @@ body.theme-light .btn-cat-del {
       const mixes = new Float32Array(count);
 
       const pal = [
-        new THREE.Color("#ff4da6"),
-        new THREE.Color("#ff9233"),
-        new THREE.Color("#ffd43b"),
-        new THREE.Color("#22f598"),
+        new THREE.Color("#ff2e93"),
+        new THREE.Color("#ff7b1c"),
+        new THREE.Color("#ffd000"),
+        new THREE.Color("#00e676"),
         new THREE.Color("#00e5ff"),
-        new THREE.Color("#3b82f6"),
+        new THREE.Color("#2979ff"),
         new THREE.Color("#a855f7"),
-        new THREE.Color("#f042ff"),
-        new THREE.Color("#34e2d8"),
-        new THREE.Color("#fb7185")
+        new THREE.Color("#e040fb"),
+        new THREE.Color("#ff3d5a"),
+        new THREE.Color("#1de9b6")
       ];
 
       for (let i = 0; i < count; i++) {
-        let x = (Math.random() - 0.5) * 145;
-        let y = (Math.random() - 0.5) * 76;
-        let z = -115 + Math.random() * 110;
-        // 避開宮殿正前方與正上方走廊，避免白點粒子遮擋宮殿
-        if (Math.abs(x) < 28 && y > -12 && y < 32 && z > -42) {
-          z = -46 - Math.random() * 68;
+        const isSpiralStream = i < count * 0.60;
+        const zLocal = (Math.random() - 0.5) * (isSpiralStream ? 36 : 56);
+        // 越靠近鏡頭的粒子外推半徑越大，確保 100% 圍繞宮殿外圍絕不遮擋宮殿
+        const minR = 45 + Math.max(0, zLocal) * 0.55;
+        let r, a;
+        if (isSpiralStream) {
+          const arm = i % 3;
+          const rNorm = Math.pow(Math.random(), 0.85);
+          r = minR + rNorm * 118;
+          const scatter = (Math.random() - 0.5) * (0.78 + rNorm * 0.55);
+          a = (arm / 3) * Math.PI * 2 - 2.8 * Math.log(0.28 + rNorm * 0.72) + scatter;
+        } else {
+          // 其餘 40% 均勻分佈於外圍深空，不只侷限在旋臂上，同時同樣避開宮殿中央
+          r = minR + Math.pow(Math.random(), 0.72) * 126;
+          a = Math.random() * Math.PI * 2;
         }
-        positions[i * 3]     = x;
-        positions[i * 3 + 1] = y;
-        positions[i * 3 + 2] = z;
+
+        positions[i * 3]     = Math.cos(a) * r;
+        positions[i * 3 + 1] = Math.sin(a) * r;
+        positions[i * 3 + 2] = zLocal;
 
         const c = pal[Math.floor(Math.random() * pal.length)];
         colors[i * 3]     = c.r;
         colors[i * 3 + 1] = c.g;
         colors[i * 3 + 2] = c.b;
 
-        sizes[i] = 1.6 + Math.random() * 3.4;
+        sizes[i] = 1.8 + Math.random() * 3.4;
         phases[i] = Math.random();
         mixes[i] = Math.random();
       }
@@ -6229,6 +6440,8 @@ body.theme-light .btn-cat-del {
       geo.setAttribute("aMix", new THREE.BufferAttribute(mixes, 1));
 
       stardustPoints = new THREE.Points(geo, stardustMat);
+      stardustPoints.position.set(0, 6, -68);
+      stardustPoints.rotation.set(-0.52, 0.10, -0.18);
       scene.add(stardustPoints);
     }
 
@@ -6303,36 +6516,48 @@ body.theme-light .btn-cat-del {
       const sparkles = new Float32Array(starCount);
 
       const palette = [
-        new THREE.Color("#ff4da6"),
-        new THREE.Color("#ff8c2b"),
-        new THREE.Color("#ffd43b"),
-        new THREE.Color("#38f28b"),
+        new THREE.Color("#ff2e93"),
+        new THREE.Color("#ff7b1c"),
+        new THREE.Color("#ffd000"),
+        new THREE.Color("#00e676"),
         new THREE.Color("#00e5ff"),
-        new THREE.Color("#3b82f6"),
+        new THREE.Color("#2979ff"),
         new THREE.Color("#a855f7"),
-        new THREE.Color("#e843ff"),
-        new THREE.Color("#ff4d6d"),
-        new THREE.Color("#7dff9a"),
-        new THREE.Color("#ffffff")
+        new THREE.Color("#e040fb"),
+        new THREE.Color("#ff3d5a"),
+        new THREE.Color("#1de9b6")
       ];
 
       for (let i = 0; i < starCount; i++) {
-        const spread = 220;
-        positions[i * 3]     = (Math.random() - 0.5) * spread;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 140;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 90 - 6;
+        // 比照新版外圍繞轉分佈：60% 沿星系旋臂流帶分佈、40% 均勻環繞外圍，因球體較宮殿小故淨空半徑收窄至 ~22
+        const isSpiralStream = i < starCount * 0.60;
+        const zLocal = (Math.random() - 0.5) * (isSpiralStream ? 28 : 42) - 4;
+        const minR = 22 + Math.max(0, zLocal) * 0.45;
+        let r, a;
+        if (isSpiralStream) {
+          const arm = i % 2;
+          const rNorm = Math.pow(Math.random(), 0.85);
+          r = minR + rNorm * 108;
+          const scatter = (Math.random() - 0.5) * (0.72 + rNorm * 0.52);
+          a = arm * Math.PI - 3.1 * Math.log(0.18 + rNorm * 0.82) + scatter;
+        } else {
+          r = minR + Math.pow(Math.random(), 0.72) * 116;
+          a = Math.random() * Math.PI * 2;
+        }
 
-        // 降低純白比例，讓各種彩色粒子區別更明顯
-        const idx = Math.random() < 0.06 ? (palette.length - 1) : Math.floor(Math.random() * (palette.length - 1));
-        const c = palette[idx];
+        positions[i * 3]     = Math.cos(a) * r;
+        positions[i * 3 + 1] = Math.sin(a) * r;
+        positions[i * 3 + 2] = zLocal;
+
+        // 100% 彩色細緻粒子，與新版星塵同規格呈現於深淺色背景
+        const c = palette[Math.floor(Math.random() * palette.length)];
         colors[i * 3] = c.r;
         colors[i * 3 + 1] = c.g;
         colors[i * 3 + 2] = c.b;
 
-        const isBright = Math.random() > 0.82;
-        sizes[i] = isBright ? (5.8 + Math.random() * 4.2) : (2.6 + Math.random() * 2.8);
+        sizes[i] = 1.7 + Math.random() * 3.1;
         phases[i] = Math.random();
-        sparkles[i] = isBright ? (0.86 + Math.random() * 0.14) : Math.random() * 0.6;
+        sparkles[i] = Math.random();
       }
 
       geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -6343,10 +6568,11 @@ body.theme-light .btn-cat-del {
 
       legacyStarPoints = new THREE.Points(geo, legacyStarMat);
       legacyStarPoints.position.set(0, 0, -18);
+      legacyStarPoints.rotation.set(-0.62, 0.10, -0.18);
       legacyGroup.add(legacyStarPoints);
     }
 
-    // 舊版星系旋臂彩色星塵 (沿著旋臂分佈並隨星系自轉，讓色彩漸層與旋轉一目了然)
+    // 舊版星系旋臂彩色星塵 (沿著旋臂分佈並隨星系自轉，避開中央球體、維持細緻光斑質感)
     function buildLegacySpiralDust(count) {
       if (!legacyDiscGroup || !legacyStarMat) return;
       const geo = new THREE.BufferGeometry();
@@ -6356,7 +6582,7 @@ body.theme-light .btn-cat-del {
       const phases = new Float32Array(count);
       const sparkles = new Float32Array(count);
       const stops = [
-        [0.00, new THREE.Color("#fff1d6")],
+        [0.00, new THREE.Color("#ffd080")],
         [0.14, new THREE.Color("#ffa04a")],
         [0.30, new THREE.Color("#ff4f93")],
         [0.48, new THREE.Color("#a35cff")],
@@ -6376,22 +6602,21 @@ body.theme-light .btn-cat-del {
       };
       const HALF = 89;
       for (let i = 0; i < count; i++) {
-        const rn = 0.04 + Math.pow(Math.random(), 0.75) * 0.9;
+        const rn = 0.16 + Math.pow(Math.random(), 0.82) * 0.80;
         const arm = Math.floor(Math.random() * 2) * Math.PI;
         const spread = (Math.random() - 0.5) * (0.55 + rn * 0.35);
         const ang = arm - 3.1 * Math.log(rn + 0.085) + spread;
         const rad = rn * HALF;
         positions[i * 3] = Math.cos(ang) * rad;
         positions[i * 3 + 1] = Math.sin(ang) * rad;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 4.0 * (1.0 - rn * 0.6);
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 4.0 * (1.0 - rn * 0.55);
         const c = gradAt(Math.min(1, rn + (Math.random() - 0.5) * 0.08));
         colors[i * 3] = c.r;
         colors[i * 3 + 1] = c.g;
         colors[i * 3 + 2] = c.b;
-        const bright = Math.random() > 0.9;
-        sizes[i] = bright ? 3.2 + Math.random() * 2.4 : 1.1 + Math.random() * 1.8;
+        sizes[i] = 1.4 + Math.random() * 2.4;
         phases[i] = Math.random();
-        sparkles[i] = bright ? 0.9 : Math.random() * 0.5;
+        sparkles[i] = Math.random();
       }
       geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
       geo.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
@@ -6627,7 +6852,7 @@ body.theme-light .btn-cat-del {
           uPulseBoost: { value: 0 }
         },
         transparent: true,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
         depthWrite: false
       });
 
@@ -6967,6 +7192,12 @@ body.theme-light .btn-cat-del {
         color: moodPrimary.clone(), emissive: moodPrimary.clone(),
         emissiveIntensity: isLight ? 0.35 : 0.85, metalness: 0.15, roughness: 0.12, clearcoat: 1.0
       });
+      matShardCrystal = new THREE.MeshPhysicalMaterial({
+        color: isLight ? 0xdbe4f0 : 0xffffff,
+        emissive: isLight ? 0x221d12 : 0x162238,
+        emissiveIntensity: isLight ? 0.20 : 0.42,
+        metalness: 0.32, roughness: 0.16, clearcoat: 1.0, clearcoatRoughness: 0.08
+      });
       matUiGlass = new THREE.MeshPhysicalMaterial({
         color: isLight ? 0xc8e4f8 : 0x0b1f36,
         metalness: 0.05, roughness: 0.14, clearcoat: 1, clearcoatRoughness: 0.08,
@@ -6996,7 +7227,7 @@ body.theme-light .btn-cat-del {
           uTime: { value: 0 }, uLightMode: { value: animState.lightMode },
           uPixelRatio: { value: renderer.getPixelRatio() }, uPulseBoost: { value: 0 }
         },
-        transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+        transparent: true, blending: THREE.NormalBlending, depthWrite: false
       });
 
       saturnRingMat = new THREE.ShaderMaterial({
@@ -7063,7 +7294,7 @@ body.theme-light .btn-cat-del {
           uPixelRatio: { value: renderer.getPixelRatio() },
           uColorA: { value: moodPrimary.clone() }, uColorB: { value: moodSecondary.clone() }
         },
-        transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+        transparent: true, blending: THREE.NormalBlending, depthWrite: false
       });
 
       supernovaMat = new THREE.ShaderMaterial({
@@ -7093,10 +7324,10 @@ body.theme-light .btn-cat-del {
       buildCosmicPlanets();
       buildInstancedShards();
       buildSupernovaSystem();
-      buildSpiralGalaxy(currentQuality === "ultra" ? 6400 : currentQuality === "high" ? 4600 : 3200);
-      buildStardust(currentQuality === "ultra" ? 2600 : currentQuality === "high" ? 1800 : 1100);
       buildNewCosmicBackdrop();
-      buildLegacyVolumetricGalaxy(currentQuality === "ultra" ? 2800 : currentQuality === "high" ? 2200 : 1600);
+      buildSpiralGalaxy(currentQuality === "ultra" ? 6400 : currentQuality === "high" ? 4600 : 3200);
+      buildStardust(currentQuality === "ultra" ? 6400 : currentQuality === "high" ? 4800 : 3400);
+      buildLegacyVolumetricGalaxy(currentQuality === "ultra" ? 7000 : currentQuality === "high" ? 5400 : 3800);
       applyResponsiveSceneScale();
 
       initUI3DFrames();
@@ -7264,8 +7495,8 @@ body.theme-light .btn-cat-del {
           legacyDiscGroup.position.y = 0;
         }
         if (legacyStarPoints) {
-          legacyStarPoints.rotation.y += dt * (0.042 * legacyWarp + legacyBurstSpeed * 0.55) * legacyRotDir;
-          legacyStarPoints.rotation.x += dt * (0.018 * legacyWarp + legacyBurstSpeed * 0.28) * legacyRotDir;
+          // 舊版粒子比照新版繞 Z 軸跟隨星系平滑旋轉，維持球體中央區域淨空
+          legacyStarPoints.rotation.z += dt * (0.055 * legacyWarp + legacyBurstSpeed * 0.65) * legacyRotDir;
           legacyStarPoints.position.x = 0;
           legacyStarPoints.position.y = 0;
         }
@@ -7422,7 +7653,12 @@ body.theme-light .btn-cat-del {
           newGrandGalaxyMat.uniforms.uPulseBoost.value = animState.pulseBoost;
         }
         if (newGrandGalaxyGroup) {
-          newGrandGalaxyGroup.rotation.z += dt * (0.045 + newBurstSpeed * 0.65) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
+          // 外圍巨型星系與旋臂星點同步明顯自轉
+          newGrandGalaxyGroup.rotation.z += dt * (0.115 + newBurstSpeed * 0.75) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
+        }
+        if (stardustPoints) {
+          // 外圍星塵粒子跟隨星系方向平滑繞轉，並永遠維持於宮殿外圍
+          stardustPoints.rotation.z += dt * (0.075 + newBurstSpeed * 0.48) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
         }
         for (let i = 0; i < auroraMats.length; i++) {
           auroraMats[i].uniforms.uTime.value = t;
@@ -7453,9 +7689,7 @@ body.theme-light .btn-cat-del {
           c.group.rotation.y = -a + (c.speed > 0 ? Math.PI * 0.5 : -Math.PI * 0.5);
         }
 
-        if (galaxyPoints) {
-          galaxyPoints.rotation.y += dt * (0.018 + newBurstSpeed * 0.55) * (newBurstSpeed > 0.01 ? newBurstDir : 1);
-        }
+        // galaxyPoints 已掛載於 newGrandGalaxyGroup 內，隨外圍星系同步自轉
 
         const burstSigned = newBurstSpeed * newBurstDir;
         const speedMult = 1.0 + animState.ringSpeedBoost * 5.0;
@@ -7533,9 +7767,9 @@ body.theme-light .btn-cat-del {
 
       // 新版背景全層視差 (星系、星球、宮殿與星塵依景深位移，主頁晃動幅度與作物頁一樣明顯)
       if (!legacyMode) {
-        if (galaxyPoints) {
-          galaxyPoints.position.x = -smoothPX * 3.6;
-          galaxyPoints.position.y = 14 - smoothPY * 2.2;
+        if (newGrandGalaxyGroup) {
+          newGrandGalaxyGroup.position.x = -smoothPX * 3.2;
+          newGrandGalaxyGroup.position.y = 10 - smoothPY * 2.0;
         }
         if (planetGroup) {
           planetGroup.position.x = -smoothPX * 2.1;
@@ -7546,7 +7780,7 @@ body.theme-light .btn-cat-del {
         }
         if (stardustPoints) {
           stardustPoints.position.x = -smoothPX * 1.2;
-          stardustPoints.position.y = -smoothPY * 0.8;
+          stardustPoints.position.y = 6 - smoothPY * 0.8;
         }
       }
 
@@ -7612,6 +7846,12 @@ body.theme-light .btn-cat-del {
         global.gsap.to(matGlassDome, { opacity: isLight ? 0.28 : 0.22, duration: dur });
         global.gsap.to(matVeinGlow, { emissiveIntensity: isLight ? 0.55 : 1.35, duration: dur });
         global.gsap.to(matAccentCrystal, { emissiveIntensity: isLight ? 0.35 : 0.85, duration: dur });
+        if (matShardCrystal) {
+          tweenCol(matShardCrystal, isLight ? 0xdbe4f0 : 0xffffff);
+          const scEm = new THREE.Color(isLight ? 0x221d12 : 0x162238);
+          global.gsap.to(matShardCrystal.emissive, { r: scEm.r, g: scEm.g, b: scEm.b, duration: dur });
+          global.gsap.to(matShardCrystal, { emissiveIntensity: isLight ? 0.20 : 0.42, duration: dur });
+        }
         global.gsap.to(matUiGlass, { opacity: isLight ? 0.16 : 0.18, duration: dur });
 
         const hSky = new THREE.Color(isLight ? 0x93c5fd : 0x4cc9f0);
@@ -8003,8 +8243,8 @@ body.theme-light .btn-cat-del {
       if (composer) composer.setPixelRatio(dpr);
 
       buildSpiralGalaxy(tier === "ultra" ? 6400 : tier === "high" ? 4600 : 3200);
-      buildStardust(tier === "ultra" ? 2600 : tier === "high" ? 1800 : 1100);
-      buildLegacyStars(tier === "ultra" ? 2800 : tier === "high" ? 2200 : 1600);
+      buildStardust(tier === "ultra" ? 6400 : tier === "high" ? 4800 : 3400);
+      buildLegacyStars(tier === "ultra" ? 7000 : tier === "high" ? 5400 : 3800);
       setLegacyMode(legacyMode);
       handleResize();
     }
@@ -8052,6 +8292,7 @@ body.theme-light .btn-cat-del {
     dropdownFilterQuality: null,
     view: "picker",
     soundEnabled: true,
+    mutationSoundEnabled: true,
     showComparison: false,
     sortMode: "quality",
     sortDirection: "desc",
@@ -8063,6 +8304,7 @@ body.theme-light .btn-cat-del {
     theme: "dark",
     graphicsQuality: "smooth",
     legacyUI: false,
+    desktopSite: false,
     gyroEnabled: true,
     hideTip: false,
     hideCalcTip: false,
@@ -8074,6 +8316,7 @@ body.theme-light .btn-cat-del {
   };
 
   global.getSoundEnabled = () => state.soundEnabled;
+  global.getMutationSoundEnabled = () => state.mutationSoundEnabled;
 
   const els = {
     pickerView: document.getElementById("pickerView"),
@@ -8147,7 +8390,10 @@ body.theme-light .btn-cat-del {
     settingsCloseBtn: document.getElementById("settingsCloseBtn"),
     settingsConfirmBtn: document.getElementById("settingsConfirmBtn"),
     settingLegacyUIToggle: document.getElementById("settingLegacyUIToggle"),
+    settingDesktopSiteRow: document.getElementById("settingDesktopSiteRow"),
+    settingDesktopSiteToggle: document.getElementById("settingDesktopSiteToggle"),
     settingSoundToggle: document.getElementById("settingSoundToggle"),
+    settingMutationSoundToggle: document.getElementById("settingMutationSoundToggle"),
     themeDarkBtn: document.getElementById("themeDarkBtn"),
     themeLightBtn: document.getElementById("themeLightBtn"),
     graphicsQualityCtrl: document.getElementById("graphicsQualityCtrl"),
@@ -8155,6 +8401,7 @@ body.theme-light .btn-cat-del {
     settingGyroLabel: document.getElementById("settingGyroLabel"),
     settingHideTipToggle: document.getElementById("settingHideTipToggle"),
     settingHideCalcTipToggle: document.getElementById("settingHideCalcTipToggle"),
+    homeUrlNoticeCard: document.getElementById("homeUrlNoticeCard"),
     settingsMemoryTipCard: document.getElementById("settingsMemoryTipCard"),
     calcPrecisionTipCard: document.getElementById("calcPrecisionTipCard"),
     tipGuideBtn: document.getElementById("tipGuideBtn"),
@@ -8198,26 +8445,36 @@ body.theme-light .btn-cat-del {
     }
   }
 
-  function detectIsMobile() {
+  function detectDeviceTier() {
     const ua = navigator.userAgent || "";
-    if (/Windows NT/i.test(ua) && !/Windows Phone|IEMobile/i.test(ua)) return false;
-    if (global.screen && typeof global.screen.width === "number" && typeof global.screen.height === "number") {
-      if (Math.min(global.screen.width, global.screen.height) < 600) return true;
-    }
+    const isWinDesktop = /Windows NT/i.test(ua) && !/Windows Phone|IEMobile/i.test(ua);
     const isMac = /Macintosh/i.test(ua);
     const hasMultiTouch = typeof navigator !== "undefined" && navigator.maxTouchPoints > 1;
     const isIPad = /iPad/i.test(ua) || (isMac && hasMultiTouch);
-    if (isMac && !isIPad) return false;
     const isCoarse = typeof global.matchMedia === "function" && global.matchMedia("(pointer: coarse)")?.matches;
-    if (/Linux/i.test(ua) && !/Android/i.test(ua) && !(hasMultiTouch && isCoarse)) return false;
-    if (/Android|iPhone|iPod|iPad|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua) || isIPad) return true;
-    if (global.matchMedia && global.matchMedia("(hover: hover) and (pointer: fine)").matches) return false;
-    return ("ontouchstart" in global) || (navigator.maxTouchPoints > 0);
+    const minScreen = (global.screen && typeof global.screen.width === "number" && typeof global.screen.height === "number")
+      ? Math.min(global.screen.width, global.screen.height)
+      : 1024;
+
+    if (isWinDesktop || (isMac && !isIPad)) return "desktop";
+    if (/Linux/i.test(ua) && !/Android/i.test(ua) && !(hasMultiTouch && isCoarse)) return "desktop";
+    if (/iPhone|iPod|Windows Phone|IEMobile|BlackBerry|Opera Mini/i.test(ua)) return "mobile";
+    if (/Android/i.test(ua) && /Mobile/i.test(ua)) return "mobile";
+    if (minScreen < 600) return "mobile";
+    if (isIPad || /Android/i.test(ua) || (hasMultiTouch && isCoarse)) return "tablet";
+    if (global.matchMedia && global.matchMedia("(hover: hover) and (pointer: fine)").matches) return "desktop";
+    return ("ontouchstart" in global) || (navigator.maxTouchPoints > 0) ? "tablet" : "desktop";
   }
 
-  let isMobileDevice = detectIsMobile();
+  const deviceTier = detectDeviceTier();
+  document.documentElement.dataset.device = deviceTier;
+  document.body.dataset.device = deviceTier;
+  let isMobileDevice = deviceTier !== "desktop";
 
   function updateDeviceSpecificUI() {
+    if (els.settingDesktopSiteRow) {
+      els.settingDesktopSiteRow.style.display = deviceTier === "desktop" ? "none" : "";
+    }
     if (els.settingGyroLabel) {
       els.settingGyroLabel.textContent = isMobileDevice ? "陀螺儀權限" : "滑鼠互動";
     }
@@ -8234,6 +8491,9 @@ body.theme-light .btn-cat-del {
   global.addEventListener("pointermove", (e) => {
     if (e.pointerType === "mouse" && isMobileDevice) {
       isMobileDevice = false;
+      updateDeviceSpecificUI();
+    } else if (e.pointerType === "touch" && !isMobileDevice && deviceTier !== "desktop") {
+      isMobileDevice = true;
       updateDeviceSpecificUI();
     }
   }, { passive: true });
@@ -8325,8 +8585,14 @@ body.theme-light .btn-cat-del {
     return !NO_COLOR_MUTATION_CROPS.has(crop.name) && !NO_COLOR_MUTATION_CROPS.has(displayName(crop.name));
   }
 
+  let cachedMutationMap = null;
+  let cachedMutationSource = null;
   function getMutationByName() {
-    return new Map(state.mutations.map((m) => [m.name, m]));
+    if (cachedMutationSource !== state.mutations || !cachedMutationMap) {
+      cachedMutationSource = state.mutations;
+      cachedMutationMap = new Map(state.mutations.map((m) => [m.name, m]));
+    }
+    return cachedMutationMap;
   }
 
   function activeRecipes(toolState = TOOL_STATE) {
@@ -8406,7 +8672,7 @@ body.theme-light .btn-cat-del {
         title: "天氣詞條",
         mutations: [
           "霓虹", "橙钻", "流火", "日蚀", "亮晶晶", "瓷化", "花雨",
-          "暗雾", "太阳耀斑", "极光", "荧光", "彩虹", "琥珀",
+          "暗雾", "太阳耀斑", "极光", "幽魂", "荧光", "彩虹", "琥珀",
           "陶化", "冰冻", "落雷",
           "生机", "沙尘", "灼热", "结霜", "迷雾", "覆雪", "潮湿", "颤栗"
         ]
@@ -8415,7 +8681,7 @@ body.theme-light .btn-cat-del {
         id: "cat_past",
         title: "活動與下架詞條",
         mutations: [
-          "星环", "火烧云", "幽幽南瓜", "血月", "幽魂", "惊魂夜", "彩尘", "哈基咪", "故障", "金币", "陨石"
+          "星环", "火烧云", "幽幽南瓜", "血月", "惊魂夜", "彩尘", "哈基咪", "故障", "金币", "陨石"
         ]
       }
     ];
@@ -8498,8 +8764,13 @@ body.theme-light .btn-cat-del {
     return { price, formattedPrice: formatPrice(price), multipliers };
   }
 
+  const baseCropValueCache = new Map();
   function baseCropValue(crop) {
-    return calculatePrice(crop, Number(crop.maxWeight), new Set()).price;
+    if (!crop) return 0;
+    if (baseCropValueCache.has(crop.name)) return baseCropValueCache.get(crop.name);
+    const val = calculatePrice(crop, Number(crop.maxWeight), new Set()).price;
+    baseCropValueCache.set(crop.name, val);
+    return val;
   }
 
   function compareCropsForPicker(a, b) {
@@ -8745,7 +9016,9 @@ body.theme-light .btn-cat-del {
       if (els.percentInput) els.percentInput.min = String(minP);
     }
 
-    renderDropdownCrops();
+    if (els.dropdownMenuList && !els.dropdownMenuList.hidden) {
+      renderDropdownCrops();
+    }
   }
 
   function renderDropdownCrops() {
@@ -8803,7 +9076,7 @@ body.theme-light .btn-cat-del {
     if (a.name === "霓虹" && b.name === "橙钻") return -1;
     if (a.name === "橙钻" && b.name === "霓虹") return 1;
     if (a.groupKey === "past" && b.groupKey === "past") {
-      const pastOrder = ["星环", "火烧云", "幽幽南瓜", "血月", "幽魂", "惊魂夜", "彩尘", "哈基咪", "故障", "金币", "陨石"];
+      const pastOrder = ["星环", "火烧云", "幽幽南瓜", "血月", "惊魂夜", "彩尘", "哈基咪", "故障", "金币", "陨石"];
       const ai = pastOrder.indexOf(a.name);
       const bi = pastOrder.indexOf(b.name);
       if (ai !== -1 && bi !== -1) return ai - bi;
@@ -8812,7 +9085,7 @@ body.theme-light .btn-cat-del {
     }
     const weatherOrder = [
       "霓虹", "橙钻", "流火", "日蚀", "亮晶晶", "瓷化", "花雨",
-      "暗雾", "太阳耀斑", "极光", "荧光", "彩虹", "琥珀",
+      "暗雾", "太阳耀斑", "极光", "幽魂", "荧光", "彩虹", "琥珀",
       "陶化", "冰冻", "落雷",
       "生机", "沙尘", "灼热", "结霜", "迷雾", "覆雪", "潮湿", "颤栗"
     ];
@@ -8844,7 +9117,7 @@ body.theme-light .btn-cat-del {
     let next = [...state.selectedMutations];
     if (next.includes(name)) {
       next = next.filter((item) => item !== name);
-      global.AstraAudio.cancel();
+      global.AstraAudio.cancel("mutation");
     } else {
       if (mutation?.groupKey === "quality" || mutation?.groupKey === "color") {
         next = next.filter((item) => getMutationByName().get(item)?.groupKey !== mutation.groupKey);
@@ -8856,7 +9129,7 @@ body.theme-light .btn-cat-del {
       });
       next.push(name);
       next = normalizeMutations(next);
-      global.AstraAudio.activate();
+      global.AstraAudio.activate("mutation");
       vibrate(14);
     }
     state.selectedMutations = new Set(next);
@@ -8903,7 +9176,10 @@ body.theme-light .btn-cat-del {
         if (validMutations.length > 0) {
           const isBaseCat = cat.id === "cat_base" || cat.title?.includes("基礎");
           const isWeatherCat = cat.id === "cat_weather" || cat.title?.includes("天氣") || validMutations.length >= 24;
-          const gridClass = isBaseCat ? "chips-grid-5" : (isWeatherCat ? "chips-grid-5 chips-grid-weather" : "chips-grid-6");
+          const hasSpecialInCat = isBaseCat && cropSpecials.length > 0;
+          const gridClass = isBaseCat
+            ? `chips-grid-5 chips-grid-base${hasSpecialInCat ? " has-special" : ""}`
+            : (isWeatherCat ? "chips-grid-5 chips-grid-weather" : "chips-grid-6 chips-grid-past");
           html += `
             <div class="mutation-group-3d">
               <div class="mutation-group-title">◆ ${escapeHtml(cat.title)}</div>
@@ -8913,14 +9189,14 @@ body.theme-light .btn-cat-del {
         }
       });
     } else {
-      const secondRowChips = [...color, ...cropSpecials];
+      const baseAllChips = [...quality, ...color, ...cropSpecials];
+      const baseHasSpecial = cropSpecials.length > 0;
       html += `
         <div class="mutation-group-3d">
           <div class="mutation-group-title">◆ 基礎詞條</div>
-          <div class="chips-grid-5" ${secondRowChips.length > 0 ? 'style="margin-bottom: 8px;"' : ""}>
-            ${quality.map(createChip).join("")}
+          <div class="chips-grid-5 chips-grid-base${baseHasSpecial ? " has-special" : ""}">
+            ${baseAllChips.map(createChip).join("")}
           </div>
-          ${secondRowChips.length > 0 ? `<div class="chips-grid-5">${secondRowChips.map(createChip).join("")}</div>` : ""}
         </div>
         <div class="mutation-group-3d">
           <div class="mutation-group-title">◆ 天氣詞條</div>
@@ -8928,7 +9204,7 @@ body.theme-light .btn-cat-del {
         </div>
         <div class="mutation-group-3d">
           <div class="mutation-group-title">◆ 活動與下架詞條</div>
-          <div class="chips-grid-6">${past.map(createChip).join("")}</div>
+          <div class="chips-grid-6 chips-grid-past">${past.map(createChip).join("")}</div>
         </div>
       `;
     }
@@ -8981,7 +9257,7 @@ body.theme-light .btn-cat-del {
   }
 
   function renderAll() {
-    renderPicker(false);
+    if (state.view === "picker") renderPicker(false);
     renderCropOptions();
     if (state.view === "calculator") renderSelectedCrop();
     renderMutations();
@@ -9171,6 +9447,31 @@ body.theme-light .btn-cat-del {
     }
   }
 
+  function applyDesktopSite(enabled, save = true) {
+    state.desktopSite = Boolean(enabled);
+    if (els.settingDesktopSiteToggle) els.settingDesktopSiteToggle.checked = state.desktopSite;
+    const vpMeta = document.getElementById("appViewportMeta") || document.querySelector('meta[name="viewport"]');
+    if (vpMeta) {
+      if (deviceTier === "mobile") {
+        vpMeta.setAttribute(
+          "content",
+          state.desktopSite
+            ? "width=1024, viewport-fit=cover"
+            : "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        );
+      } else {
+        vpMeta.setAttribute("content", "width=device-width, initial-scale=1.0, viewport-fit=cover");
+      }
+    }
+    if (save) {
+      try { localStorage.setItem(KEYS.DESKTOP_SITE, String(state.desktopSite)); } catch (e) {}
+      global.requestAnimationFrame(() => {
+        global.dispatchEvent(new Event("resize"));
+        setTimeout(() => global.dispatchEvent(new Event("resize")), 120);
+      });
+    }
+  }
+
   if (els.graphicsQualityCtrl) {
     els.graphicsQualityCtrl.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-quality]");
@@ -9281,6 +9582,7 @@ body.theme-light .btn-cat-del {
   els.blacklistModal?.addEventListener("click", (e) => { if (e.target === els.blacklistModal) closeModal(els.blacklistModal); });
 
   function updateHideTipVisibility() {
+    if (els.homeUrlNoticeCard) els.homeUrlNoticeCard.style.display = state.hideTip ? "none" : "";
     if (els.settingsMemoryTipCard) els.settingsMemoryTipCard.style.display = state.hideTip ? "none" : "";
     if (els.calcPrecisionTipCard) els.calcPrecisionTipCard.style.display = state.hideCalcTip ? "none" : "";
     if (els.settingGuideRow) els.settingGuideRow.style.display = "flex";
@@ -9289,7 +9591,9 @@ body.theme-light .btn-cat-del {
   els.settingsBtn?.addEventListener("click", () => {
     updateDeviceSpecificUI();
     if (els.settingLegacyUIToggle) els.settingLegacyUIToggle.checked = state.legacyUI;
+    if (els.settingDesktopSiteToggle) els.settingDesktopSiteToggle.checked = state.desktopSite;
     if (els.settingSoundToggle) els.settingSoundToggle.checked = state.soundEnabled;
+    if (els.settingMutationSoundToggle) els.settingMutationSoundToggle.checked = state.mutationSoundEnabled;
     if (els.themeDarkBtn) els.themeDarkBtn.classList.toggle("active", state.theme === "dark");
     if (els.themeLightBtn) els.themeLightBtn.classList.toggle("active", state.theme === "light");
     if (els.settingGyroToggle) els.settingGyroToggle.checked = state.gyroEnabled;
@@ -9314,11 +9618,23 @@ body.theme-light .btn-cat-del {
     vibrate(12);
   });
 
+  els.settingDesktopSiteToggle?.addEventListener("change", () => {
+    applyDesktopSite(els.settingDesktopSiteToggle.checked, true);
+    global.AstraAudio.toggle(state.desktopSite);
+    vibrate(12);
+  });
+
   els.settingSoundToggle?.addEventListener("change", () => {
     state.soundEnabled = els.settingSoundToggle.checked;
     try { localStorage.setItem(KEYS.SOUND, state.soundEnabled); } catch (e) {}
     global.AstraAudio.toggle(state.soundEnabled);
     vibrate(10);
+  });
+  els.settingMutationSoundToggle?.addEventListener("change", () => {
+    state.mutationSoundEnabled = els.settingMutationSoundToggle.checked;
+    try { localStorage.setItem(KEYS.MUTATION_SOUND, String(state.mutationSoundEnabled)); } catch (e) {}
+    vibrate(10);
+    if (state.mutationSoundEnabled) global.AstraAudio.activate("mutation");
   });
   els.themeDarkBtn?.addEventListener("click", () => { applyTheme("dark"); global.AstraAudio.tap(880); vibrate(12); });
   els.themeLightBtn?.addEventListener("click", () => { applyTheme("light"); global.AstraAudio.tap(920); vibrate(12); });
@@ -9347,13 +9663,13 @@ body.theme-light .btn-cat-del {
 
   els.settingHideTipToggle?.addEventListener("change", () => {
     state.hideTip = els.settingHideTipToggle.checked;
-    try { localStorage.setItem(KEYS.HIDE_TIP, state.hideTip); } catch (e) {}
+    try { localStorage.setItem(KEYS.HIDE_TIP, String(state.hideTip)); } catch (e) {}
     updateHideTipVisibility();
     global.AstraAudio.toggle(!state.hideTip);
   });
   els.settingHideCalcTipToggle?.addEventListener("change", () => {
     state.hideCalcTip = els.settingHideCalcTipToggle.checked;
-    try { localStorage.setItem(KEYS.HIDE_CALC_TIP, state.hideCalcTip); } catch (e) {}
+    try { localStorage.setItem(KEYS.HIDE_CALC_TIP, String(state.hideCalcTip)); } catch (e) {}
     updateHideTipVisibility();
     global.AstraAudio.toggle(!state.hideCalcTip);
   });
@@ -9940,7 +10256,9 @@ body.theme-light .btn-cat-del {
     state.dropdownFilterQuality = state.dropdownFilterQuality === clickedQ ? null : clickedQ;
     if (state.dropdownFilterQuality) global.AstraAudio.activate();
     else global.AstraAudio.cancel();
-    renderDropdownCrops();
+    if (els.dropdownMenuList && !els.dropdownMenuList.hidden) {
+      renderDropdownCrops();
+    }
   });
 
   els.dropdownMenuList.addEventListener("click", (e) => {
@@ -9966,7 +10284,14 @@ body.theme-light .btn-cat-del {
     const isOpen = !els.valPrecDropdownMenu.hidden;
     els.valPrecDropdownMenu.hidden = isOpen;
     document.querySelector(".energy-reactor-dock")?.classList.toggle("precision-dropdown-open", !isOpen);
-    if (!isOpen) els.dropdownMenuList.hidden = true;
+    if (!isOpen) {
+      els.dropdownMenuList.hidden = true;
+      const arrow = document.getElementById("repickArrow");
+      if (arrow) arrow.textContent = "❯";
+      els.dropdownTriggerBtn?.classList.remove("active");
+      document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
+      if (els.compareValPrecDropdownMenu) els.compareValPrecDropdownMenu.hidden = true;
+    }
     updateValPrecMenuUI();
     global.AstraAudio.tap(780);
   });
@@ -9990,6 +10315,15 @@ body.theme-light .btn-cat-del {
     e.stopPropagation();
     const isOpen = !els.compareValPrecDropdownMenu.hidden;
     els.compareValPrecDropdownMenu.hidden = isOpen;
+    if (!isOpen) {
+      if (els.valPrecDropdownMenu) els.valPrecDropdownMenu.hidden = true;
+      document.querySelector(".energy-reactor-dock")?.classList.remove("precision-dropdown-open");
+      if (els.dropdownMenuList) els.dropdownMenuList.hidden = true;
+      const arrow = document.getElementById("repickArrow");
+      if (arrow) arrow.textContent = "❯";
+      els.dropdownTriggerBtn?.classList.remove("active");
+      document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
+    }
     updateCompareValPrecMenuUI();
     global.AstraAudio.tap(780);
   });
@@ -10024,7 +10358,17 @@ body.theme-light .btn-cat-del {
     }
   });
 
-  els.comparePercentSlider.addEventListener("input", renderTable);
+  let compareSliderRaf = null;
+  els.comparePercentSlider.addEventListener("input", () => {
+    const percent = Number(els.comparePercentSlider.value) || 100;
+    els.comparePercentLabel.textContent = `${percent}%`;
+    els.comparePercentSlider.style.setProperty("--slider-val", `${percent}%`);
+    if (compareSliderRaf !== null) return;
+    compareSliderRaf = global.requestAnimationFrame(() => {
+      compareSliderRaf = null;
+      renderTable();
+    });
+  });
   els.showComparisonToggle.addEventListener("change", () => {
     state.showComparison = els.showComparisonToggle.checked;
     try { localStorage.setItem(KEYS.COMPARE, state.showComparison); } catch (e) {}
@@ -10142,8 +10486,33 @@ body.theme-light .btn-cat-del {
 
   global.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (els.confirmActionModal?.classList.contains("active")) {
+        closeConfirmDialog();
+        return;
+      }
+      if (els.customSortModal?.classList.contains("active")) {
+        handleCustomSortCancel();
+        return;
+      }
+      let closedAnyModal = false;
       [els.disclaimerModal, els.changelogModal, els.blacklistModal, els.settingsModal, els.switchGuideModal]
-        .forEach((m) => { if (m?.classList.contains("active")) closeModal(m); });
+        .forEach((m) => { if (m?.classList.contains("active")) { closeModal(m); closedAnyModal = true; } });
+      if (!closedAnyModal) {
+        if (els.dropdownMenuList && !els.dropdownMenuList.hidden) {
+          els.dropdownMenuList.hidden = true;
+          const arrow = document.getElementById("repickArrow");
+          if (arrow) arrow.textContent = "❯";
+          els.dropdownTriggerBtn?.classList.remove("active");
+          document.querySelector(".control-pod-3d")?.classList.remove("dropdown-open");
+        }
+        if (els.valPrecDropdownMenu && !els.valPrecDropdownMenu.hidden) {
+          els.valPrecDropdownMenu.hidden = true;
+          document.querySelector(".energy-reactor-dock")?.classList.remove("precision-dropdown-open");
+        }
+        if (els.compareValPrecDropdownMenu && !els.compareValPrecDropdownMenu.hidden) {
+          els.compareValPrecDropdownMenu.hidden = true;
+        }
+      }
     }
   });
 
@@ -10253,6 +10622,10 @@ body.theme-light .btn-cat-del {
     const savedSound = localStorage.getItem(KEYS.SOUND);
     if (savedSound !== null) state.soundEnabled = savedSound === "true";
 
+    const savedMutationSound = localStorage.getItem(KEYS.MUTATION_SOUND);
+    if (savedMutationSound !== null) state.mutationSoundEnabled = savedMutationSound === "true";
+    if (els.settingMutationSoundToggle) els.settingMutationSoundToggle.checked = state.mutationSoundEnabled;
+
     const savedTheme = localStorage.getItem(KEYS.THEME);
     state.theme = savedTheme === "light" ? "light" : "dark";
 
@@ -10262,6 +10635,10 @@ body.theme-light .btn-cat-del {
       : "smooth";
 
     state.legacyUI = localStorage.getItem(KEYS.LEGACY_UI) === "true";
+
+    const savedDesktopSite = localStorage.getItem(KEYS.DESKTOP_SITE);
+    state.desktopSite = savedDesktopSite === "true";
+    applyDesktopSite(state.desktopSite, false);
 
     const savedCompare = localStorage.getItem(KEYS.COMPARE);
     if (savedCompare !== null) state.showComparison = savedCompare === "true";
@@ -10299,6 +10676,8 @@ body.theme-light .btn-cat-del {
 
     state.hideTip = localStorage.getItem(KEYS.HIDE_TIP) === "true";
     state.hideCalcTip = localStorage.getItem(KEYS.HIDE_CALC_TIP) === "true";
+    if (els.settingHideTipToggle) els.settingHideTipToggle.checked = state.hideTip;
+    if (els.settingHideCalcTipToggle) els.settingHideCalcTipToggle.checked = state.hideCalcTip;
     updateHideTipVisibility();
 
     const savedCustom = localStorage.getItem(KEYS.CUSTOM_MUTATIONS);
