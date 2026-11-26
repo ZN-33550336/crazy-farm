@@ -4019,8 +4019,8 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
             <span class="settings-clean-label">🖥️ 3D 畫質等級</span>
             <div class="theme-segmented-ctrl" id="graphicsQualityCtrl">
               <button class="theme-seg-btn" type="button" data-quality="ultra">極致</button>
-              <button class="theme-seg-btn" type="button" data-quality="high">高</button>
-              <button class="theme-seg-btn active" type="button" data-quality="smooth">流暢</button>
+              <button class="theme-seg-btn active" type="button" data-quality="high">高</button>
+              <button class="theme-seg-btn" type="button" data-quality="smooth">流暢</button>
             </div>
           </div>
 
@@ -5470,7 +5470,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
     let envMapLight = null;
     let currentTheme = "dark";
     let currentView = "picker";
-    let currentQuality = "smooth";
+    let currentQuality = "high";
     let parallaxEnabled = true;
     let legacyMode = false;
 
@@ -7178,13 +7178,13 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
     /* ------------------------------------------------------------------
      * 7. 初始化
      * ------------------------------------------------------------------ */
-    function init({ canvasId = "quantumCanvas3D", theme = "dark", quality = "smooth", parallax = true, legacy = false } = {}) {
+    function init({ canvasId = "quantumCanvas3D", theme = "dark", quality = "high", parallax = true, legacy = false } = {}) {
       if (initialized) return;
       const canvas = document.getElementById(canvasId);
       if (!canvas || !global.THREE || !global.ASTRAL_SHADERS) return;
 
       currentTheme = theme === "light" ? "light" : "dark";
-      currentQuality = ["ultra", "high", "smooth"].includes(quality) ? quality : "smooth";
+      currentQuality = ["ultra", "high", "smooth"].includes(quality) ? quality : "high";
       parallaxEnabled = Boolean(parallax);
       legacyMode = Boolean(legacy);
       animState.lightMode = currentTheme === "light" ? 1.0 : 0.0;
@@ -8378,7 +8378,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
     priceDigits: 2,
     comparePriceDigits: 2,
     theme: "dark",
-    graphicsQuality: "smooth",
+    graphicsQuality: "high",
     legacyUI: false,
     desktopSite: false,
     gyroEnabled: true,
@@ -9499,7 +9499,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
   }
 
   function applyGraphicsQuality(tier, save = true) {
-    const valid = ["ultra", "high", "smooth"].includes(tier) ? tier : "smooth";
+    const valid = ["ultra", "high", "smooth"].includes(tier) ? tier : "high";
     state.graphicsQuality = valid;
     if (els.graphicsQualityCtrl) {
       els.graphicsQualityCtrl.querySelectorAll("[data-quality]").forEach((btn) => {
@@ -10723,7 +10723,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
     const savedQuality = localStorage.getItem(KEYS.GRAPHICS);
     state.graphicsQuality = ["ultra", "high", "smooth"].includes(savedQuality)
       ? savedQuality
-      : "smooth";
+      : "high";
 
     state.legacyUI = localStorage.getItem(KEYS.LEGACY_UI) === "true";
 
