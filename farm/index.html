@@ -902,38 +902,10 @@ body.theme-light .specimen-q-灰色 {
   align-items: center;
   justify-content: center;
 }
-/* 手機與 iPad 平板：完整還原原本 3D 透視階層與逐卡陀螺儀傾斜（關閉會壓平 3D 的 content-visibility: auto） */
-html[data-device="mobile"] body:not(.legacy-ui) .crop-grid-3d,
-html[data-device="tablet"] body:not(.legacy-ui) .crop-grid-3d {
-  perspective: 1100px;
-  transform-style: preserve-3d;
-}
-html[data-device="mobile"] .crop-pedestal-3d,
-html[data-device="tablet"] .crop-pedestal-3d {
-  content-visibility: visible;
-  transform-style: preserve-3d;
-}
+/* 手機與 iPad 平板：共用單一陀螺儀旋轉角度 (--tilt-rx / --tilt-ry)，搭配 content-visibility: auto 僅繪製可視區域，消除 69 張卡巢狀 preserve-3d 造成的卡頓 */
 html[data-device="mobile"] .crop-3d-stage,
 html[data-device="tablet"] .crop-3d-stage {
-  perspective: 420px;
-  transform-style: preserve-3d;
-  transform: rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
-}
-html[data-device="mobile"] .crop-3d-token,
-html[data-device="tablet"] .crop-3d-token {
-  transform-style: preserve-3d;
-}
-html[data-device="mobile"] .crop-3d-depth-1,
-html[data-device="tablet"] .crop-3d-depth-1 {
-  transform: translate3d(1.2px, 1.8px, -2px);
-}
-html[data-device="mobile"] .crop-3d-depth-2,
-html[data-device="tablet"] .crop-3d-depth-2 {
-  transform: translate3d(2.2px, 3.4px, -4px);
-}
-html[data-device="mobile"] .crop-3d-face,
-html[data-device="tablet"] .crop-3d-face {
-  transform: translateZ(1px);
+  transform: perspective(420px) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
 }
 @media (max-width: 560px) {
   .crop-3d-stage {
@@ -7801,8 +7773,8 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
 
       global.addEventListener("resize", scheduleResize);
       global.addEventListener("scroll", () => { uiRectsDirty = true; }, { passive: true });
-      global.addEventListener("mousemove", (e) => {
-        if (!parallaxEnabled || global.isCustomSortDragging) return;
+      global.addEventListener("pointermove", (e) => {
+        if (e.pointerType !== "mouse" || !parallaxEnabled || global.isCustomSortDragging) return;
         isGyroInput = false;
         const w = cachedVW;
         const h = cachedVH;
@@ -7861,22 +7833,49 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
         lastAy = ay;
         lastAz = az;
       }, { passive: true });
+      const wrapAngleDeg = (a) => {
+        let d = ((a + 180) % 360 + 360) % 360 - 180;
+        return d === -180 ? 180 : d;
+      };
       global.addEventListener("deviceorientation", (e) => {
         if (!parallaxEnabled || !Number.isFinite(e.gamma) || !Number.isFinite(e.beta)) return;
-        if (Math.abs(e.beta) > 150) return;
         isGyroInput = true;
-        if (gyroBaseGamma === null || gyroBaseBeta === null) {
-          gyroBaseGamma = e.gamma;
-          gyroBaseBeta = e.beta;
+        const screenAngle = (global.screen?.orientation?.angle ?? global.orientation ?? 0) | 0;
+        let rawX = e.gamma;
+        let rawY = e.beta;
+        if (screenAngle === 90) {
+          rawX = -e.beta;
+          rawY = e.gamma;
+        } else if (screenAngle === -90 || screenAngle === 270) {
+          rawX = e.beta;
+          rawY = -e.gamma;
+        } else if (screenAngle === 180 || screenAngle === -180) {
+          rawX = -e.gamma;
+          rawY = -e.beta;
         }
-        const dG = e.gamma - gyroBaseGamma;
-        const dB = e.beta - gyroBaseBeta;
-        // 基準姿態極緩慢跟隨手部姿勢 (放慢回正速度，傾斜時能持續感受到跟隨)
-        gyroBaseGamma += dG * 0.0015;
-        gyroBaseBeta += dB * 0.0015;
-        // 背景視差：取消死區門檻，恢復原本的跟隨幅度
-        pointerNX = Math.max(-1, Math.min(1, dG / 30));
-        pointerNY = Math.max(-1, Math.min(1, dB / 30));
+
+        if (gyroBaseGamma === null || gyroBaseBeta === null) {
+          gyroBaseGamma = rawX;
+          gyroBaseBeta = rawY;
+        }
+
+        let dG = wrapAngleDeg(rawX - gyroBaseGamma);
+        let dB = wrapAngleDeg(rawY - gyroBaseBeta);
+
+        // 超過 ±34° 時推動基準角同步跟上，確保任何握持姿勢都不會卡死在飽和邊界
+        if (dG > 34) { gyroBaseGamma = wrapAngleDeg(gyroBaseGamma + (dG - 34)); dG = 34; }
+        else if (dG < -34) { gyroBaseGamma = wrapAngleDeg(gyroBaseGamma + (dG + 34)); dG = -34; }
+        if (dB > 34) { gyroBaseBeta = wrapAngleDeg(gyroBaseBeta + (dB - 34)); dB = 34; }
+        else if (dB < -34) { gyroBaseBeta = wrapAngleDeg(gyroBaseBeta + (dB + 34)); dB = -34; }
+
+        // 自適應回正基準：中心附近緩慢跟隨 (0.012)，大角度持續傾斜時加快校準 (0.08)
+        const followG = Math.abs(dG) > 22 ? 0.08 : 0.012;
+        const followB = Math.abs(dB) > 22 ? 0.08 : 0.012;
+        gyroBaseGamma = wrapAngleDeg(gyroBaseGamma + dG * followG);
+        gyroBaseBeta = wrapAngleDeg(gyroBaseBeta + dB * followB);
+
+        pointerNX = Math.tanh(dG / 20);
+        pointerNY = Math.tanh(dB / 20);
         if (legacyMode) {
           // 舊版球體保持目前的晃動手感 (沿用原本的死區與幅度)
           const deadzone = (v) => (Math.abs(v) < 1.5 ? 0 : v - Math.sign(v) * 1.5);
@@ -7886,9 +7885,17 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
           legacyVelY -= sNY * 0.38;
         }
       }, { passive: true });
+      global.addEventListener("orientationchange", () => {
+        gyroBaseGamma = null;
+        gyroBaseBeta = null;
+      }, { passive: true });
       document.addEventListener("visibilitychange", () => {
         isPaused = document.hidden;
-        if (!isPaused && clock) clock.getDelta();
+        if (!isPaused) {
+          gyroBaseGamma = null;
+          gyroBaseBeta = null;
+          if (clock) clock.getDelta();
+        }
       });
 
       clock = new THREE.Clock();
@@ -8285,15 +8292,13 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
         const wantTilt = currentView === "picker" && !legacyMode && parallaxEnabled;
         if (usePerCardTilt) {
           if (pickerGridEl.style.transform) pickerGridEl.style.transform = "";
-          if (frameCounter % 2 === 0 || !wantTilt) {
-            const tileRx = wantTilt ? (smoothPY / Math.max(0.1, scaleY)) * 6.5 : 0;
-            const tileRy = wantTilt ? (smoothPX / Math.max(0.1, scaleX)) * 7.5 : 0;
-            if (Math.abs(tileRx - lastTileTiltX) > 0.15 || Math.abs(tileRy - lastTileTiltY) > 0.15 || (!wantTilt && (lastTileTiltX !== 0 || lastTileTiltY !== 0))) {
-              lastTileTiltX = tileRx;
-              lastTileTiltY = tileRy;
-              pickerGridEl.style.setProperty("--tilt-rx", `${tileRx.toFixed(2)}deg`);
-              pickerGridEl.style.setProperty("--tilt-ry", `${tileRy.toFixed(2)}deg`);
-            }
+          const tileRx = wantTilt ? (smoothPY / Math.max(0.1, scaleY)) * 6.5 : 0;
+          const tileRy = wantTilt ? (smoothPX / Math.max(0.1, scaleX)) * 7.5 : 0;
+          if (Math.abs(tileRx - lastTileTiltX) > 0.06 || Math.abs(tileRy - lastTileTiltY) > 0.06 || (!wantTilt && (lastTileTiltX !== 0 || lastTileTiltY !== 0))) {
+            lastTileTiltX = tileRx;
+            lastTileTiltY = tileRy;
+            pickerGridEl.style.setProperty("--tilt-rx", `${tileRx.toFixed(2)}deg`);
+            pickerGridEl.style.setProperty("--tilt-ry", `${tileRy.toFixed(2)}deg`);
           }
         } else {
           const tileRx = wantTilt ? (smoothPY / Math.max(0.1, scaleY)) * 3.8 : 0;
