@@ -902,10 +902,31 @@ body.theme-light .specimen-q-灰色 {
   align-items: center;
   justify-content: center;
 }
-/* 手機與 iPad 平板：共用單一陀螺儀旋轉角度 (--tilt-rx / --tilt-ry)，搭配 content-visibility: auto 僅繪製可視區域，消除 69 張卡巢狀 preserve-3d 造成的卡頓 */
+/* 手機與 iPad 平板：共用單一陀螺儀旋轉角度 (--tilt-rx / --tilt-ry) 並保留晶塊 3D 景深層次 */
+html[data-device="mobile"] .crop-pedestal-3d,
+html[data-device="tablet"] .crop-pedestal-3d {
+  content-visibility: visible;
+}
 html[data-device="mobile"] .crop-3d-stage,
 html[data-device="tablet"] .crop-3d-stage {
-  transform: perspective(420px) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
+  transform-style: preserve-3d;
+  transform: perspective(360px) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
+}
+html[data-device="mobile"] .crop-3d-token,
+html[data-device="tablet"] .crop-3d-token {
+  transform-style: preserve-3d;
+}
+html[data-device="mobile"] .crop-3d-depth-1,
+html[data-device="tablet"] .crop-3d-depth-1 {
+  transform: translate3d(1.5px, 2px, -3px);
+}
+html[data-device="mobile"] .crop-3d-depth-2,
+html[data-device="tablet"] .crop-3d-depth-2 {
+  transform: translate3d(3px, 4px, -6px);
+}
+html[data-device="mobile"] .crop-3d-face,
+html[data-device="tablet"] .crop-3d-face {
+  transform: translateZ(3px);
 }
 @media (max-width: 560px) {
   .crop-3d-stage {
@@ -7868,14 +7889,14 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
         if (dB > 34) { gyroBaseBeta = wrapAngleDeg(gyroBaseBeta + (dB - 34)); dB = 34; }
         else if (dB < -34) { gyroBaseBeta = wrapAngleDeg(gyroBaseBeta + (dB + 34)); dB = -34; }
 
-        // 自適應回正基準：中心附近緩慢跟隨 (0.012)，大角度持續傾斜時加快校準 (0.08)
-        const followG = Math.abs(dG) > 22 ? 0.08 : 0.012;
-        const followB = Math.abs(dB) > 22 ? 0.08 : 0.012;
+        // 自適應回正基準：中心附近極緩慢跟隨 (0.0015) 保持明顯持續傾斜感，大角度持續傾斜時平滑校準 (0.03)
+        const followG = Math.abs(dG) > 26 ? 0.03 : 0.0015;
+        const followB = Math.abs(dB) > 26 ? 0.03 : 0.0015;
         gyroBaseGamma = wrapAngleDeg(gyroBaseGamma + dG * followG);
         gyroBaseBeta = wrapAngleDeg(gyroBaseBeta + dB * followB);
 
-        pointerNX = Math.tanh(dG / 20);
-        pointerNY = Math.tanh(dB / 20);
+        pointerNX = Math.max(-1, Math.min(1, dG / 26));
+        pointerNY = Math.max(-1, Math.min(1, dB / 26));
         if (legacyMode) {
           // 舊版球體保持目前的晃動手感 (沿用原本的死區與幅度)
           const deadzone = (v) => (Math.abs(v) < 1.5 ? 0 : v - Math.sign(v) * 1.5);
@@ -8292,9 +8313,9 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
         const wantTilt = currentView === "picker" && !legacyMode && parallaxEnabled;
         if (usePerCardTilt) {
           if (pickerGridEl.style.transform) pickerGridEl.style.transform = "";
-          const tileRx = wantTilt ? (smoothPY / Math.max(0.1, scaleY)) * 6.5 : 0;
-          const tileRy = wantTilt ? (smoothPX / Math.max(0.1, scaleX)) * 7.5 : 0;
-          if (Math.abs(tileRx - lastTileTiltX) > 0.06 || Math.abs(tileRy - lastTileTiltY) > 0.06 || (!wantTilt && (lastTileTiltX !== 0 || lastTileTiltY !== 0))) {
+          const tileRx = wantTilt ? (smoothPY / Math.max(0.1, scaleY)) * 12.0 : 0;
+          const tileRy = wantTilt ? (smoothPX / Math.max(0.1, scaleX)) * 14.0 : 0;
+          if (Math.abs(tileRx - lastTileTiltX) > 0.05 || Math.abs(tileRy - lastTileTiltY) > 0.05 || (!wantTilt && (lastTileTiltX !== 0 || lastTileTiltY !== 0))) {
             lastTileTiltX = tileRx;
             lastTileTiltY = tileRy;
             pickerGridEl.style.setProperty("--tilt-rx", `${tileRx.toFixed(2)}deg`);
@@ -9468,13 +9489,20 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
   /* --------------------------------------------------------------------------
    * 畫面渲染
    * -------------------------------------------------------------------------- */
+  let lastPickerRenderSig = "";
   function renderPicker(animateCards = false) {
     const query = els.pickerSearch.value.trim().toLowerCase();
     const qFilter = state.currentFilterQuality;
+    const sig = `${state.legacyUI ? 1 : 0}|${query}|${qFilter || ""}|${state.crops.length}`;
 
     document.querySelectorAll("#qualityTabs .filter-tab-pill").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.q === qFilter);
     });
+
+    if (!animateCards && sig === lastPickerRenderSig && els.pickerGrid.children.length > 0) {
+      return;
+    }
+    lastPickerRenderSig = sig;
 
     const crops = state.crops
       .filter((crop) => {
@@ -10030,6 +10058,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
 
   function applyLegacyUI(enabled, save = true) {
     state.legacyUI = Boolean(enabled);
+    lastPickerRenderSig = "";
     document.body.classList.toggle("legacy-ui", state.legacyUI);
     if (els.settingLegacyUIToggle) els.settingLegacyUIToggle.checked = state.legacyUI;
     global.AstralScene3D?.setLegacyMode(state.legacyUI);
