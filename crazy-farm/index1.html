@@ -605,6 +605,24 @@ body.legacy-ui .home-url-notice-card {
   }
 }
 
+.notice-yellow-note {
+  color: #ffd43b;
+  font-weight: 800;
+}
+body.theme-light .notice-yellow-note {
+  color: #b45309;
+}
+
+.setting-kw-home,
+.setting-kw-calc {
+  color: #ffd43b;
+  font-weight: 900;
+}
+body.theme-light .setting-kw-home,
+body.theme-light .setting-kw-calc {
+  color: #d97706;
+}
+
 .settings-memory-tip-card,
 .calc-memory-tip-card {
   display: flex;
@@ -620,7 +638,25 @@ body.legacy-ui .home-url-notice-card {
   line-height: 1.55;
   color: var(--text-main);
 }
-body.theme-light .settings-memory-tip-card,
+body.theme-light .notice-yellow-note {
+  color: #ffd43b;
+  font-weight: 800;
+}
+body.theme-light .notice-yellow-note {
+  color: #b45309;
+}
+
+.setting-kw-home,
+.setting-kw-calc {
+  color: #ffd43b;
+  font-weight: 900;
+}
+body.theme-light .setting-kw-home,
+body.theme-light .setting-kw-calc {
+  color: #d97706;
+}
+
+.settings-memory-tip-card,
 body.theme-light .calc-memory-tip-card {
   background: rgba(246, 251, 255, 0.34);
   border-color: rgba(13, 148, 136, 0.36);
@@ -1269,6 +1305,7 @@ body.theme-light .crop-legacy-name {
   align-items: center;
   gap: 14px;
   min-width: 0;
+  flex: 1;
 }
 
 .banner-crystal-frame {
@@ -1304,6 +1341,7 @@ body.theme-light .banner-crystal-frame {
 
 .banner-left {
   min-width: 0;
+  flex: 1;
 }
 
 .banner-title-row {
@@ -1335,6 +1373,23 @@ body.theme-light .banner-crystal-frame {
   font-weight: 600;
   color: var(--text-muted);
   font-family: "Share Tech Mono", "Noto Sans TC", monospace;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+}
+.b-meta .meta-chunk {
+  white-space: nowrap;
+}
+@media (max-width: 680px) {
+  .b-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+  }
+  .b-meta .meta-sep {
+    display: none;
+  }
 }
 
 .btn-repick-crop {
@@ -2001,11 +2056,9 @@ html[data-device="desktop"] .chips-grid-base.has-special {
   grid-template-columns: repeat(8, minmax(0, 1fr));
 }
 html[data-device="mobile"] .chips-grid-base,
-html[data-device="mobile"] .chips-grid-weather {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
+html[data-device="mobile"] .chips-grid-weather,
 html[data-device="mobile"] .chips-grid-past {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 @media (orientation: portrait) {
   html[data-device="tablet"] .chips-grid-weather {
@@ -2652,6 +2705,16 @@ body.theme-light .btn-danger-clean {
   flex-direction: column;
   gap: 10px;
 }
+.changelog-latest-release {
+  background: linear-gradient(145deg, rgba(16, 62, 88, 0.72), rgba(52, 26, 92, 0.62));
+  border: 1.5px solid rgba(52, 226, 216, 0.65);
+  box-shadow: 0 0 22px rgba(52, 226, 216, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+body.theme-light .changelog-latest-release {
+  background: linear-gradient(145deg, rgba(224, 247, 250, 0.92), rgba(237, 233, 254, 0.90));
+  border: 1.5px solid rgba(13, 148, 136, 0.65);
+  box-shadow: 0 8px 22px rgba(13, 148, 136, 0.16), inset 0 1px 0 #ffffff;
+}
 .changelog-version-header {
   display: flex;
   align-items: center;
@@ -2713,13 +2776,31 @@ body.theme-light .btn-danger-clean {
   min-width: 185px;
   padding: 6px;
   border-radius: 12px;
-  background: var(--glass-bg-elevated);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+  background: #0a1628;
+  border: 1.5px solid rgba(255, 71, 133, 0.55);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.72);
   display: none;
   flex-direction: column;
   gap: 4px;
-  z-index: 40;
+  z-index: 60;
+}
+body.theme-light .bl-dropdown-menu {
+  background: #f8fbff;
+  border-color: rgba(190, 18, 60, 0.45);
+  box-shadow: 0 14px 30px rgba(18, 52, 92, 0.22);
+}
+.bl-bright-yellow {
+  color: #ffe033;
+  font-weight: 900;
+}
+.bl-soft-yellow {
+  color: #d6c37e;
+}
+body.theme-light .bl-bright-yellow {
+  color: #d97706;
+}
+body.theme-light .bl-soft-yellow {
+  color: #8a7338;
 }
 .bl-dropdown-menu.open,
 .bl-dropdown-menu.active {
@@ -2816,10 +2897,31 @@ body.theme-light .bl-badge-block { color: #c2410c; }
   padding: 2px 6px;
   border-radius: 6px;
 }
-.bl-crown-scam { background: rgba(255, 42, 122, 0.25); color: #ff80ab; }
-.bl-crown-block { background: rgba(249, 115, 22, 0.25); color: #fdba74; }
-body.theme-light .bl-crown-scam { color: #be123c; }
-body.theme-light .bl-crown-block { color: #c2410c; }
+.bl-crown-scam { background: rgba(255, 42, 122, 0.36); color: #ff9ec2; border: 1px solid rgba(255, 71, 133, 0.55); }
+.bl-crown-block { background: rgba(249, 115, 22, 0.36); color: #fed7aa; border: 1px solid rgba(249, 115, 22, 0.55); }
+body.theme-light .bl-crown-scam { color: #9f1239; background: rgba(254, 205, 211, 0.9); }
+body.theme-light .bl-crown-block { color: #9a3412; background: rgba(254, 215, 170, 0.9); }
+
+.bl-row-top-scam td {
+  background: linear-gradient(90deg, rgba(244, 63, 94, 0.32), rgba(225, 29, 72, 0.20));
+  border-bottom-color: rgba(255, 71, 133, 0.45);
+}
+.bl-row-top-scam td:first-child {
+  box-shadow: inset 4px 0 0 #ff2a7a;
+}
+.bl-row-top-block td {
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.32), rgba(234, 88, 12, 0.20));
+  border-bottom-color: rgba(249, 115, 22, 0.45);
+}
+.bl-row-top-block td:first-child {
+  box-shadow: inset 4px 0 0 #ff8c1a;
+}
+body.theme-light .bl-row-top-scam td {
+  background: linear-gradient(90deg, rgba(254, 205, 211, 0.85), rgba(255, 228, 230, 0.72));
+}
+body.theme-light .bl-row-top-block td {
+  background: linear-gradient(90deg, rgba(254, 215, 170, 0.85), rgba(255, 237, 213, 0.72));
+}
 .bl-id {
   font-family: "Share Tech Mono", monospace;
   font-size: 11.5px;
@@ -3200,7 +3302,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
       <section id="pickerView" class="picker-stage">
         <div id="homeUrlNoticeCard" class="home-url-notice-card">
           <span class="home-url-notice-text">
-            📢 <strong>網址定版公告</strong>：因先前更換網址可能導致原先記憶重置，<strong>往後不會再更改網址</strong>，所有按鈕與設定只需重新調整一次即可自動記憶保存！（可於設定內「隱藏首頁提示」關閉）
+            📢 <strong>網址定版公告</strong>：因先前更換網址可能導致原先記憶重置，<strong>往後不會再更改網址</strong>，所有按鈕與設定只需重新調整一次即可自動記憶保存！<span class="notice-yellow-note">（可於設定內「隱藏首頁提示」關閉）</span>
           </span>
         </div>
 
@@ -3222,7 +3324,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
 
             <div id="settingsMemoryTipCard" class="settings-memory-tip-card">
               <span class="settings-memory-tip-text">
-                💡 本計算器之可自訂功能較多，所有皆只需設定一次便會自動記憶，之後進入網頁便會自動還原。<span style="white-space: nowrap;">一般情況使用<strong class="guide-highlight-preset" style="white-space: nowrap; display: inline;">預設設定</strong>即可</span>。各項說明請見功能說明。
+                💡 本計算器之可自訂功能較多，所有皆只需設定一次便會自動記憶，之後進入網頁便會自動還原。一般情況使用<strong class="guide-highlight-preset">預設設定</strong>即可。各項說明請見功能說明。
               </span>
               <button id="tipGuideBtn" class="settings-memory-tip-btn" type="button">功能說明</button>
             </div>
@@ -3534,10 +3636,12 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
               <span class="changelog-version-tag">最新版本</span>
             </div>
             <ul class="changelog-ul changelog-simple-ul">
-              <li>🏛️ <strong>全新 3D 宇宙宮殿與舊版切換</strong>：背景翻新為星海上的宇宙宮殿、極光與自轉星系，粒子集中於外圍不擋視線；設定裡可隨時切回「使用舊版介面」（粒子也同步升級更細緻）。</li>
-              <li>🔥 <strong>詞條調整與電腦/平板排版適配</strong>：新增「火燒雲」詞條、「幽魂」移入天氣詞條並加入全選、「隕石」移至活動區；電腦端詞條與切換清單更寬敞（7～8 欄），手機與 iPad 平板各自自動適配。</li>
-              <li>🍎 <strong>69 種果實圖示與數值更新</strong>：全果實補齊遊戲圖示更好找，並補上銀杏生長耗時、修正雪蓮價格與秋水仙耗時，主頁三個大框改為透明外框不擋背景。</li>
-              <li>🔊 <strong>獨立詞條音效與設定升級</strong>：設定新增「詞條音效」（與操作音效分開控制）、「3D 畫質等級」與「隱藏首頁/計算提示」，所有設定都會自動記憶。</li>
+              <li>🏛️ <strong>全新 3D 宇宙宮殿與舊版切換</strong>：背景換成星海上的宇宙宮殿、極光和旋轉星系；設定裡也能隨時切回「舊版介面」（球體與粒子同步升級更細緻）。</li>
+              <li>🎨 <strong>深淺雙主題、畫質調整與互動彩蛋</strong>：支援深色星空和淺色藍天主題、3D 畫質等級（預設高），點三下左上角寶石或搖晃手機／滑鼠還能觸發專屬特效。</li>
+              <li>🔥 <strong>新增詞條與全選分區調整</strong>：新增「火燒雲」詞條，「幽魂」移到天氣區並加入一鍵全選，「隕石」移到活動區，之前自訂過排序的玩家也會自動補齊。</li>
+              <li>🍎 <strong>69 種果實圖片與數據更新</strong>：全部果實都加上遊戲原圖更好找，補上銀杏生長耗時、修正雪蓮價格與秋水仙耗時，1 小時以上的總耗時改為省略秒數更簡潔。</li>
+              <li>📱 <strong>電腦／平板／手機介面與顯示優化</strong>：主頁三個大框改為透明不擋背景，切換作物清單填滿品階色、比較表按鈕與滑動顯示更順眼，三種裝置各自自動調整成最好點的欄數。</li>
+              <li>🔊 <strong>獨立詞條音效與實用功能</strong>：設定新增「詞條音效」（與操作音效分開控制）與隱藏提示開關；並加入內建瀏覽器外開提醒、網頁更新通知，以及修復部分文案與相容性。</li>
             </ul>
           </div>
           <div class="modal-section-card changelog-card changelog-post-release">
@@ -3668,23 +3772,21 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
               <span class="changelog-version-tag">最新版本</span>
             </div>
             <ul class="changelog-ul">
-              <li><strong>全新 3D 宇宙宮殿與雙介面自由切換</strong>：
-                <br>• <strong>新版宇宙宮殿場景</strong>：主視覺升級為漂浮在雲海與星系中的宇宙皇家宮殿、中心神果與四重星環，搭配流動極光與外圍自轉星系；彩色粒子主要環繞於外圍旋轉，不遮擋中央宮殿，菱形結晶也調整為與宮殿呼應的皇家寶石色系。
-                <br>• <strong>舊版介面保留與粒子升級</strong>：設定中可隨時切換「使用舊版介面」（經典量子球體＋升級版旋臂星系），舊版粒子同步升級為細緻柔光粒子並貼合球體外圍旋轉，畫面更乾淨精緻。
-                <br>• <strong>雙主題與彩蛋互動</strong>：支援「深色星穹」與「淺色晨曦」雙主題（淺色提高透光度呈現藍天白雲與透明主頁外框），三擊左上角寶石或快速晃動／搖晃手機皆可觸發專屬特效（新版聖輝光柱／舊版球體爆散重聚）。
+              <li><strong>全新 3D 宇宙宮殿與舊版介面自由切換</strong>：
+                <br>• <strong>新版宇宙宮殿場景</strong>：主視覺升級為漂浮在雲海與星系中的宇宙皇家宮殿、中心神果與四重星環，搭配流動極光與外圍旋轉彩色粒子；設定中可隨時切換「舊版介面」（經典量子球體＋升級版旋臂星系與細緻環繞粒子）。
+                <br>• <strong>雙主題與互動彩蛋</strong>：支援深色／淺色雙主題、三檔 3D 畫質（預設「高」），三擊左上角寶石或晃動手機／滑鼠皆可觸發專屬能量特效。
               </li>
-              <li><strong>詞條新增、分區調整與自動補齊</strong>：
-                <br>• <strong>新增「火燒雲」詞條</strong>：於活動與下架詞條區新增「火燒雲」（藍色品質、5 倍，排於「星環」與「幽幽南瓜」之間）。
-                <br>• <strong>「幽魂」與「隕石」歸位調整</strong>：「幽魂」移至天氣詞條區（極光與螢光之間）並納入「全選(流)」與「全選(瓷)」；「隕石」移至活動與下架詞條區（「金幣」之後），並自天氣全選中移除。
-                <br>• <strong>自訂排序自動相容</strong>：曾自行排列詞條的玩家無需重置，系統會自動將新詞條安插到對應位置。
+              <li><strong>詞條新增與分區調整</strong>：
+                <br>• 於活動與下架詞條區新增「火燒雲」（藍色品質、5 倍，排於「星環」與「幽幽南瓜」之間）。
+                <br>• 「幽魂」移至天氣詞條區（極光與螢光之間）並納入「全選(流)」與「全選(瓷)」；「隕石」移至活動與下架詞條區並自天氣全選移除；自訂排序玩家亦會自動補齊。
               </li>
               <li><strong>69 種果實圖示、數據校準與介面優化</strong>：
-                <br>• <strong>全果實圖鑑與數據更新</strong>：補齊全部 69 種果實遊戲原圖；補全銀杏生長耗時（<code>4318.14秒</code>），並修正雪蓮價格係數（<code>56993.9613</code>）與秋水仙生長耗時（<code>705.88秒</code>）。
-                <br>• <strong>透明主頁與操作細節優化</strong>：主頁頂欄、作物列表與頁尾三個大框改為全透明僅保留外框線，完整呈現 3D 背景；計算頁「切換作物」清單填滿對應品階色調並提升圖層層級；全作物比較表調整「小數幾位」與「高到低」按鈕位置並修正滑動時表頭裁切效果。
+                <br>• 補齊全部 69 種果實遊戲原圖；補上銀杏生長耗時（<code>4318.14秒</code>），修正雪蓮價格係數（<code>56993.9613</code>）與秋水仙生長耗時（<code>705.88秒</code>）。
+                <br>• 總生長耗時於 1 小時以上省略秒數（超過 30 秒進位 1 分）、未滿 1 小時保留秒數；主頁三大框改為透明外框、切換作物清單填滿品階色調並調整比較表按鈕與滑動裁切，並修復部分文案與排版對齊。
               </li>
-              <li><strong>多裝置適配、雙獨立音效與設定升級</strong>：
-                <br>• <strong>電腦／平板／手機三端適配</strong>：電腦端三大詞條區統一為每排 7 欄（基礎區含特殊詞條時自動為 8 欄）、切換作物清單為 5 欄；手機端（含開電腦版網站）維持天氣 5×5 與切換清單 3 欄；針對 iPad 平板進行直橫向專屬排版與觸控高度適配，手機瀏覽時畫質也與開電腦版網站同樣清晰。
-                <br>• <strong>獨立「詞條音效」與畫質設定</strong>：設定內新增「詞條音效」（預設開啟，與「操作音效」分開控制）、3D 畫質等級（極致／高／流暢）、非電腦裝置專屬「電腦版網站」開關（預設關閉），以及「隱藏首頁提示」與「隱藏計算提示」獨立開關。
+              <li><strong>三端適配、獨立音效與瀏覽器提醒</strong>：
+                <br>• 電腦、iPad 平板與手機各自自動適配最佳欄數與畫質；設定新增獨立「詞條音效」（與操作音效分開控制）、「電腦版網站」開關及「隱藏首頁／計算提示」。
+                <br>• 支援自動偵測 LINE / FB / DC 等內建瀏覽器並引導改用外部瀏覽器，以及偵測網頁更新後提示一鍵更新元件。
               </li>
             </ul>
           </div>
@@ -3983,9 +4085,9 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
           <div class="modal-section-card" style="border-color: rgba(255, 42, 122, 0.35);">
             <h4 style="color: #ff6599;">⚠️ 社群通報聲明</h4>
             <p style="font-size: 12.5px; line-height: 1.65; margin: 0;">
-              本名單資料由玩家交流群組成員共同蒐集、發現並回報彙整，旨在提醒廣大農場島主留意交易安全與防範損失，<strong>非工具作者本人之個人立場與指控</strong>。若名單資訊有誤、雙方已達成和解或欲申請更正更新，請隨時聯繫社群管理進行反饋。
+              本名單資料由玩家交流群組成員共同蒐集、發現並回報彙整，旨在提醒廣大農場島主留意交易安全與防範損失，<strong class="bl-bright-yellow">非本計算器作者之個人立場與指控</strong>。若名單資訊有誤、雙方已達成和解或欲申請更正更新，<strong class="bl-bright-yellow">請點擊主頁畫面右下方的問題回報向作者的DC聯繫</strong>。
             </p>
-            <p style="font-size: 11.5px; color: #f5c443; margin-top: 6px; line-height: 1.5;">
+            <p class="bl-soft-yellow" style="font-size: 11.5px; margin-top: 6px; line-height: 1.5;">
               💡 標註為「未知」之玩家編號，若有玩家知悉其遊戲 ID，非常歡迎隨時向群組管理提供補全！
             </p>
             <p style="font-size: 11.5px; color: #ffaa77; margin-top: 6px; line-height: 1.55; border-top: 1px dashed rgba(249, 115, 22, 0.35); padding-top: 6px;">
@@ -4140,9 +4242,9 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
           <button id="settingsCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
         </div>
         <div class="modal-body-3d settings-clean-body">
-          <!-- 0. 使用舊版介面 (預設關閉) -->
+          <!-- 0. 舊版介面 (預設關閉) -->
           <div class="settings-clean-row">
-            <span class="settings-clean-label">🕰️ 使用舊版介面 <span class="setting-hint-note">(介面卡頓可選)</span></span>
+            <span class="settings-clean-label">🕰️ 舊版介面 <span class="setting-hint-note">(介面卡頓可選)</span></span>
             <label class="switch-unit" style="margin: 0; cursor: pointer;">
               <input id="settingLegacyUIToggle" type="checkbox" />
               <div class="astra-toggle-switch"></div>
@@ -4222,15 +4324,15 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
             </div>
           </div>
 
-          <!-- 4. 各項功能說明 (一律常駐顯示) -->
+          <!-- 4. 功能說明 (一律常駐顯示) -->
           <div id="settingGuideRow" class="settings-clean-row">
-            <span class="settings-clean-label">📖 各項功能說明</span>
+            <span class="settings-clean-label">📖 功能說明</span>
             <button id="openSwitchGuideBtn" class="settings-mini-btn" type="button">功能說明</button>
           </div>
 
-          <!-- 5. 自行排列詞條 (位於設定最底部，上方為功能說明) -->
+          <!-- 5. 排列詞條 (位於設定最底部，上方為功能說明) -->
           <div id="customOrderRow" class="settings-clean-row">
-            <span class="settings-clean-label">🧩 自行排列詞條</span>
+            <span class="settings-clean-label">🧩 排列詞條</span>
             <div style="display: flex; align-items: center; gap: 8px;">
               <button id="resetCustomOrderBtn" class="settings-mini-btn btn-danger-clean" type="button" style="display: none;">恢復預設</button>
               <button id="openCustomOrderBtn" class="settings-mini-btn" type="button">排列</button>
@@ -4243,12 +4345,12 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
       </div>
     </div>
 
-    <!-- 自行排列詞條編輯彈窗 -->
+    <!-- 排列詞條編輯彈窗 -->
     <div id="customSortModal" class="modal-backdrop-3d" role="dialog" aria-modal="true" aria-labelledby="customSortTitle" style="z-index: 10040;">
       <div class="modal-card-3d custom-sort-modal-card">
         <div class="modal-header-3d">
           <div id="customSortTitle" class="modal-title-3d">
-            <span>🧩</span> 自行排列詞條
+            <span>🧩</span> 排列詞條
             <span id="customCatCountBadge" class="custom-cat-badge">3/10</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
@@ -4298,7 +4400,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
       <div class="modal-card-3d" style="max-width: 600px;">
         <div class="modal-header-3d">
           <div id="switchGuideTitle" class="modal-title-3d">
-            <span>📖</span> 各項功能說明
+            <span>📖</span> 功能說明
           </div>
           <button id="switchGuideCloseBtn" class="modal-close-btn" type="button" aria-label="關閉">✕</button>
         </div>
@@ -4321,46 +4423,26 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
                 </tr>
                 <tr>
                   <td><span class="guide-badge-name">可輸入到小數第六位</span></td>
-                  <td>開啟後作物重量與比率可精確輸入至小數後 6 位，且重量範圍顯示對應高精度數值；關閉時限制為 2 位小數。</td>
-                </tr>
-                <tr>
-                  <td><span class="guide-badge-name">小數: 2~6位</span></td>
-                  <td>設定計算器「總價值」或全作物比較表的「預估價值」顯示小數點位數（支援 2～6 位精確切換）。</td>
-                </tr>
-                <tr>
-                  <td><span class="guide-badge-name">全作物比較</span></td>
-                  <td>開啟後展開下方所有作物的價值對比表格，支援依品階或預估價值排序，並附帶全作物重量比率滑桿。</td>
+                  <td>開啟後作物重量與比率可精確輸入至小數後最高 6 位，且重量範圍顯示對應高精度數值；關閉時限制為 2 位小數。</td>
                 </tr>
                 <tr>
                   <td><span id="guideInteractiveName" class="guide-badge-name">滑鼠互動</span></td>
                   <td id="guideInteractiveDesc">啟用電腦滑鼠互動，滑鼠游標移動時背景 3D 超新星會隨動力學即時傾角動態響應。</td>
                 </tr>
                 <tr>
-                  <td><span class="guide-badge-name">隱藏首頁提示</span></td>
-                  <td>開啟後將隱藏首頁的「網址定版公告」與「記憶與操作提示卡片」，預設關閉並自動記憶；功能說明可隨時於設定內開啟。</td>
+                  <td><span class="guide-badge-name">隱藏首頁 / 計算提示</span></td>
+                  <td>分別控制隱藏首頁的「網址定版公告與記憶提示」或計算器下方的「精準計算提示」，預設皆為關閉並自動記憶；功能說明可隨時於設定內開啟。</td>
                 </tr>
                 <tr>
-                  <td><span class="guide-badge-name">隱藏計算提示</span></td>
-                  <td>開啟後將隱藏計算器橫幅下方的「精準計算提示卡片」，預設關閉並自動記憶，提供更精簡專注的試算視圖。</td>
-                </tr>
-                <tr>
-                  <td><span class="guide-badge-name">使用舊版介面</span></td>
-                  <td>切換回經典輕量舊版介面與升級版立體星雲星系背景，適合偏好舊版排版或較低階裝置使用；預設關閉。</td>
-                </tr>
-                <tr>
-                  <td><span class="guide-badge-name">全選(流)</span></td>
-                  <td>一鍵全選流火版最高倍率之 16 個天氣詞條（含花雨與潮濕，不影響品階/專屬/活動/顏色詞條）；再次點擊即可還原至上次手動選擇之天氣狀態。</td>
-                </tr>
-                <tr>
-                  <td><span class="guide-badge-name">全選(瓷)</span></td>
-                  <td>一鍵全選瓷化版最高倍率之 16 個天氣詞條（含花雨與潮濕，不影響品階/專屬/活動/顏色詞條）；再次點擊即可還原至上次手動選擇之天氣狀態。</td>
+                  <td><span class="guide-badge-name">全選(流) / 全選(瓷)</span></td>
+                  <td>一鍵全選流火版或瓷化版倍率之 17 個天氣詞條；再次點擊即可還原至上次手動選擇之天氣狀態。</td>
                 </tr>
                 <tr>
                   <td><span class="guide-badge-name">快捷百分比(100~55%)</span></td>
                   <td>快速將當前作物設定為指定重量百分比，再次點擊相同按鈕可取消並還原上次輸入的自訂數值。</td>
                 </tr>
                 <tr>
-                  <td><span class="guide-badge-name">自行排列詞條</span></td>
+                  <td><span class="guide-badge-name">排列詞條</span></td>
                   <td>自由拖曳自訂詞條顯示順序與分類歸屬（最多可建立 10 個分類）；隨時可一鍵確認還原為預設排列。</td>
                 </tr>
               </tbody>
@@ -4431,66 +4513,66 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
   "月光草": "新月光草.png",
   "月番茄": "新月番茄.png",
   "大豆": "大豆.png",
-  "月灯草": "新月灯草.png",
-  "黄瓜": "黄瓜.png",
+  "月灯草": "新月燈草.png",
+  "黄瓜": "黃瓜.png",
   "竹子": "竹子.png",
   "西瓜": "西瓜.png",
   "梨": "梨.png",
   "橘子": "橘子.png",
-  "蓝莓": "蓝莓.png",
+  "蓝莓": "藍莓.png",
   "玉米": "玉米.png",
   "白菜": "白菜.png",
   "花生": "花生.png",
-  "牵牛花": "牵牛花.png",
+  "牵牛花": "牽牛花.png",
   "棉花": "棉花.png",
-  "银辉苔": "新银辉苔.png",
-  "月环树": "新月环果.png",
-  "苹果": "苹果.png",
+  "银辉苔": "新銀輝苔.png",
+  "月环树": "新月環果.png",
+  "苹果": "蘋果.png",
   "石榴": "石榴.png",
   "月莓": "新月莓.png",
-  "星叶菜": "新星叶菜.png",
+  "星叶菜": "新星葉菜.png",
   "香蕉": "香蕉.png",
-  "车厘子": "车厘子.png",
+  "车厘子": "車厘子.png",
   "柿子": "柿子.png",
   "椰子": "椰子.png",
   "南瓜": "南瓜.png",
-  "龙眼": "龙眼.png",
+  "龙眼": "龍眼.png",
   "草莓": "草莓.png",
   "荔枝": "荔枝.png",
   "菠菜": "菠菜.png",
   "柚子": "柚子.png",
   "液光藤": "新液光藤.png",
   "月核树": "新月核果.png",
-  "猕猴桃": "猕猴桃.png",
-  "榴莲": "榴莲.png",
+  "猕猴桃": "獼猴桃.png",
+  "榴莲": "榴槤.png",
   "葡萄": "葡萄.png",
   "蟠桃": "蟠桃.png",
   "星空玫瑰": "新星空玫瑰.png",
   "月影梅": "新月影梅.png",
   "大王菊": "大王菊.png",
-  "惊奇菇": "惊奇菇.png",
+  "惊奇菇": "驚奇菇.png",
   "月兔": "新月兔.png",
   "魔鬼朝天椒": "魔鬼朝天椒.png",
   "月蟾蜍": "新月蟾蜍.png",
-  "芦荟": "芦荟.png",
+  "芦荟": "蘆薈.png",
   "向日葵": "向日葵.png",
   "仙人掌象": "仙人掌象.png",
-  "红包树": "新红包果.png",
-  "火龙狗": "火龙狗.png",
+  "红包树": "新紅包果.png",
+  "火龙狗": "火龍狗.png",
   "松果": "松果.png",
   "幻月花": "新幻月花.png",
   "彼岸花": "新彼岸花.png",
-  "马蹄莲": "新马蹄莲.png",
-  "铃兰幽幽": "铃兰悠悠.png",
-  "听歌的柿黛拉": "新听歌的柿黛拉.png",
+  "马蹄莲": "新馬蹄蓮.png",
+  "铃兰幽幽": "鈴蘭悠悠.png",
+  "听歌的柿黛拉": "新聽歌的柿黛拉.png",
   "跳舞的柿黛拉": "跳舞的柿黛拉.png",
   "秋水仙": "秋水仙.png",
-  "银杏": "银杏.png",
-  "沉静的疯象南瓜": "沉静的疯象南瓜.png",
-  "雪莲": "雪莲.png",
-  "藏红花": "藏红花.png",
-  "灵芝": "灵芝.png",
-  "迷路的疯象南瓜": "迷路的疯象南瓜.png",
+  "银杏": "銀杏.png",
+  "沉静的疯象南瓜": "沉靜的瘋象南瓜.png",
+  "雪莲": "雪蓮.png",
+  "藏红花": "藏紅花.png",
+  "灵芝": "靈芝.png",
+  "迷路的疯象南瓜": "迷路的瘋象南瓜.png",
   "芒果": "芒果.png"
 };
 
@@ -8757,9 +8839,11 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
     const num = Number(val);
     if (!Number.isFinite(num)) return "0";
     const d = Number(digits) || 2;
-    if (num >= 1000000000) return `${(num / 1000000000).toFixed(d).replace(/\.?0+$/, "")}B`;
-    if (num >= 1000000) return `${(num / 1000000).toFixed(d).replace(/\.?0+$/, "")}M`;
-    if (num >= 10000) return `${(num / 10000).toFixed(d).replace(/\.?0+$/, "")}W`;
+    const factor = Math.pow(10, d);
+    const fmt = (v) => (Math.floor(v * factor + 1e-9) / factor).toFixed(d).replace(/\.?0+$/, "");
+    if (num >= 1000000000) return `${fmt(num / 1000000000)}B`;
+    if (num >= 1000000) return `${fmt(num / 1000000)}M`;
+    if (num >= 10000) return `${fmt(num / 1000)}K`;
     return num.toFixed(d).replace(/\.?0+$/, "");
   }
 
@@ -8773,6 +8857,18 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
     if (h > 0) return `${h}小時${m}分${s}秒`;
     if (m > 0) return `${m}分${s}秒`;
     return `${s}秒`;
+  }
+
+  function formatDurationNoSec(sec) {
+    const total = Math.max(0, Math.round(Number(sec) || 0));
+    if (total < 3600) return formatDuration(total);
+    const remSec = total % 60;
+    const totalMin = Math.floor(total / 60) + (remSec > 30 ? 1 : 0);
+    const d = Math.floor(totalMin / 1440);
+    const h = Math.floor((totalMin % 1440) / 60);
+    const m = totalMin % 60;
+    if (d > 0) return `${d}日${h}小時${m}分`;
+    return `${h}小時${m}分`;
   }
 
   function displayName(val) {
@@ -9244,8 +9340,9 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
     }
 
     const maxTimeSec = (Number(current.growthSpeed) || 0) * Number(current.maxWeight);
-    const maxTimeText = maxTimeSec > 0 ? `滿重耗時: 約${formatDuration(maxTimeSec)}` : "成熟耗時: 暫無數據";
-    els.cropSubMeta.textContent = `MAX ${Number(current.maxWeight) > 0 ? formatNumber(current.maxWeight) + "KG" : "待實測"} • ${maxTimeText}`;
+    const maxWeightText = `重量上限：${Number(current.maxWeight) > 0 ? formatNumber(current.maxWeight) + "KG" : "待實測"}`;
+    const maxTimeText = maxTimeSec > 0 ? `滿重耗時：約${formatDurationNoSec(maxTimeSec)}` : "滿重耗時：暫無數據";
+    els.cropSubMeta.innerHTML = `<span class="meta-chunk">${escapeHtml(maxWeightText)}</span><span class="meta-sep"> • </span><span class="meta-chunk">${escapeHtml(maxTimeText)}</span>`;
 
     if (els.weightRangeLabel) {
       const minW = formatNumber(minWeight(current));
@@ -9306,7 +9403,7 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
       const totalSeconds = safeWeight * speed;
       const secPerPct = totalSeconds / 100;
       const rateText = secPerPct >= 60 ? formatDuration(secPerPct) : `${formatNumber(secPerPct, 1)}秒`;
-      els.growthTimeBox.textContent = `約${formatDuration(totalSeconds)}（${rateText}/1%）`;
+      els.growthTimeBox.textContent = `約${formatDurationNoSec(totalSeconds)}（${rateText}/1%）`;
     } else {
       els.growthTimeBox.textContent = "-";
     }
