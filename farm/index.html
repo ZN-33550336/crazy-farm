@@ -910,7 +910,7 @@ html[data-device="tablet"] .crop-pedestal-3d {
 html[data-device="mobile"] .crop-3d-stage,
 html[data-device="tablet"] .crop-3d-stage {
   transform-style: preserve-3d;
-  transform: perspective(360px) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
+  transform: perspective(260px) translate3d(var(--tilt-tx, 0px), var(--tilt-ty, 0px), 0) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
 }
 html[data-device="mobile"] .crop-3d-token,
 html[data-device="tablet"] .crop-3d-token {
@@ -918,15 +918,19 @@ html[data-device="tablet"] .crop-3d-token {
 }
 html[data-device="mobile"] .crop-3d-depth-1,
 html[data-device="tablet"] .crop-3d-depth-1 {
-  transform: translate3d(1.5px, 2px, -3px);
+  transform: translate3d(1.5px, 2px, 3px);
 }
 html[data-device="mobile"] .crop-3d-depth-2,
 html[data-device="tablet"] .crop-3d-depth-2 {
-  transform: translate3d(3px, 4px, -6px);
+  transform: translate3d(3px, 4px, -3px);
 }
 html[data-device="mobile"] .crop-3d-face,
 html[data-device="tablet"] .crop-3d-face {
-  transform: translateZ(3px);
+  transform: translateZ(9px);
+}
+html[data-device="mobile"] .crop-3d-sheen,
+html[data-device="tablet"] .crop-3d-sheen {
+  opacity: 0.42;
 }
 @media (max-width: 560px) {
   .crop-3d-stage {
@@ -7895,8 +7899,8 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
         gyroBaseGamma = wrapAngleDeg(gyroBaseGamma + dG * followG);
         gyroBaseBeta = wrapAngleDeg(gyroBaseBeta + dB * followB);
 
-        pointerNX = Math.max(-1, Math.min(1, dG / 26));
-        pointerNY = Math.max(-1, Math.min(1, dB / 26));
+        pointerNX = Math.max(-1, Math.min(1, dG / 18));
+        pointerNY = Math.max(-1, Math.min(1, dB / 18));
         if (legacyMode) {
           // 舊版球體保持目前的晃動手感 (沿用原本的死區與幅度)
           const deadzone = (v) => (Math.abs(v) < 1.5 ? 0 : v - Math.sign(v) * 1.5);
@@ -8313,13 +8317,19 @@ body.legacy-ui.theme-light:not(.view-calculator) .cyber-footer-3d {
         const wantTilt = currentView === "picker" && !legacyMode && parallaxEnabled;
         if (usePerCardTilt) {
           if (pickerGridEl.style.transform) pickerGridEl.style.transform = "";
-          const tileRx = wantTilt ? (smoothPY / Math.max(0.1, scaleY)) * 12.0 : 0;
-          const tileRy = wantTilt ? (smoothPX / Math.max(0.1, scaleX)) * 14.0 : 0;
+          const normX = wantTilt ? (smoothPX / Math.max(0.1, scaleX)) : 0;
+          const normY = wantTilt ? (smoothPY / Math.max(0.1, scaleY)) : 0;
+          const tileRx = wantTilt ? normY * 24.0 : 0;
+          const tileRy = wantTilt ? normX * 28.0 : 0;
           if (Math.abs(tileRx - lastTileTiltX) > 0.05 || Math.abs(tileRy - lastTileTiltY) > 0.05 || (!wantTilt && (lastTileTiltX !== 0 || lastTileTiltY !== 0))) {
             lastTileTiltX = tileRx;
             lastTileTiltY = tileRy;
             pickerGridEl.style.setProperty("--tilt-rx", `${tileRx.toFixed(2)}deg`);
             pickerGridEl.style.setProperty("--tilt-ry", `${tileRy.toFixed(2)}deg`);
+            pickerGridEl.style.setProperty("--tilt-tx", `${(normX * 4.5).toFixed(2)}px`);
+            pickerGridEl.style.setProperty("--tilt-ty", `${(-normY * 4.5).toFixed(2)}px`);
+            pickerGridEl.style.setProperty("--card-mx", wantTilt ? `${(50 + normX * 45).toFixed(1)}%` : "30%");
+            pickerGridEl.style.setProperty("--card-my", wantTilt ? `${(50 - normY * 45).toFixed(1)}%` : "20%");
           }
         } else {
           const tileRx = wantTilt ? (smoothPY / Math.max(0.1, scaleY)) * 3.8 : 0;
